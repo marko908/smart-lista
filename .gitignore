@@ -47,3 +47,6 @@ expo.log
 
 # artefakty testow
 .test-build/
+
+# lokalna konfiguracja Supabase
+.env

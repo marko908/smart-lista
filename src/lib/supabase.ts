@@ -1,0 +1,57 @@
+/**
+ * Połączenie z Supabase.
+ *
+ * Konto jest DODATKIEM, nie warunkiem działania. W sklepie nie ma zasięgu,
+ * więc aplikacja musi ruszyć i policzyć trasę bez logowania i bez sieci.
+ * Konto dokłada trzy rzeczy: plany przeżywają zmianę telefonu, listę widać
+ * na dwóch urządzeniach, a mapy da się komuś udostępnić.
+ *
+ * Dlatego `supabase` może być `null` — gdy nie ma konfiguracji, cała warstwa
+ * sieciowa po prostu nie istnieje, a reszta aplikacji działa jak dotąd.
+ */
+
+import { createClient, type SupabaseClient } from '@supabase/supabase-js';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { Platform } from 'react-native';
+import * as SecureStore from 'expo-secure-store';
+
+const URL = process.env.EXPO_PUBLIC_SUPABASE_URL;
+const KLUCZ = process.env.EXPO_PUBLIC_SUPABASE_ANON_KEY;
+
+/**
+ * Sesja trzymana bezpiecznie na telefonie, zwyczajnie w przeglądarce.
+ *
+ * `expo-secure-store` używa pęku kluczy iOS i keystore Androida, ale na webie
+ * nie istnieje. Tam zostaje magazyn przeglądarki — token i tak jest widoczny
+ * dla kodu strony, więc udawanie bezpieczeństwa niczego by nie dało.
+ *
+ * Uwaga: SecureStore ma limit 2048 bajtów na wartość. Sesja Supabase mieści
+ * się w nim z zapasem, ale gdyby kiedyś przestała, trzeba ją będzie dzielić.
+ */
+const magazyn = {
+  getItem: (klucz: string) =>
+    Platform.OS === 'web' ? AsyncStorage.getItem(klucz) : SecureStore.getItemAsync(klucz),
+  setItem: (klucz: string, wartosc: string) =>
+    Platform.OS === 'web'
+      ? AsyncStorage.setItem(klucz, wartosc)
+      : SecureStore.setItemAsync(klucz, wartosc),
+  removeItem: (klucz: string) =>
+    Platform.OS === 'web' ? AsyncStorage.removeItem(klucz) : SecureStore.deleteItemAsync(klucz),
+};
+
+export const supabase: SupabaseClient | null =
+  URL && KLUCZ
+    ? createClient(URL, KLUCZ, {
+        auth: {
+          storage: magazyn,
+          autoRefreshToken: true,
+          persistSession: true,
+          // Wykrywanie sesji z adresu URL ma sens tylko w przeglądarce —
+          // tam wraca link potwierdzający albo logowanie przez dostawcę.
+          detectSessionInUrl: Platform.OS === 'web',
+        },
+      })
+    : null;
+
+/** Czy w ogóle da się zalogować. Bez konfiguracji ekran konta się nie pokazuje. */
+export const kontaWlaczone = supabase !== null;
