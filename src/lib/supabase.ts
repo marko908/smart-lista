@@ -30,6 +30,16 @@ const KLUCZ =
   process.env.EXPO_PUBLIC_SUPABASE_PUBLISHABLE_KEY ?? process.env.EXPO_PUBLIC_SUPABASE_ANON_KEY;
 
 /**
+ * Czy w ogóle jest gdzie trzymać sesję.
+ *
+ * `web.output: "static"` sprawia, że expo-router renderuje trasy z góry
+ * w Node — a tam nie ma `window`. Magazyn przeglądarki wywalał wtedy cały
+ * serwer deweloperski przy starcie. Podczas takiego renderowania sesji i tak
+ * nie ma sensu odczytywać: nie ma zalogowanego człowieka, jest generator HTML.
+ */
+const wPrzegladarce = typeof window !== 'undefined';
+
+/**
  * Sesja trzymana bezpiecznie na telefonie, zwyczajnie w przeglądarce.
  *
  * `expo-secure-store` używa pęku kluczy iOS i keystore Androida, ale na webie
@@ -40,14 +50,18 @@ const KLUCZ =
  * się w nim z zapasem, ale gdyby kiedyś przestała, trzeba ją będzie dzielić.
  */
 const magazyn = {
-  getItem: (klucz: string) =>
-    Platform.OS === 'web' ? AsyncStorage.getItem(klucz) : SecureStore.getItemAsync(klucz),
-  setItem: (klucz: string, wartosc: string) =>
-    Platform.OS === 'web'
-      ? AsyncStorage.setItem(klucz, wartosc)
-      : SecureStore.setItemAsync(klucz, wartosc),
-  removeItem: (klucz: string) =>
-    Platform.OS === 'web' ? AsyncStorage.removeItem(klucz) : SecureStore.deleteItemAsync(klucz),
+  getItem: (klucz: string) => {
+    if (Platform.OS !== 'web') return SecureStore.getItemAsync(klucz);
+    return wPrzegladarce ? AsyncStorage.getItem(klucz) : Promise.resolve(null);
+  },
+  setItem: (klucz: string, wartosc: string) => {
+    if (Platform.OS !== 'web') return SecureStore.setItemAsync(klucz, wartosc);
+    return wPrzegladarce ? AsyncStorage.setItem(klucz, wartosc) : Promise.resolve();
+  },
+  removeItem: (klucz: string) => {
+    if (Platform.OS !== 'web') return SecureStore.deleteItemAsync(klucz);
+    return wPrzegladarce ? AsyncStorage.removeItem(klucz) : Promise.resolve();
+  },
 };
 
 export const supabase: SupabaseClient | null =
@@ -59,7 +73,7 @@ export const supabase: SupabaseClient | null =
           persistSession: true,
           // Wykrywanie sesji z adresu URL ma sens tylko w przeglądarce —
           // tam wraca link potwierdzający albo logowanie przez dostawcę.
-          detectSessionInUrl: Platform.OS === 'web',
+          detectSessionInUrl: Platform.OS === 'web' && wPrzegladarce,
         },
       })
     : null;
