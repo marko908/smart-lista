@@ -4,6 +4,7 @@ import { Pressable, StyleSheet, Text, View } from 'react-native';
 import { Body, Button, Card, Empty, FONT, H1, Input, Label, Screen } from '../components/ui';
 import { chainName } from '../data/chains';
 import { PRODUCT_COUNT } from '../data/products';
+import { useKonto } from '../lib/konto';
 import { potwierdz } from '../lib/potwierdz';
 import { newId, useApp } from '../lib/storage';
 import { radius, useTheme } from '../lib/theme';
@@ -12,6 +13,7 @@ import type { ShoppingList } from '../lib/types';
 export default function Home() {
   const t = useTheme();
   const { state, ready, update } = useApp();
+  const konto = useKonto();
   const [adding, setAdding] = useState(false);
 
   /**
@@ -76,6 +78,32 @@ export default function Home() {
         </View>
         <Text style={[st.chev, { color: t.colors.primary }]}>›</Text>
       </Pressable>
+
+      {konto.wlaczone && (
+        <Pressable
+          onPress={() => router.push('/konto')}
+          style={({ pressed }) => [
+            st.storesRow,
+            {
+              backgroundColor: t.colors.card,
+              borderColor: t.colors.border,
+              opacity: pressed ? 0.75 : 1,
+            },
+          ]}
+        >
+          <View style={{ flex: 1, gap: 2 }}>
+            <Text style={[st.storesTitle, { color: t.colors.foreground }]}>
+              {konto.email ?? 'Konto'}
+            </Text>
+            <Text style={[st.storesHint, { color: t.colors.mutedForeground }]}>
+              {konto.email
+                ? 'Zalogowany'
+                : 'Nieobowiązkowe — żeby plany przeżyły zmianę telefonu'}
+            </Text>
+          </View>
+          <Text style={[st.chev, { color: t.colors.primary }]}>›</Text>
+        </Pressable>
+      )}
 
       {formularz ? (
         <Card>
