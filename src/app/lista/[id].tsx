@@ -193,6 +193,12 @@ export default function ListScreen() {
     router.back();
   }
 
+  const tryby: SortMode[] = [
+    'trasa',
+    ...(ZAKLADKA_WPISYWANIE ? (['wpisywanie'] as const) : []),
+    ...(PODGLAD_TRASY && store?.map ? (['podglad'] as const) : []),
+  ];
+
   const left = list.items.filter((i) => !i.checked).length;
   const here = currentGroup(route);
   const next = nextGroup(route);
@@ -284,13 +290,13 @@ export default function ListScreen() {
             <Text style={[st.routeLeft, { color: t.colors.primary }]}>{left}</Text>
           </View>
 
-          {/* przełącznik sortowania — to jest cały dowód */}
+          {/*
+            Przełącznik pokazujemy tylko wtedy, gdy jest między czym wybierać.
+            Jedno pole „Kolejność trasy" wyglądało jak zepsuty przycisk.
+          */}
+          {tryby.length > 1 && (
           <View style={[st.seg, { borderColor: t.colors.border, backgroundColor: t.colors.muted }]}>
-            {([
-              'trasa',
-              ...(ZAKLADKA_WPISYWANIE ? ['wpisywanie'] : []),
-              ...(PODGLAD_TRASY && store?.map ? ['podglad'] : []),
-            ] as SortMode[]).map((m) => (
+            {tryby.map((m) => (
               <Pressable
                 key={m}
                 onPress={() => setMode(m)}
@@ -310,6 +316,7 @@ export default function ListScreen() {
               </Pressable>
             ))}
           </View>
+          )}
 
           {mode === 'podglad' && store?.map ? (
             <PodgladTrasy map={store.map} path={route.path} order={route.groups} />

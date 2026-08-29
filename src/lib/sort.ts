@@ -76,6 +76,21 @@ export function buildRoute(list: ShoppingList, store: Store | null): Route {
   const rank = new Map<SectionKey, number>();
   order.forEach((s, i) => rank.set(s, i));
 
+  /**
+   * Bez sklepu nie ma trasy — i nie ma czego udawać.
+   *
+   * Wcześniej wszystkie sekcje miały wtedy równą rangę, więc rozstrzygało
+   * sortowanie zapasowe: alfabetycznie po nazwie sekcji. Nagłówek mówił
+   * „kolejność wpisywania", a lista pokazywała alfabet. Teraz kolejność bierze
+   * się z tego, co człowiek wpisał najpierw — czyli z pierwszego wystąpienia
+   * sekcji na liście.
+   */
+  if (source === 'brak') {
+    list.items.forEach((item) => {
+      if (!rank.has(item.section)) rank.set(item.section, rank.size);
+    });
+  }
+
   const bySection = new Map<SectionKey, ListItem[]>();
   for (const item of list.items) {
     const arr = bySection.get(item.section);
