@@ -3,16 +3,36 @@ import { useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
 import { Alert, Platform, Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
 import { Body, Button, Card, Empty, FONT, H2, Input, Label, Pill, Screen } from '../../components/ui';
 import { SectionPicker } from '../../components/SectionPicker';
+import { StorePlan } from '../../components/StorePlan';
 import { chainName } from '../../data/chains';
 import { SECTIONS, SECTION_GROUPS, sectionName, type SectionKey } from '../../data/sections';
 import { matchProduct, suggest } from '../../lib/match';
 import { parseEntry, splitEntries } from '../../lib/normalize';
-import { buildRoute, currentGroup, nextGroup } from '../../lib/sort';
+import { buildRoute, currentGroup, nextGroup, type RouteGroup } from '../../lib/sort';
 import { newId, useApp } from '../../lib/storage';
 import { radius, useTheme } from '../../lib/theme';
 import type { ListItem } from '../../lib/types';
+import type { StoreMap } from '../../lib/mapModel';
 
-type SortMode = 'trasa' | 'wpisywanie';
+type SortMode = 'trasa' | 'wpisywanie' | 'podglad';
+
+/**
+ * TYMCZASOWE — podgląd trasy narysowanej na planie sklepu.
+ *
+ * Narzędzie diagnostyczne dla autora: pozwala zobaczyć, którędy silnik
+ * poprowadził trasę, zamiast wnioskować to z kolejności pozycji na liście.
+ * Nie jest częścią tego, co ma zostać w gotowej aplikacji.
+ *
+ * Żeby to usunąć: ustaw na false, a potem wyrzuć zakładkę „Podgląd trasy",
+ * komponent PodgladTrasy i wariant 'podglad' z SortMode.
+ */
+const PODGLAD_TRASY = true;
+
+const NAZWY_TRYBOW: Record<SortMode, string> = {
+  trasa: 'Kolejność trasy',
+  wpisywanie: 'Kolejność wpisywania',
+  podglad: 'Podgląd trasy',
+};
 
 export default function ListScreen() {
   const t = useTheme();
@@ -263,7 +283,9 @@ export default function ListScreen() {
 
           {/* przełącznik sortowania — to jest cały dowód */}
           <View style={[st.seg, { borderColor: t.colors.border, backgroundColor: t.colors.muted }]}>
-            {(['trasa', 'wpisywanie'] as SortMode[]).map((m) => (
+            {((PODGLAD_TRASY && store?.map
+              ? ['trasa', 'wpisywanie', 'podglad']
+              : ['trasa', 'wpisywanie']) as SortMode[]).map((m) => (
               <Pressable
                 key={m}
                 onPress={() => setMode(m)}
@@ -278,13 +300,15 @@ export default function ListScreen() {
                     { color: mode === m ? t.colors.foreground : t.colors.mutedForeground },
                   ]}
                 >
-                  {m === 'trasa' ? 'Kolejność trasy' : 'Kolejność wpisywania'}
+                  {NAZWY_TRYBOW[m]}
                 </Text>
               </Pressable>
             ))}
           </View>
 
-          {mode === 'trasa' ? (
+          {mode === 'podglad' && store?.map ? (
+            <PodgladTrasy map={store.map} path={route.path} order={route.groups} />
+          ) : mode === 'trasa' ? (
             <View style={{ gap: 6 }}>
               {/*
                 Jeden ciąg, produkt po produkcie w kolejności trasy. Podział na
@@ -434,6 +458,51 @@ function Row({
   );
 }
 
+/**
+ * TYMCZASOWE — plan sklepu z narysowaną trasą.
+ *
+ * Pokazuje to, czego lista pokazać nie umie: którędy silnik poprowadził drogę
+ * i w jakiej kolejności zbiera sekcje. Do oceny, czy trasa ma sens, zanim
+ * pójdzie się z nią do sklepu.
+ */
+function PodgladTrasy({
+  map,
+  path,
+  order,
+}: {
+  map: StoreMap;
+  path: number[] | null;
+  order: RouteGroup[];
+}) {
+  const t = useTheme();
+  const [szerokosc, setSzerokosc] = useState(0);
+  // Plan rysujemy w pełnej szerokości ekranu; wysokość wychodzi z proporcji siatki.
+  const kratka = szerokosc > 0 ? szerokosc / map.gridW : 0;
+
+  return (
+    <View style={{ gap: 10 }}>
+      <View
+        onLayout={(e) => setSzerokosc(e.nativeEvent.layout.width)}
+        style={[st.podglad, { borderColor: t.colors.border, backgroundColor: t.colors.card }]}
+      >
+        {kratka > 0 && <StorePlan map={map} cell={kratka} path={path} />}
+      </View>
+
+      <View style={{ gap: 4 }}>
+        {order.map((g, i) => (
+          <Text key={g.section} style={[st.podgladKrok, { color: t.colors.mutedForeground }]}>
+            {i + 1}. {g.name}
+          </Text>
+        ))}
+      </View>
+
+      <Text style={[st.footnote, { color: t.colors.mutedForeground }]}>
+        Podgląd roboczy — nie jest częścią gotowej aplikacji.
+      </Text>
+    </View>
+  );
+}
+
 const st = StyleSheet.create({
   wrap: { flexDirection: 'row', flexWrap: 'wrap', gap: 6 },
   link: { fontFamily: FONT.sansMedium, fontSize: 14 },
@@ -460,6 +529,8 @@ const st = StyleSheet.create({
     borderColor: 'transparent',
   },
   segText: { fontFamily: FONT.sansMedium, fontSize: 13, letterSpacing: -0.15 },
+  podglad: { borderWidth: 1, borderRadius: radius.md, overflow: 'hidden' },
+  podgladKrok: { fontFamily: FONT.mono, fontSize: 12, lineHeight: 17 },
   row: {
     flexDirection: 'row',
     alignItems: 'center',

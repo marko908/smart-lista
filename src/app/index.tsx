@@ -10,8 +10,16 @@ import type { ShoppingList } from '../lib/types';
 
 export default function Home() {
   const t = useTheme();
-  const { state, update } = useApp();
+  const { state, ready, update } = useApp();
   const [adding, setAdding] = useState(false);
+
+  /**
+   * Pusta aplikacja od razu pokazuje formularz, zamiast chować go za przyciskiem.
+   * Pierwszy ekran ma mówić „napisz, co kupujesz", a nie „znajdź, gdzie się
+   * zaczyna". Gdy listy już są, formularz wraca pod przycisk.
+   */
+  const pierwszaWizyta = ready && state.lists.length === 0;
+  const formularz = adding || pierwszaWizyta;
   const [name, setName] = useState('');
 
   function createList() {
@@ -62,7 +70,7 @@ export default function Home() {
         <Text style={[st.chev, { color: t.colors.primary }]}>›</Text>
       </Pressable>
 
-      {adding ? (
+      {formularz ? (
         <Card>
           <Label>Nazwa listy</Label>
           <Input
@@ -75,14 +83,17 @@ export default function Home() {
           />
           <View style={{ flexDirection: 'row', gap: 8 }}>
             <Button title="Utwórz" onPress={createList} style={{ flex: 1 }} />
-            <Button
-              title="Anuluj"
-              variant="ghost"
-              onPress={() => {
-                setAdding(false);
-                setName('');
-              }}
-            />
+            {/* Anulowanie przy pustej aplikacji zostawiłoby pusty ekran. */}
+            {!pierwszaWizyta && (
+              <Button
+                title="Anuluj"
+                variant="ghost"
+                onPress={() => {
+                  setAdding(false);
+                  setName('');
+                }}
+              />
+            )}
           </View>
         </Card>
       ) : (
