@@ -4,6 +4,7 @@ import { Pressable, StyleSheet, Text, View } from 'react-native';
 import { Body, Button, Card, Empty, FONT, H1, Input, Label, Screen } from '../components/ui';
 import { chainName } from '../data/chains';
 import { PRODUCT_COUNT } from '../data/products';
+import { potwierdz } from '../lib/potwierdz';
 import { newId, useApp } from '../lib/storage';
 import { radius, useTheme } from '../lib/theme';
 import type { ShoppingList } from '../lib/types';
@@ -35,6 +36,12 @@ export default function Home() {
     setName('');
     setAdding(false);
     router.push(`/lista/${list.id}`);
+  }
+
+  async function usunListe(list: ShoppingList) {
+    const zgoda = await potwierdz('Usunąć listę?', `„${list.name}" zniknie razem z pozycjami.`);
+    if (!zgoda) return;
+    update((prev) => ({ ...prev, lists: prev.lists.filter((l) => l.id !== list.id) }));
   }
 
   return (
@@ -129,6 +136,15 @@ export default function Home() {
                     {store ? `${store.name} · ${chainName(store.chain)}` : 'Bez sklepu'}
                   </Text>
                 </View>
+                <Pressable
+                  onPress={() => usunListe(list)}
+                  accessibilityRole="button"
+                  accessibilityLabel={`Usuń listę ${list.name}`}
+                  hitSlop={8}
+                  style={({ pressed }) => [st.usun, { opacity: pressed ? 0.5 : 1 }]}
+                >
+                  <Text style={[st.usunZnak, { color: t.colors.mutedForeground }]}>✕</Text>
+                </Pressable>
                 <View
                   style={[
                     st.badge,
@@ -186,6 +202,8 @@ const st = StyleSheet.create({
   },
   listName: { fontFamily: FONT.sansSemi, fontSize: 16, letterSpacing: -0.25 },
   listMeta: { fontFamily: FONT.sans, fontSize: 13 },
+  usun: { paddingHorizontal: 6, paddingVertical: 4 },
+  usunZnak: { fontFamily: FONT.sansMedium, fontSize: 15, lineHeight: 18 },
   badge: {
     minWidth: 34,
     height: 28,

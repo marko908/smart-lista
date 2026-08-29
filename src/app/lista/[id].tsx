@@ -1,6 +1,6 @@
 import { router, useLocalSearchParams, useNavigation } from 'expo-router';
 import { useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
-import { Alert, Platform, Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
+import { Platform, Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
 import { Body, Button, Card, Empty, FONT, H2, Input, Label, Pill, Screen } from '../../components/ui';
 import { SectionPicker } from '../../components/SectionPicker';
 import { StorePlan } from '../../components/StorePlan';
@@ -9,10 +9,11 @@ import { SECTIONS, SECTION_GROUPS, sectionName, type SectionKey } from '../../da
 import { matchProduct, suggest } from '../../lib/match';
 import { parseEntry, splitEntries } from '../../lib/normalize';
 import { buildRoute, currentGroup, nextGroup, type RouteGroup } from '../../lib/sort';
+import { potwierdz } from '../../lib/potwierdz';
 import { newId, useApp } from '../../lib/storage';
 import { radius, useTheme } from '../../lib/theme';
 import type { ListItem } from '../../lib/types';
-import type { StoreMap } from '../../lib/mapModel';
+import { sectionGroups, type StoreMap } from '../../lib/mapModel';
 
 type SortMode = 'trasa' | 'wpisywanie' | 'podglad';
 
@@ -27,6 +28,15 @@ type SortMode = 'trasa' | 'wpisywanie' | 'podglad';
  * komponent PodgladTrasy i wariant 'podglad' z SortMode.
  */
 const PODGLAD_TRASY = true;
+
+/**
+ * UKRYTE — zakładka „Kolejność wpisywania".
+ *
+ * Trasa jest całym sensem tej aplikacji, a druga zakładka podważała ją przy
+ * każdym otwarciu listy. Zostaje w kodzie, bo przy porównywaniu wyników trasy
+ * bywa przydatna — wystarczy ustawić na true.
+ */
+const ZAKLADKA_WPISYWANIE = false;
 
 const NAZWY_TRYBOW: Record<SortMode, string> = {
   trasa: 'Kolejność trasy',
@@ -176,18 +186,11 @@ export default function ListScreen() {
     }));
   }
 
-  function confirmDeleteList() {
-    Alert.alert('Usunąć listę?', `„${list!.name}" zniknie razem z pozycjami.`, [
-      { text: 'Anuluj', style: 'cancel' },
-      {
-        text: 'Usuń',
-        style: 'destructive',
-        onPress: () => {
-          update((prev) => ({ ...prev, lists: prev.lists.filter((l) => l.id !== list!.id) }));
-          router.back();
-        },
-      },
-    ]);
+  async function confirmDeleteList() {
+    const zgoda = await potwierdz('Usunąć listę?', `„${list!.name}" zniknie razem z pozycjami.`);
+    if (!zgoda) return;
+    update((prev) => ({ ...prev, lists: prev.lists.filter((l) => l.id !== list!.id) }));
+    router.back();
   }
 
   const left = list.items.filter((i) => !i.checked).length;
@@ -283,9 +286,11 @@ export default function ListScreen() {
 
           {/* przełącznik sortowania — to jest cały dowód */}
           <View style={[st.seg, { borderColor: t.colors.border, backgroundColor: t.colors.muted }]}>
-            {((PODGLAD_TRASY && store?.map
-              ? ['trasa', 'wpisywanie', 'podglad']
-              : ['trasa', 'wpisywanie']) as SortMode[]).map((m) => (
+            {([
+              'trasa',
+              ...(ZAKLADKA_WPISYWANIE ? ['wpisywanie'] : []),
+              ...(PODGLAD_TRASY && store?.map ? ['podglad'] : []),
+            ] as SortMode[]).map((m) => (
               <Pressable
                 key={m}
                 onPress={() => setMode(m)}
@@ -479,13 +484,34 @@ function PodgladTrasy({
   // Plan rysujemy w pełnej szerokości ekranu; wysokość wychodzi z proporcji siatki.
   const kratka = szerokosc > 0 ? szerokosc / map.gridW : 0;
 
+  /**
+   * Kropka na każdy przystanek trasy, w kolejności zbierania.
+   *
+   * Stawiamy ją na kratce DOSTĘPU, czyli tam, gdzie człowiek staje po produkt,
+   * a nie na samym regale — inaczej numer lądowałby wewnątrz bryły i nie
+   * byłoby widać, z której strony się podchodzi.
+   */
+  const punkty = useMemo(() => {
+    const dostep = sectionGroups(map);
+    return order
+      .map((g, i) => {
+        const kratki = dostep.get(g.section);
+        if (!kratki?.length) return null;
+        // Środkowa z kratek dostępu — najbliżej środka odcinka regału.
+        return { cell: kratki[Math.floor(kratki.length / 2)], nr: i + 1 };
+      })
+      .filter((p): p is { cell: number; nr: number } => p !== null);
+  }, [map, order]);
+
   return (
     <View style={{ gap: 10 }}>
       <View
         onLayout={(e) => setSzerokosc(e.nativeEvent.layout.width)}
         style={[st.podglad, { borderColor: t.colors.border, backgroundColor: t.colors.card }]}
       >
-        {kratka > 0 && <StorePlan map={map} cell={kratka} path={path} />}
+        {kratka > 0 && (
+          <StorePlan map={map} cell={kratka} path={path} uproszczony punkty={punkty} />
+        )}
       </View>
 
       <View style={{ gap: 4 }}>

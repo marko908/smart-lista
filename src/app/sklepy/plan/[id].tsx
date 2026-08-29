@@ -1,7 +1,6 @@
 import { router, useLocalSearchParams, useNavigation } from 'expo-router';
 import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
 import {
-  Alert,
   Platform,
   Pressable,
   ScrollView,
@@ -37,6 +36,7 @@ import {
 import { saveTextFile } from '../../../lib/fileIO';
 import { fileNameFor, serializeStore } from '../../../lib/mapFile';
 import { computeRoute, costForOrder } from '../../../lib/route';
+import { wybierz } from '../../../lib/potwierdz';
 import { newId, useApp } from '../../../lib/storage';
 import { radius, useTheme } from '../../../lib/theme';
 
@@ -572,30 +572,18 @@ export default function PlanBuilder() {
     setNote(res.message);
   }
 
-  function resetPlan() {
-    Alert.alert(
+  async function resetPlan() {
+    const wybor = await wybierz(
       'Zacząć plan od nowa?',
       'Możesz wrócić do gotowego układu dyskontu albo zacząć od pustej sali z samym wejściem i kasami.',
-      [
-        { text: 'Anuluj', style: 'cancel' },
-        {
-          text: 'Gotowy układ',
-          onPress: () => {
-            setMap(createStarterMap());
-            setSelectedIds([]);
-          },
-        },
-        {
-          text: 'Pusta sala',
-          style: 'destructive',
-          onPress: () => {
-            setMap(createBareMap());
-            setSelectedIds([]);
-          },
-        },
-      ]
+      'Gotowy układ',
+      'Pusta sala'
     );
+    if (!wybor) return;
+    setMap(wybor === 'pierwsza' ? createStarterMap() : createBareMap());
+    setSelectedIds([]);
   }
+
 
   return (
     <View

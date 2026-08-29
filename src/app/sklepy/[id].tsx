@@ -1,9 +1,10 @@
 import { router, useLocalSearchParams, useNavigation } from 'expo-router';
 import { useLayoutEffect, useMemo } from 'react';
-import { Alert, Pressable, StyleSheet, Text, View } from 'react-native';
+import { Pressable, StyleSheet, Text, View } from 'react-native';
 import { Body, Button, Card, FONT, H2, Label, Pill, Screen } from '../../components/ui';
 import { chainName, chainOrder } from '../../data/chains';
 import { SECTIONS, SECTION_GROUPS, sectionName, type SectionKey } from '../../data/sections';
+import { potwierdz } from '../../lib/potwierdz';
 import { useApp } from '../../lib/storage';
 import { radius, useTheme } from '../../lib/theme';
 
@@ -58,29 +59,24 @@ export default function WalkOrderEditor() {
     setOrder(chainOrder(store!.chain));
   }
 
-  function confirmClear() {
-    Alert.alert('Wyczyścić marszrutę?', 'Sklep wróci do typowego układu sieci.', [
-      { text: 'Anuluj', style: 'cancel' },
-      { text: 'Wyczyść', style: 'destructive', onPress: () => setOrder([]) },
-    ]);
+  async function confirmClear() {
+    const zgoda = await potwierdz(
+      'Wyczyścić marszrutę?',
+      'Sklep wróci do typowego układu sieci.',
+      'Wyczyść'
+    );
+    if (zgoda) setOrder([]);
   }
 
-  function confirmDelete() {
-    Alert.alert('Usunąć sklep?', `„${store!.name}" zniknie razem z marszrutą.`, [
-      { text: 'Anuluj', style: 'cancel' },
-      {
-        text: 'Usuń',
-        style: 'destructive',
-        onPress: () => {
-          update((prev) => ({
-            ...prev,
-            stores: prev.stores.filter((s) => s.id !== store!.id),
-            lists: prev.lists.map((l) => (l.storeId === store!.id ? { ...l, storeId: null } : l)),
-          }));
-          router.back();
-        },
-      },
-    ]);
+  async function confirmDelete() {
+    const zgoda = await potwierdz('Usunąć sklep?', `„${store!.name}" zniknie razem z marszrutą.`);
+    if (!zgoda) return;
+    update((prev) => ({
+      ...prev,
+      stores: prev.stores.filter((s) => s.id !== store!.id),
+      lists: prev.lists.map((l) => (l.storeId === store!.id ? { ...l, storeId: null } : l)),
+    }));
+    router.back();
   }
 
   return (

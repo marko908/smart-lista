@@ -7,12 +7,12 @@
  */
 
 import { memo } from 'react';
-import Svg, { G, Line, Polyline, Rect, Text as SvgText } from 'react-native-svg';
+import Svg, { Circle, G, Line, Polyline, Rect, Text as SvgText } from 'react-native-svg';
 import { categoryColors } from '../../design/tokens';
 import { BLOCK_BY_KEY } from '../data/blocks';
 import { sectionCategory, sectionName, type SectionKey } from '../data/sections';
 import { useTheme } from '../lib/theme';
-import type { MapBlock, StoreMap } from '../lib/mapModel';
+import { cellsOf, type MapBlock, type StoreMap } from '../lib/mapModel';
 
 type Props = {
   map: StoreMap;
@@ -22,6 +22,14 @@ type Props = {
   selectedIds?: string[] | null;
   /** Łamana trasy — indeksy kratek. */
   path?: number[] | null;
+  /**
+   * Widok uproszczony: bez nazw sekcji, a klocki stykające się bokami zlewają
+   * się w jedną bryłę. Do podglądu trasy, gdzie liczy się kształt sklepu
+   * i droga przez niego, a nie to, co stoi na której półce.
+   */
+  uproszczony?: boolean;
+  /** Kropki z numerami — gdzie po drodze coś się bierze. */
+  punkty?: { cell: number; nr: number }[] | null;
 };
 
 function fit(text: string, lengthPx: number, fontSize: number): string {
@@ -31,13 +39,22 @@ function fit(text: string, lengthPx: number, fontSize: number): string {
   return text.slice(0, Math.max(1, max - 1)) + '…';
 }
 
-function StorePlanInner({ map, cell, selectedIds, path }: Props) {
+function StorePlanInner({ map, cell, selectedIds, path, uproszczony, punkty }: Props) {
   const t = useTheme();
   const cat = categoryColors[t.isDark ? 'dark' : 'light'];
   const pxW = cell * map.gridW;
   const pxH = cell * map.gridH;
   /** Grubość murów — skaluje się z przybliżeniem, ale nie znika przy oddaleniu. */
   const mur = Math.max(2, cell * 0.22);
+
+  /** Zbiór kratek zajętych przez cokolwiek poza wejściem — tylko do widoku uproszczonego. */
+  const bryla = new Set<number>();
+  if (uproszczony) {
+    for (const b of map.blocks) {
+      if (b.type === 'wejscie') continue;
+      for (const c of cellsOf(map, b)) bryla.add(c);
+    }
+  }
 
   const points =
     path && path.length > 1
@@ -179,7 +196,25 @@ function StorePlanInner({ map, cell, selectedIds, path }: Props) {
         ))}
       </G>
 
-      {map.blocks.filter((b) => b.type !== 'wejscie').map(renderBlock)}
+      {uproszczony
+        ? /*
+             Każdą zajętą kratkę rysujemy osobno, tym samym wypełnieniem i BEZ
+             obrysu. Sąsiadujące kratki zlewają się wtedy w jedną bryłę same
+             z siebie — nie trzeba liczyć obwiedni wielokątów, a regał z pięciu
+             klocków wygląda jak jeden regał.
+           */
+          [...bryla].map((c) => (
+            <Rect
+              key={`u${c}`}
+              x={(c % map.gridW) * cell}
+              y={Math.floor(c / map.gridW) * cell}
+              width={cell}
+              height={cell}
+              fill={t.colors.mutedForeground}
+              opacity={0.35}
+            />
+          ))
+        : map.blocks.filter((b) => b.type !== 'wejscie').map(renderBlock)}
 
       {points && (
         <Polyline
@@ -213,6 +248,26 @@ function StorePlanInner({ map, cell, selectedIds, path }: Props) {
         strokeLinejoin="miter"
         opacity={0.75}
       />
+      {punkty?.map((p) => {
+        const cx = ((p.cell % map.gridW) + 0.5) * cell;
+        const cy = (Math.floor(p.cell / map.gridW) + 0.5) * cell;
+        const r = Math.max(7, cell * 0.62);
+        return (
+          <G key={`p${p.nr}`}>
+            <Circle cx={cx} cy={cy} r={r} fill={t.colors.primary} stroke={t.colors.card} strokeWidth={Math.max(1, r * 0.14)} />
+            <SvgText
+              x={cx}
+              y={cy + r * 0.36}
+              fontSize={r * 1.05}
+              fontWeight="700"
+              fill={t.colors.primaryForeground}
+              textAnchor="middle"
+            >
+              {p.nr}
+            </SvgText>
+          </G>
+        );
+      })}
     </Svg>
   );
 }

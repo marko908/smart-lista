@@ -1,11 +1,12 @@
 import { router } from 'expo-router';
 import { useEffect, useState } from 'react';
-import { Alert, Pressable, StyleSheet, Text, View } from 'react-native';
+import { Pressable, StyleSheet, Text, View } from 'react-native';
 import { Body, Button, Card, Empty, FONT, H1, Input, Label, Pill, Screen } from '../../components/ui';
 import { CHAINS, chainName, type ChainKey } from '../../data/chains';
 import { BLOCK_BY_KEY } from '../../data/blocks';
 import { openTextFile } from '../../lib/fileIO';
 import { parseStoreFile } from '../../lib/mapFile';
+import { wybierz } from '../../lib/potwierdz';
 import { newId, useApp } from '../../lib/storage';
 import { radius, useTheme } from '../../lib/theme';
 import type { Store } from '../../lib/types';
@@ -53,33 +54,25 @@ export default function Stores() {
       return;
     }
 
-    Alert.alert(
+    const wybor = await wybierz(
       'Taki sklep już jest',
       `„${dup.name}" już istnieje. Zastąpić jego plan, czy dodać osobny wpis?`,
-      [
-        { text: 'Anuluj', style: 'cancel' },
-        {
-          text: 'Dodaj osobno',
-          onPress: () => {
-            const fresh = addStore({ ...parsed.store, name: `${parsed.store.name} (kopia)` });
-            setNote(`Dodano „${fresh.name}".${info}`);
-          },
-        },
-        {
-          text: 'Zastąp',
-          style: 'destructive',
-          onPress: () => {
-            update((prev) => ({
-              ...prev,
-              stores: prev.stores.map((s) =>
-                s.id === dup.id ? { ...s, ...parsed.store } : s
-              ),
-            }));
-            setNote(`Zaktualizowano „${dup.name}".${info}`);
-          },
-        },
-      ]
+      'Dodaj osobno',
+      'Zastąp'
     );
+    if (!wybor) return;
+
+    if (wybor === 'pierwsza') {
+      const fresh = addStore({ ...parsed.store, name: `${parsed.store.name} (kopia)` });
+      setNote(`Dodano „${fresh.name}".${info}`);
+      return;
+    }
+
+    update((prev) => ({
+      ...prev,
+      stores: prev.stores.map((s) => (s.id === dup.id ? { ...s, ...parsed.store } : s)),
+    }));
+    setNote(`Zaktualizowano „${dup.name}".${info}`);
   }
 
   function createStore() {
