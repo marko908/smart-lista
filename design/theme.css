@@ -1,0 +1,173 @@
+/* ==========================================================================
+   Alejka — motyw bazowy UI (źródło prawdy)
+   --------------------------------------------------------------------------
+   Format: shadcn/ui + Tailwind v4 (@theme inline).
+   Ten plik jest KANONICZNY. Każda zmiana koloru, promienia czy fontu
+   zaczyna się tutaj, a potem jest przenoszona do design/tokens.ts
+   (wersja dla React Native / Expo).
+   Nie hardkoduj kolorów w komponentach — używaj zmiennych.
+   ========================================================================== */
+
+:root {
+  --card: #ffffff;
+  --ring: #c1a875;
+  --input: #e2decb;
+  --muted: #f1ede1;
+  --accent: #c1a875;
+  --border: #e2decb;
+  --radius: 0.75rem;
+  --chart-1: #c1a875;
+  --chart-2: #3d4147;
+  --chart-3: #e5e1d5;
+  --chart-4: #8a7d5e;
+  --chart-5: #2a2d31;
+  --popover: #ffffff;
+  --primary: #c1a875;
+  --sidebar: #f1ede1;
+  --spacing: 0.25rem;
+  --font-mono: JetBrains Mono, monospace;
+  --font-sans: Inter, -apple-system, sans-serif;
+  --secondary: #e5e1d5;
+  --background: #f8f7f2;
+  --font-serif: Georgia, serif;
+  --foreground: #1a1a1a;
+  --destructive: #d32f2f;
+  --shadow-blur: 15px;
+  --shadow-color: #000000;
+  --sidebar-ring: #c1a875;
+  --shadow-spread: 0px;
+  --letter-spacing: -0.02em;
+  --shadow-opacity: 0.05;
+  --sidebar-accent: #e2decb;
+  --sidebar-border: #e2decb;
+  --card-foreground: #1a1a1a;
+  --shadow-offset-x: 0px;
+  --shadow-offset-y: 8px;
+  --sidebar-primary: #c1a875;
+  --muted-foreground: #6b6352;
+  --accent-foreground: #ffffff;
+  --popover-foreground: #1a1a1a;
+  --primary-foreground: #ffffff;
+  --sidebar-foreground: #1a1a1a;
+  --secondary-foreground: #1a1a1a;
+  --destructive-foreground: #ffffff;
+  --sidebar-accent-foreground: #1a1a1a;
+  --sidebar-primary-foreground: #ffffff;
+
+  /* Kolory kategorii regalow — zeby na planie od razu bylo widac, co jest czym. */
+  --cat-swieze: #7d9b6a;
+  --cat-pieczywo: #b8863b;
+  --cat-nabial: #6f96b8;
+  --cat-mieso: #b5654f;
+  --cat-mrozone: #7fb0bf;
+  --cat-napoje: #5f9a91;
+  --cat-suche: #c1a875;
+  --cat-chemia: #8a86a3;
+  --cat-infra: #3d4147;
+  --cat-pusty: #e5e1d5;
+}
+
+.dark {
+  --card: #1e1e1c;
+  --ring: #d4bc8b;
+  --input: #2d2b28;
+  --muted: #242422;
+  --accent: #d4bc8b;
+  --border: #2d2b28;
+  --radius: 0.75rem;
+  --chart-1: #d4bc8b;
+  --chart-2: #6d7278;
+  --chart-3: #33312e;
+  --chart-4: #a89b7c;
+  --chart-5: #1a1a18;
+  --popover: #1e1e1c;
+  --primary: #d4bc8b;
+  --sidebar: #141412;
+  --spacing: 0.25rem;
+  --font-mono: JetBrains Mono, monospace;
+  --font-sans: Inter, -apple-system, sans-serif;
+  --secondary: #2d2b28;
+  --background: #141412;
+  --font-serif: Georgia, serif;
+  --foreground: #f8f7f2;
+  --destructive: #ef4444;
+  --shadow-blur: 25px;
+  --shadow-color: #000000;
+  --sidebar-ring: #d4bc8b;
+  --shadow-spread: 0px;
+  --letter-spacing: -0.02em;
+  --shadow-opacity: 0.4;
+  --sidebar-accent: #2d2b28;
+  --sidebar-border: #2d2b28;
+  --card-foreground: #f8f7f2;
+  --shadow-offset-x: 0px;
+  --shadow-offset-y: 10px;
+  --sidebar-primary: #d4bc8b;
+  --muted-foreground: #a39e94;
+  --accent-foreground: #141412;
+  --popover-foreground: #f8f7f2;
+  --primary-foreground: #141412;
+  --sidebar-foreground: #f8f7f2;
+  --secondary-foreground: #f8f7f2;
+  --destructive-foreground: #f8f7f2;
+  --sidebar-accent-foreground: #f8f7f2;
+  --sidebar-primary-foreground: #141412;
+
+  --cat-swieze: #9dbb8a;
+  --cat-pieczywo: #d4a45c;
+  --cat-nabial: #8fb4d4;
+  --cat-mieso: #d1836c;
+  --cat-mrozone: #9ccbd8;
+  --cat-napoje: #7fb8ae;
+  --cat-suche: #d4bc8b;
+  --cat-chemia: #a8a4c0;
+  --cat-infra: #6d7278;
+  --cat-pusty: #2d2b28;
+}
+
+@theme inline {
+  --color-card: var(--card);
+  --color-ring: var(--ring);
+  --color-input: var(--input);
+  --color-muted: var(--muted);
+  --color-accent: var(--accent);
+  --color-border: var(--border);
+  --color-radius: var(--radius);
+  --color-chart-1: var(--chart-1);
+  --color-chart-2: var(--chart-2);
+  --color-chart-3: var(--chart-3);
+  --color-chart-4: var(--chart-4);
+  --color-chart-5: var(--chart-5);
+  --color-popover: var(--popover);
+  --color-primary: var(--primary);
+  --color-sidebar: var(--sidebar);
+  --color-spacing: var(--spacing);
+  --color-font-mono: var(--font-mono);
+  --color-font-sans: var(--font-sans);
+  --color-secondary: var(--secondary);
+  --color-background: var(--background);
+  --color-font-serif: var(--font-serif);
+  --color-foreground: var(--foreground);
+  --color-destructive: var(--destructive);
+  --color-shadow-blur: var(--shadow-blur);
+  --color-shadow-color: var(--shadow-color);
+  --color-sidebar-ring: var(--sidebar-ring);
+  --color-shadow-spread: var(--shadow-spread);
+  --color-letter-spacing: var(--letter-spacing);
+  --color-shadow-opacity: var(--shadow-opacity);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-card-foreground: var(--card-foreground);
+  --color-shadow-offset-x: var(--shadow-offset-x);
+  --color-shadow-offset-y: var(--shadow-offset-y);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-destructive-foreground: var(--destructive-foreground);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+}

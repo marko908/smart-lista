@@ -1,0 +1,1489 @@
+{
+  "format": "alejka.store",
+  "version": 1,
+  "exportedAt": "2026-08-28T17:50:34.884Z",
+  "catalogVersion": 9,
+  "store": {
+    "name": "Lidl Rybnik Żorska",
+    "chain": "lidl",
+    "map": {
+      "gridW": 28,
+      "gridH": 40,
+      "blocks": [
+        {
+          "id": "wejscie_1",
+          "type": "wejscie",
+          "x": 1,
+          "y": 39,
+          "w": 3,
+          "h": 1,
+          "rot": 0,
+          "sections": [],
+          "sectionsB": []
+        },
+        {
+          "id": "kasy_2",
+          "type": "kasy",
+          "x": 7,
+          "y": 35,
+          "w": 21,
+          "h": 5,
+          "rot": 0,
+          "sections": [],
+          "sectionsB": []
+        },
+        {
+          "id": "blk_mtb9czcg_8tfzjo",
+          "type": "lodowka",
+          "x": 13,
+          "y": 0,
+          "w": 3,
+          "h": 1,
+          "rot": 0,
+          "sections": [
+            "kielbasy",
+            "wedliny-lada"
+          ],
+          "sectionsB": []
+        },
+        {
+          "id": "blk_mtb9czcg_iyyy4q",
+          "type": "lada",
+          "x": 0,
+          "y": 19,
+          "w": 1,
+          "h": 9,
+          "rot": 0,
+          "sections": [
+            "piekarnia",
+            "pieczywo-swieze"
+          ],
+          "sectionsB": []
+        },
+        {
+          "id": "blk_mtb9czcg_8qia9o",
+          "type": "regal-scienny",
+          "x": 0,
+          "y": 28,
+          "w": 1,
+          "h": 7,
+          "rot": 0,
+          "sections": [
+            "pieczywo-pakowane"
+          ],
+          "sectionsB": []
+        },
+        {
+          "id": "blk_mtb9czch_3wf9jy",
+          "type": "zamrazarka",
+          "x": 23,
+          "y": 3,
+          "w": 1,
+          "h": 4,
+          "rot": 0,
+          "sections": [
+            "mrozone-dania"
+          ],
+          "sectionsB": []
+        },
+        {
+          "id": "blk_mtb9czch_y5gcj9",
+          "type": "lodowka",
+          "x": 27,
+          "y": 11,
+          "w": 1,
+          "h": 2,
+          "rot": 0,
+          "sections": [
+            "masla"
+          ],
+          "sectionsB": []
+        },
+        {
+          "id": "blk_mtb9czch_u4b08j",
+          "type": "regal-scienny",
+          "x": 5,
+          "y": 30,
+          "w": 1,
+          "h": 3,
+          "rot": 0,
+          "sections": [
+            "kawa",
+            "kawa-kapsulki"
+          ],
+          "sectionsB": []
+        },
+        {
+          "id": "blk_mtb9czch_6zhva6",
+          "type": "lodowka",
+          "x": 6,
+          "y": 31,
+          "w": 1,
+          "h": 2,
+          "rot": 0,
+          "sections": [
+            "jaja"
+          ],
+          "sectionsB": []
+        },
+        {
+          "id": "blk_mtb9czch_piddx1",
+          "type": "regal-scienny",
+          "x": 6,
+          "y": 29,
+          "w": 1,
+          "h": 2,
+          "rot": 0,
+          "sections": [
+            "dodatki-pieczenie",
+            "kakao",
+            "maki"
+          ],
+          "sectionsB": []
+        },
+        {
+          "id": "blk_mtb9czch_7vk5bd",
+          "type": "regal-scienny",
+          "x": 5,
+          "y": 22,
+          "w": 1,
+          "h": 3,
+          "rot": 0,
+          "sections": [
+            "batony"
+          ],
+          "sectionsB": []
+        },
+        {
+          "id": "blk_mtb9czch_eq10x9",
+          "type": "regal-scienny",
+          "x": 5,
+          "y": 25,
+          "w": 1,
+          "h": 3,
+          "rot": 0,
+          "sections": [
+            "czekolady"
+          ],
+          "sectionsB": []
+        },
+        {
+          "id": "blk_mtb9czch_asp4vw",
+          "type": "regal-scienny",
+          "x": 0,
+          "y": 15,
+          "w": 1,
+          "h": 3,
+          "rot": 0,
+          "sections": [
+            "kremy-smarowanie",
+            "dzemy",
+            "miody"
+          ],
+          "sectionsB": []
+        },
+        {
+          "id": "blk_mtb9czch_ynqhr2",
+          "type": "regal-scienny",
+          "x": 0,
+          "y": 12,
+          "w": 1,
+          "h": 3,
+          "rot": 0,
+          "sections": [
+            "bakalie",
+            "orzeszki"
+          ],
+          "sectionsB": []
+        },
+        {
+          "id": "blk_mtb9czch_wqj2m0",
+          "type": "lodowka",
+          "x": 5,
+          "y": 4,
+          "w": 1,
+          "h": 2,
+          "rot": 0,
+          "sections": [
+            "mieso-swieze"
+          ],
+          "sectionsB": []
+        },
+        {
+          "id": "blk_mtb9czch_rsivt5",
+          "type": "lodowka",
+          "x": 6,
+          "y": 4,
+          "w": 1,
+          "h": 4,
+          "rot": 0,
+          "sections": [
+            "mieso-mielone"
+          ],
+          "sectionsB": []
+        },
+        {
+          "id": "blk_mtb9czch_q3johl",
+          "type": "regal-scienny",
+          "x": 6,
+          "y": 24,
+          "w": 1,
+          "h": 2,
+          "rot": 0,
+          "sections": [
+            "cukier"
+          ],
+          "sectionsB": []
+        },
+        {
+          "id": "blk_mtb9czch_tb5rg5",
+          "type": "lodowka",
+          "x": 6,
+          "y": 26,
+          "w": 1,
+          "h": 2,
+          "rot": 0,
+          "sections": [
+            "mleko"
+          ],
+          "sectionsB": []
+        },
+        {
+          "id": "blk_mtb9czch_tgtzg2",
+          "type": "stoisko",
+          "x": 5,
+          "y": 11,
+          "w": 1,
+          "h": 9,
+          "rot": 0,
+          "sections": [
+            "owoce"
+          ],
+          "sectionsB": []
+        },
+        {
+          "id": "blk_mtb9czch_j4jwxz",
+          "type": "stoisko",
+          "x": 6,
+          "y": 9,
+          "w": 1,
+          "h": 11,
+          "rot": 0,
+          "sections": [
+            "warzywa"
+          ],
+          "sectionsB": []
+        },
+        {
+          "id": "blk_mtb9czci_qaev6f",
+          "type": "regal-scienny",
+          "x": 0,
+          "y": 3,
+          "w": 1,
+          "h": 2,
+          "rot": 0,
+          "sections": [
+            "przekaski-miesne"
+          ],
+          "sectionsB": []
+        },
+        {
+          "id": "blk_mtb9gget_0rvu3p",
+          "type": "stoisko",
+          "x": 0,
+          "y": 35,
+          "w": 1,
+          "h": 2,
+          "rot": 0,
+          "sections": [
+            "kwiaty"
+          ],
+          "sectionsB": []
+        },
+        {
+          "id": "blk_mtba7t08_lq1cy0",
+          "type": "lodowka",
+          "x": 11,
+          "y": 0,
+          "w": 2,
+          "h": 1,
+          "rot": 0,
+          "sections": [
+            "dania-gotowe"
+          ],
+          "sectionsB": []
+        },
+        {
+          "id": "blk_mtbanqmd_5bm6a3",
+          "type": "lodowka",
+          "x": 16,
+          "y": 0,
+          "w": 3,
+          "h": 1,
+          "rot": 0,
+          "sections": [
+            "wedliny",
+            "parowki"
+          ],
+          "sectionsB": []
+        },
+        {
+          "id": "blk_mtbaoeng_igg91o",
+          "type": "lodowka",
+          "x": 19,
+          "y": 0,
+          "w": 3,
+          "h": 1,
+          "rot": 0,
+          "sections": [
+            "ryby-wedzone"
+          ],
+          "sectionsB": []
+        },
+        {
+          "id": "blk_mtbaoox8_7qkuc5",
+          "type": "lodowka",
+          "x": 25,
+          "y": 0,
+          "w": 3,
+          "h": 1,
+          "rot": 0,
+          "sections": [
+            "sery-zolte"
+          ],
+          "sectionsB": []
+        },
+        {
+          "id": "blk_mtbaowtp_p4i6qb",
+          "type": "lodowka",
+          "x": 22,
+          "y": 0,
+          "w": 3,
+          "h": 1,
+          "rot": 0,
+          "sections": [
+            "sery-plesniowe"
+          ],
+          "sectionsB": []
+        },
+        {
+          "id": "blk_mtbap7rq_dxgdh2",
+          "type": "lodowka",
+          "x": 27,
+          "y": 1,
+          "w": 2,
+          "h": 1,
+          "rot": 90,
+          "sections": [
+            "sery-zolte"
+          ],
+          "sectionsB": []
+        },
+        {
+          "id": "blk_mtbapiw0_ii4oog",
+          "type": "lodowka",
+          "x": 27,
+          "y": 3,
+          "w": 1,
+          "h": 1,
+          "rot": 90,
+          "sections": [
+            "serki-twarogi"
+          ],
+          "sectionsB": []
+        },
+        {
+          "id": "blk_mtbapwld_o46zgb",
+          "type": "lodowka",
+          "x": 27,
+          "y": 5,
+          "w": 2,
+          "h": 1,
+          "rot": 90,
+          "sections": [
+            "jogurty"
+          ],
+          "sectionsB": []
+        },
+        {
+          "id": "blk_mtbaq9wi_cx5sp5",
+          "type": "lodowka",
+          "x": 27,
+          "y": 9,
+          "w": 2,
+          "h": 1,
+          "rot": 90,
+          "sections": [
+            "smietany"
+          ],
+          "sectionsB": []
+        },
+        {
+          "id": "blk_mtbaurun_nn9ekr",
+          "type": "regal-scienny",
+          "x": 0,
+          "y": 9,
+          "w": 1,
+          "h": 3,
+          "rot": 0,
+          "sections": [
+            "konserwy-warzywne",
+            "kiszonki"
+          ],
+          "sectionsB": []
+        },
+        {
+          "id": "blk_mtcneci2_lkup90",
+          "type": "zamrazarka",
+          "x": 22,
+          "y": 3,
+          "w": 1,
+          "h": 4,
+          "rot": 0,
+          "sections": [
+            "frytki"
+          ],
+          "sectionsB": []
+        },
+        {
+          "id": "blk_mtcnemlu_od72np",
+          "type": "zamrazarka",
+          "x": 27,
+          "y": 13,
+          "w": 1,
+          "h": 2,
+          "rot": 0,
+          "sections": [
+            "mrozone-warzywa",
+            "mrozone-owoce"
+          ],
+          "sectionsB": []
+        },
+        {
+          "id": "blk_mtcnfqny_owgti5",
+          "type": "zamrazarka",
+          "x": 27,
+          "y": 15,
+          "w": 1,
+          "h": 2,
+          "rot": 0,
+          "sections": [
+            "mrozone-ryby"
+          ],
+          "sectionsB": []
+        },
+        {
+          "id": "blk_mtcng0oy_7c855s",
+          "type": "zamrazarka",
+          "x": 27,
+          "y": 17,
+          "w": 1,
+          "h": 3,
+          "rot": 0,
+          "sections": [
+            "lody"
+          ],
+          "sectionsB": []
+        },
+        {
+          "id": "blk_mtcngkv9_2oppo3",
+          "type": "regal-scienny",
+          "x": 27,
+          "y": 22,
+          "w": 1,
+          "h": 3,
+          "rot": 0,
+          "sections": [
+            "piwo-bezalkoholowe"
+          ],
+          "sectionsB": []
+        },
+        {
+          "id": "blk_mtcngw65_d8kwzq",
+          "type": "regal-scienny",
+          "x": 27,
+          "y": 25,
+          "w": 1,
+          "h": 3,
+          "rot": 0,
+          "sections": [
+            "piwo"
+          ],
+          "sectionsB": []
+        },
+        {
+          "id": "blk_mtcnh4l4_s4s1a6",
+          "type": "regal-scienny",
+          "x": 27,
+          "y": 28,
+          "w": 1,
+          "h": 5,
+          "rot": 0,
+          "sections": [
+            "alkohole-mocne"
+          ],
+          "sectionsB": []
+        },
+        {
+          "id": "blk_mtcnhmyq_lz26g9",
+          "type": "regal-scienny",
+          "x": 23,
+          "y": 30,
+          "w": 1,
+          "h": 3,
+          "rot": 0,
+          "sections": [
+            "alkohole-mocne"
+          ],
+          "sectionsB": []
+        },
+        {
+          "id": "blk_mtcnhsp8_8afe0w",
+          "type": "regal-scienny",
+          "x": 23,
+          "y": 28,
+          "w": 1,
+          "h": 2,
+          "rot": 0,
+          "sections": [
+            "wino"
+          ],
+          "sectionsB": []
+        },
+        {
+          "id": "blk_mtcniaf2_fhkn63",
+          "type": "regal-scienny",
+          "x": 23,
+          "y": 22,
+          "w": 1,
+          "h": 5,
+          "rot": 0,
+          "sections": [
+            "chipsy",
+            "chrupki"
+          ],
+          "sectionsB": []
+        },
+        {
+          "id": "blk_mtcnix3e_8h2h9v",
+          "type": "regal-scienny",
+          "x": 22,
+          "y": 19,
+          "w": 2,
+          "h": 1,
+          "rot": 0,
+          "sections": [
+            "proteinowe"
+          ],
+          "sectionsB": []
+        },
+        {
+          "id": "blk_mtcnjfvg_k1ngj1",
+          "type": "regal-scienny",
+          "x": 23,
+          "y": 17,
+          "w": 1,
+          "h": 2,
+          "rot": 0,
+          "sections": [
+            "papier-toaletowy"
+          ],
+          "sectionsB": []
+        },
+        {
+          "id": "blk_mtcnjqcc_l03ptp",
+          "type": "regal-scienny",
+          "x": 22,
+          "y": 16,
+          "w": 1,
+          "h": 3,
+          "rot": 0,
+          "sections": [
+            "reczniki-papierowe"
+          ],
+          "sectionsB": []
+        },
+        {
+          "id": "blk_mtd6fv57_7c4aml",
+          "type": "lodowka",
+          "x": 5,
+          "y": 3,
+          "w": 2,
+          "h": 1,
+          "rot": 0,
+          "sections": [
+            "grill"
+          ],
+          "sectionsB": []
+        },
+        {
+          "id": "blk_mtd6hsiv_ml4ha3",
+          "type": "regal-scienny",
+          "x": 23,
+          "y": 9,
+          "w": 1,
+          "h": 8,
+          "rot": 0,
+          "sections": [
+            "tekstylia",
+            "zabawki"
+          ],
+          "sectionsB": []
+        },
+        {
+          "id": "blk_mtd6igjt_bgpno7",
+          "type": "regal-scienny",
+          "x": 22,
+          "y": 9,
+          "w": 1,
+          "h": 4,
+          "rot": 0,
+          "sections": [
+            "papiernicze"
+          ],
+          "sectionsB": []
+        },
+        {
+          "id": "blk_mtd6k0je_964m79",
+          "type": "regal-scienny",
+          "x": 22,
+          "y": 13,
+          "w": 1,
+          "h": 3,
+          "rot": 0,
+          "sections": [
+            "chusteczki"
+          ],
+          "sectionsB": []
+        },
+        {
+          "id": "blk_mtd6kami_ym9ne7",
+          "type": "klocek",
+          "x": 17,
+          "y": 16,
+          "w": 1,
+          "h": 3,
+          "rot": 0,
+          "sections": [],
+          "sectionsB": []
+        },
+        {
+          "id": "blk_mtd6khpu_znbr5f",
+          "type": "regal-scienny",
+          "x": 16,
+          "y": 19,
+          "w": 2,
+          "h": 1,
+          "rot": 0,
+          "sections": [
+            "oferta-czasowa-polka"
+          ],
+          "sectionsB": []
+        },
+        {
+          "id": "blk_mtd6n8rs_rprtbl",
+          "type": "lodowka",
+          "x": 0,
+          "y": 0,
+          "w": 5,
+          "h": 1,
+          "rot": 0,
+          "sections": [
+            "oferta-czasowa-lodowka"
+          ],
+          "sectionsB": []
+        },
+        {
+          "id": "blk_mtd6stxb_lm2u6y",
+          "type": "regal-scienny",
+          "x": 8,
+          "y": 0,
+          "w": 2,
+          "h": 1,
+          "rot": 0,
+          "sections": [
+            "soki-swieze"
+          ],
+          "sectionsB": []
+        },
+        {
+          "id": "blk_mtd6tfje_quz8lf",
+          "type": "lodowka",
+          "x": 12,
+          "y": 3,
+          "w": 1,
+          "h": 5,
+          "rot": 0,
+          "sections": [
+            "drob"
+          ],
+          "sectionsB": []
+        },
+        {
+          "id": "blk_mtd6tlcd_emq6f6",
+          "type": "lodowka",
+          "x": 11,
+          "y": 3,
+          "w": 1,
+          "h": 5,
+          "rot": 0,
+          "sections": [
+            "drob"
+          ],
+          "sectionsB": []
+        },
+        {
+          "id": "blk_mtd75tja_ybfn1x",
+          "type": "regal-scienny",
+          "x": 11,
+          "y": 10,
+          "w": 1,
+          "h": 4,
+          "rot": 0,
+          "sections": [
+            "narzedzia"
+          ],
+          "sectionsB": []
+        },
+        {
+          "id": "blk_mtd76pc6_le8k2w",
+          "type": "regal-scienny",
+          "x": 12,
+          "y": 10,
+          "w": 1,
+          "h": 4,
+          "rot": 0,
+          "sections": [
+            "narzedzia",
+            "motoryzacja"
+          ],
+          "sectionsB": []
+        },
+        {
+          "id": "blk_mtd771am_gwuro0",
+          "type": "regal-scienny",
+          "x": 11,
+          "y": 9,
+          "w": 2,
+          "h": 1,
+          "rot": 0,
+          "sections": [
+            "narzedzia"
+          ],
+          "sectionsB": []
+        },
+        {
+          "id": "blk_mtd77jam_sl5x8e",
+          "type": "regal-scienny",
+          "x": 11,
+          "y": 15,
+          "w": 2,
+          "h": 1,
+          "rot": 0,
+          "sections": [
+            "oferta-czasowa-polka"
+          ],
+          "sectionsB": []
+        },
+        {
+          "id": "blk_mtd77te0_reeog4",
+          "type": "regal-scienny",
+          "x": 11,
+          "y": 16,
+          "w": 1,
+          "h": 3,
+          "rot": 0,
+          "sections": [
+            "oferta-czasowa-polka"
+          ],
+          "sectionsB": []
+        },
+        {
+          "id": "blk_mtd79n0h_4rodcz",
+          "type": "regal-scienny",
+          "x": 11,
+          "y": 19,
+          "w": 2,
+          "h": 1,
+          "rot": 0,
+          "sections": [
+            "oferta-czasowa-polka"
+          ],
+          "sectionsB": []
+        },
+        {
+          "id": "blk_mtd79pci_6ki09s",
+          "type": "regal-scienny",
+          "x": 12,
+          "y": 16,
+          "w": 1,
+          "h": 3,
+          "rot": 0,
+          "sections": [
+            "kuchnie-swiata"
+          ],
+          "sectionsB": []
+        },
+        {
+          "id": "blk_mtd7bojl_yzftao",
+          "type": "regal-scienny",
+          "x": 0,
+          "y": 5,
+          "w": 1,
+          "h": 2,
+          "rot": 0,
+          "sections": [
+            "przyprawy",
+            "zupy-buliony",
+            "ziola-suszone",
+            "sosy"
+          ],
+          "sectionsB": []
+        },
+        {
+          "id": "blk_mtd7bzzz_xmsylf",
+          "type": "regal-scienny",
+          "x": 0,
+          "y": 7,
+          "w": 1,
+          "h": 2,
+          "rot": 0,
+          "sections": [
+            "makarony",
+            "kasze",
+            "ryze"
+          ],
+          "sectionsB": []
+        },
+        {
+          "id": "blk_mtd7dlsk_iuz86i",
+          "type": "regal-scienny",
+          "x": 11,
+          "y": 22,
+          "w": 1,
+          "h": 1,
+          "rot": 0,
+          "sections": [
+            "konserwy-rybne"
+          ],
+          "sectionsB": []
+        },
+        {
+          "id": "blk_mtd7dwpz_zemhpa",
+          "type": "regal-scienny",
+          "x": 11,
+          "y": 23,
+          "w": 1,
+          "h": 1,
+          "rot": 0,
+          "sections": [
+            "konserwy-miesne"
+          ],
+          "sectionsB": []
+        },
+        {
+          "id": "blk_mtd7e7uu_yuvvcf",
+          "type": "regal-scienny",
+          "x": 11,
+          "y": 25,
+          "w": 1,
+          "h": 2,
+          "rot": 0,
+          "sections": [
+            "pomidory-passaty",
+            "ketchup-majonez",
+            "musztardy"
+          ],
+          "sectionsB": []
+        },
+        {
+          "id": "blk_mtd7exs3_8sk1pw",
+          "type": "regal-scienny",
+          "x": 11,
+          "y": 27,
+          "w": 1,
+          "h": 3,
+          "rot": 0,
+          "sections": [
+            "platki",
+            "musli",
+            "kaszki"
+          ],
+          "sectionsB": []
+        },
+        {
+          "id": "blk_mtd7fhh7_k6hj2a",
+          "type": "regal-scienny",
+          "x": 11,
+          "y": 30,
+          "w": 1,
+          "h": 3,
+          "rot": 0,
+          "sections": [
+            "ciastka",
+            "wafle",
+            "cukierki"
+          ],
+          "sectionsB": []
+        },
+        {
+          "id": "blk_mtd7gksj_bbi11r",
+          "type": "lodowka",
+          "x": 6,
+          "y": 28,
+          "w": 1,
+          "h": 1,
+          "rot": 0,
+          "sections": [
+            "napoje-roslinne"
+          ],
+          "sectionsB": []
+        },
+        {
+          "id": "blk_mtd7h2p1_6su7fj",
+          "type": "regal-scienny",
+          "x": 6,
+          "y": 22,
+          "w": 1,
+          "h": 2,
+          "rot": 0,
+          "sections": [
+            "oleje"
+          ],
+          "sectionsB": []
+        },
+        {
+          "id": "blk_mtd7hrdw_21pnee",
+          "type": "regal-scienny",
+          "x": 12,
+          "y": 31,
+          "w": 1,
+          "h": 2,
+          "rot": 0,
+          "sections": [
+            "worki-smieci"
+          ],
+          "sectionsB": []
+        },
+        {
+          "id": "blk_mtd7i63o_16vvp7",
+          "type": "regal-scienny",
+          "x": 16,
+          "y": 32,
+          "w": 1,
+          "h": 1,
+          "rot": 0,
+          "sections": [
+            "folie-kuchenne"
+          ],
+          "sectionsB": []
+        },
+        {
+          "id": "blk_mtd7ij18_napcag",
+          "type": "regal-scienny",
+          "x": 16,
+          "y": 29,
+          "w": 1,
+          "h": 3,
+          "rot": 0,
+          "sections": [
+            "zmywarka",
+            "plyny-naczynia",
+            "czyszczenie",
+            "akcesoria-sprzatanie",
+            "odswiezacze"
+          ],
+          "sectionsB": []
+        },
+        {
+          "id": "blk_mtd7ksx5_ao5deq",
+          "type": "regal-scienny",
+          "x": 12,
+          "y": 30,
+          "w": 1,
+          "h": 1,
+          "rot": 0,
+          "sections": [
+            "pranie"
+          ],
+          "sectionsB": []
+        },
+        {
+          "id": "blk_mtd7lbgx_ktrp3c",
+          "type": "regal-scienny",
+          "x": 3,
+          "y": 38,
+          "w": 1,
+          "h": 1,
+          "rot": 0,
+          "sections": [
+            "prasa"
+          ],
+          "sectionsB": []
+        },
+        {
+          "id": "blk_mtd7lvxc_8rs9md",
+          "type": "sciana",
+          "x": 0,
+          "y": 37,
+          "w": 1,
+          "h": 3,
+          "rot": 0,
+          "sections": [],
+          "sectionsB": []
+        },
+        {
+          "id": "blk_mtd7nbp5_nqkies",
+          "type": "regal-scienny",
+          "x": 16,
+          "y": 26,
+          "w": 1,
+          "h": 3,
+          "rot": 0,
+          "sections": [
+            "pieluchy",
+            "zywnosc-dzieci",
+            "akcesoria-dzieci"
+          ],
+          "sectionsB": []
+        },
+        {
+          "id": "blk_mtd7nwwk_rih941",
+          "type": "regal-scienny",
+          "x": 16,
+          "y": 22,
+          "w": 1,
+          "h": 2,
+          "rot": 0,
+          "sections": [
+            "higiena-zeby"
+          ],
+          "sectionsB": []
+        },
+        {
+          "id": "blk_mtd7qw4v_pp0e9n",
+          "type": "regal-scienny",
+          "x": 12,
+          "y": 29,
+          "w": 1,
+          "h": 1,
+          "rot": 0,
+          "sections": [
+            "rajstopy"
+          ],
+          "sectionsB": []
+        },
+        {
+          "id": "blk_mtd7rnxy_qfwqjw",
+          "type": "kosz",
+          "x": 16,
+          "y": 3,
+          "w": 1,
+          "h": 11,
+          "rot": 0,
+          "sections": [
+            "aleja-srodkowa"
+          ],
+          "sectionsB": []
+        },
+        {
+          "id": "blk_mtd7rqvb_6sppqu",
+          "type": "kosz",
+          "x": 17,
+          "y": 3,
+          "w": 1,
+          "h": 11,
+          "rot": 0,
+          "sections": [
+            "aleja-srodkowa"
+          ],
+          "sectionsB": []
+        },
+        {
+          "id": "blk_mtd7tks4_c6457b",
+          "type": "regal-scienny",
+          "x": 16,
+          "y": 16,
+          "w": 1,
+          "h": 3,
+          "rot": 0,
+          "sections": [
+            "kuchnie-swiata"
+          ],
+          "sectionsB": []
+        },
+        {
+          "id": "blk_mtd813ao_n9hxk8",
+          "type": "regal-scienny",
+          "x": 6,
+          "y": 0,
+          "w": 2,
+          "h": 1,
+          "rot": 0,
+          "sections": [
+            "soki-swieze",
+            "salaty"
+          ],
+          "sectionsB": []
+        },
+        {
+          "id": "blk_mtd81fvs_gks7oo",
+          "type": "stoisko",
+          "x": 5,
+          "y": 9,
+          "w": 1,
+          "h": 2,
+          "rot": 0,
+          "sections": [
+            "ziola-swieze",
+            "warzywa"
+          ],
+          "sectionsB": []
+        },
+        {
+          "id": "blk_mtd828tk_wbntmy",
+          "type": "regal-scienny",
+          "x": 0,
+          "y": 18,
+          "w": 1,
+          "h": 1,
+          "rot": 0,
+          "sections": [
+            "ciasta"
+          ],
+          "sectionsB": []
+        },
+        {
+          "id": "blk_mtd82qip_oud6ks",
+          "type": "lodowka",
+          "x": 27,
+          "y": 4,
+          "w": 1,
+          "h": 1,
+          "rot": 90,
+          "sections": [
+            "kefiry"
+          ],
+          "sectionsB": []
+        },
+        {
+          "id": "blk_mtd84bs6_w0084l",
+          "type": "lodowka",
+          "rot": 0,
+          "x": 27,
+          "y": 7,
+          "w": 1,
+          "h": 2,
+          "sections": [
+            "desery-mleczne"
+          ],
+          "sectionsB": []
+        },
+        {
+          "id": "blk_mtd85e46_w0i9iy",
+          "type": "lodowka",
+          "x": 5,
+          "y": 6,
+          "w": 1,
+          "h": 2,
+          "rot": 0,
+          "sections": [
+            "ryby-swieze"
+          ],
+          "sectionsB": []
+        },
+        {
+          "id": "blk_mtd86pda_xl7yzs",
+          "type": "lodowka",
+          "x": 11,
+          "y": 24,
+          "w": 1,
+          "h": 1,
+          "rot": 0,
+          "sections": [
+            "garmazerka"
+          ],
+          "sectionsB": []
+        },
+        {
+          "id": "blk_mtd879q4_ob06me",
+          "type": "lodowka",
+          "x": 10,
+          "y": 0,
+          "w": 1,
+          "h": 1,
+          "rot": 0,
+          "sections": [
+            "sushi"
+          ],
+          "sectionsB": []
+        },
+        {
+          "id": "blk_mtd882d6_xwwa57",
+          "type": "regal-scienny",
+          "x": 17,
+          "y": 23,
+          "w": 1,
+          "h": 6,
+          "rot": 0,
+          "sections": [
+            "woda"
+          ],
+          "sectionsB": []
+        },
+        {
+          "id": "blk_mtd88tm1_p5wbhf",
+          "type": "regal-scienny",
+          "x": 22,
+          "y": 31,
+          "w": 1,
+          "h": 2,
+          "rot": 0,
+          "sections": [
+            "karma-psy",
+            "karma-koty",
+            "akcesoria-zwierzeta"
+          ],
+          "sectionsB": []
+        },
+        {
+          "id": "blk_mtd88we4_zn00p9",
+          "type": "regal-scienny",
+          "x": 17,
+          "y": 29,
+          "w": 1,
+          "h": 4,
+          "rot": 0,
+          "sections": [
+            "napoje-gazowane",
+            "napoje-niegazowane"
+          ],
+          "sectionsB": []
+        },
+        {
+          "id": "blk_mtd89kkl_rmmz4u",
+          "type": "regal-scienny",
+          "rot": 0,
+          "x": 17,
+          "y": 22,
+          "w": 1,
+          "h": 1,
+          "sections": [
+            "syropy"
+          ],
+          "sectionsB": []
+        },
+        {
+          "id": "blk_mtd8a4wg_afx1nh",
+          "type": "regal-scienny",
+          "x": 5,
+          "y": 28,
+          "w": 1,
+          "h": 2,
+          "rot": 0,
+          "sections": [
+            "herbata"
+          ],
+          "sectionsB": []
+        },
+        {
+          "id": "blk_mtd8cm9j_v7d2b3",
+          "type": "kosz",
+          "x": 16,
+          "y": 15,
+          "w": 2,
+          "h": 1,
+          "rot": 0,
+          "sections": [
+            "grill-akcesoria"
+          ],
+          "sectionsB": []
+        },
+        {
+          "id": "blk_mtd8k8hn_qhrs5d",
+          "type": "regal-scienny",
+          "x": 12,
+          "y": 25,
+          "w": 1,
+          "h": 1,
+          "rot": 0,
+          "sections": [
+            "dezodoranty"
+          ],
+          "sectionsB": []
+        },
+        {
+          "id": "blk_mtd8kol5_u57otl",
+          "type": "regal-scienny",
+          "x": 16,
+          "y": 24,
+          "w": 1,
+          "h": 2,
+          "rot": 0,
+          "sections": [
+            "pielegnacja-ciala"
+          ],
+          "sectionsB": []
+        },
+        {
+          "id": "blk_mtd8kpb5_1zz7sq",
+          "type": "regal-scienny",
+          "x": 12,
+          "y": 24,
+          "w": 1,
+          "h": 1,
+          "rot": 0,
+          "sections": [
+            "higiena-intymna"
+          ],
+          "sectionsB": []
+        },
+        {
+          "id": "blk_mtd8kqm9_x6tm8f",
+          "type": "regal-scienny",
+          "x": 12,
+          "y": 22,
+          "w": 1,
+          "h": 2,
+          "rot": 0,
+          "sections": [
+            "pielegnacja-twarzy",
+            "makijaz"
+          ],
+          "sectionsB": []
+        },
+        {
+          "id": "blk_mtd8l4t9_b8wwxj",
+          "type": "regal-scienny",
+          "x": 12,
+          "y": 28,
+          "w": 1,
+          "h": 1,
+          "rot": 0,
+          "sections": [
+            "golenie"
+          ],
+          "sectionsB": []
+        },
+        {
+          "id": "blk_mtd8l69z_2zmfv4",
+          "type": "regal-scienny",
+          "x": 12,
+          "y": 27,
+          "w": 1,
+          "h": 1,
+          "rot": 0,
+          "sections": [
+            "kapiel"
+          ],
+          "sectionsB": []
+        },
+        {
+          "id": "blk_mtd8l7pl_k7ejhe",
+          "type": "regal-scienny",
+          "x": 12,
+          "y": 26,
+          "w": 1,
+          "h": 1,
+          "rot": 0,
+          "sections": [
+            "wlosy"
+          ],
+          "sectionsB": []
+        },
+        {
+          "id": "blk_mtd8mynl_qion28",
+          "type": "regal-scienny",
+          "x": 22,
+          "y": 29,
+          "w": 1,
+          "h": 2,
+          "rot": 0,
+          "sections": [
+            "energetyki"
+          ],
+          "sectionsB": []
+        },
+        {
+          "id": "blk_mtd8nthe_i3pztk",
+          "type": "regal-scienny",
+          "x": 22,
+          "y": 27,
+          "w": 1,
+          "h": 2,
+          "rot": 0,
+          "sections": [
+            "izotoniki"
+          ],
+          "sectionsB": []
+        },
+        {
+          "id": "blk_mtd8nufd_wqft1t",
+          "type": "regal-scienny",
+          "x": 22,
+          "y": 22,
+          "w": 1,
+          "h": 5,
+          "rot": 0,
+          "sections": [
+            "soki"
+          ],
+          "sectionsB": []
+        },
+        {
+          "id": "blk_mtd8pzsm_bhdxno",
+          "type": "sciana",
+          "x": 3,
+          "y": 35,
+          "w": 1,
+          "h": 3,
+          "rot": 0,
+          "sections": [],
+          "sectionsB": []
+        },
+        {
+          "id": "blk_mtd8qhml_2qdg46",
+          "type": "regal-scienny",
+          "x": 6,
+          "y": 35,
+          "w": 1,
+          "h": 5,
+          "rot": 0,
+          "sections": [
+            "napoje-gazowane",
+            "napoje-niegazowane"
+          ],
+          "sectionsB": []
+        },
+        {
+          "id": "blk_mtd8sm4v_rz7t2s",
+          "type": "regal-scienny",
+          "x": 23,
+          "y": 27,
+          "w": 1,
+          "h": 1,
+          "rot": 0,
+          "sections": [
+            "paluszki-krakersy",
+            "popcorn"
+          ],
+          "sectionsB": []
+        },
+        {
+          "id": "blk_mtd8wq6l_4d39ol",
+          "type": "regal-scienny",
+          "rot": 0,
+          "x": 27,
+          "y": 33,
+          "w": 1,
+          "h": 2,
+          "sections": [
+            "guma-mietowki"
+          ],
+          "sectionsB": []
+        }
+      ]
+    },
+    "walkOrder": []
+  }
+}

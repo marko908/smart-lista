@@ -1,0 +1,993 @@
+<title>Alejka</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap">
+
+<style>
+  /* Tokeny przeniesione z design/theme.css — motyw bazowy aplikacji.
+     Nazwy lokalne mapują się na tokeny shadcn 1:1, patrz komentarze. */
+  :root {
+    --ground: #f8f7f2;        /* background */
+    --surface: #ffffff;       /* card */
+    --surface-2: #f1ede1;     /* muted */
+    --surface-3: #e5e1d5;     /* secondary */
+    --ink: #1a1a1a;           /* foreground */
+    --ink-soft: #6b6352;      /* muted-foreground */
+    --ink-faint: #8a7d5e;     /* chart-4 */
+    --rule: #e2decb;          /* border */
+    --rule-strong: #cfc7ac;   /* border zmieszany z muted-foreground */
+    --gold: #c1a875;          /* primary / accent */
+    --gold-ink: #8a7d5e;      /* chart-4 — wersja bezpieczna dla tekstu */
+    --gold-soft: #f1ede1;     /* muted jako tło akcentu */
+    --gold-fg: #ffffff;       /* primary-foreground */
+    --graphite: #3d4147;      /* chart-2 */
+    --bad: #d32f2f;           /* destructive */
+    --bad-soft: #f7e7e6;
+    --shadow: 0 8px 15px rgba(0, 0, 0, 0.05);
+
+    --f-sans: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    --f-mono: "JetBrains Mono", ui-monospace, Consolas, monospace;
+    --f-serif: Georgia, "Times New Roman", serif;
+
+    --r: 0.75rem;
+    --measure: 34rem;
+    --wide: 68rem;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --ground: #141412;
+      --surface: #1e1e1c;
+      --surface-2: #242422;
+      --surface-3: #2d2b28;
+      --ink: #f8f7f2;
+      --ink-soft: #a39e94;
+      --ink-faint: #a89b7c;
+      --rule: #2d2b28;
+      --rule-strong: #43403a;
+      --gold: #d4bc8b;
+      --gold-ink: #d4bc8b;
+      --gold-soft: #2d2b28;
+      --gold-fg: #141412;
+      --graphite: #6d7278;
+      --bad: #ef4444;
+      --bad-soft: #35211f;
+      --shadow: 0 10px 25px rgba(0, 0, 0, 0.4);
+    }
+  }
+
+  :root[data-theme="dark"] {
+    --ground: #141412;
+    --surface: #1e1e1c;
+    --surface-2: #242422;
+    --surface-3: #2d2b28;
+    --ink: #f8f7f2;
+    --ink-soft: #a39e94;
+    --ink-faint: #a89b7c;
+    --rule: #2d2b28;
+    --rule-strong: #43403a;
+    --gold: #d4bc8b;
+    --gold-ink: #d4bc8b;
+    --gold-soft: #2d2b28;
+    --gold-fg: #141412;
+    --graphite: #6d7278;
+    --bad: #ef4444;
+    --bad-soft: #35211f;
+    --shadow: 0 10px 25px rgba(0, 0, 0, 0.4);
+  }
+
+  * { box-sizing: border-box; }
+
+  body {
+    background-color: var(--ground);
+    color: var(--ink);
+    font-family: var(--f-sans);
+    font-size: 16.5px;
+    line-height: 1.65;
+    letter-spacing: -0.011em;
+    margin: 0;
+    padding: 0 1.25rem 6rem;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  .wrap { max-width: var(--wide); margin: 0 auto; }
+
+  .col {
+    max-width: var(--measure);
+    display: flex;
+    flex-direction: column;
+    gap: 1.05rem;
+  }
+
+  /* ---------- typografia ---------- */
+
+  h1, h2, h3, h4 {
+    font-family: var(--f-sans);
+    font-weight: 600;
+    line-height: 1.14;
+    letter-spacing: -0.02em;
+    text-wrap: balance;
+    margin: 0;
+  }
+
+  h1 { font-size: clamp(2.7rem, 7.5vw, 4.5rem); font-weight: 700; letter-spacing: -0.042em; }
+  h2 { font-size: clamp(1.5rem, 3.2vw, 1.95rem); letter-spacing: -0.028em; }
+  h3 { font-size: 1.12rem; font-weight: 600; }
+  h4 { font-size: 0.78rem; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase; }
+
+  p { margin: 0; }
+  strong { font-weight: 600; color: var(--ink); }
+
+  .eyebrow {
+    font-family: var(--f-mono);
+    font-size: 0.7rem;
+    font-weight: 500;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--ink-faint);
+  }
+
+  .lede {
+    font-family: var(--f-serif);
+    font-size: clamp(1.2rem, 2.4vw, 1.42rem);
+    line-height: 1.5;
+    letter-spacing: -0.005em;
+    color: var(--ink-soft);
+  }
+
+  .note { font-size: 0.94rem; color: var(--ink-soft); }
+
+  code {
+    font-family: var(--f-mono);
+    font-size: 0.85em;
+    background: var(--surface-2);
+    border: 1px solid var(--rule);
+    padding: 0.08em 0.34em;
+    border-radius: 4px;
+  }
+
+  /* ---------- nagłówek ---------- */
+
+  .masthead { padding: 4.5rem 0 2.4rem; border-bottom: 1px solid var(--rule); }
+  .masthead .col { gap: 1.4rem; max-width: 44rem; }
+
+  .title-mark { display: flex; align-items: baseline; gap: 0.95rem; flex-wrap: wrap; }
+  .title-mark .tag {
+    font-family: var(--f-mono);
+    font-size: 0.68rem;
+    font-weight: 500;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--gold-ink);
+    background: var(--gold-soft);
+    border: 1px solid var(--rule);
+    padding: 0.3rem 0.6rem;
+    border-radius: 999px;
+    white-space: nowrap;
+  }
+
+  .meta-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem 1.75rem;
+    font-family: var(--f-mono);
+    font-size: 0.72rem;
+    letter-spacing: 0.03em;
+    color: var(--ink-faint);
+    padding-top: 0.4rem;
+  }
+  .meta-row span b { color: var(--ink-soft); font-weight: 500; }
+
+  /* ---------- sekcje ---------- */
+
+  section { padding: 3.4rem 0; border-bottom: 1px solid var(--rule); }
+  section:last-of-type { border-bottom: none; }
+
+  .sec-head {
+    display: flex;
+    align-items: baseline;
+    gap: 1rem;
+    margin-bottom: 1.6rem;
+  }
+  .sec-head .num {
+    font-family: var(--f-mono);
+    font-size: 0.76rem;
+    font-weight: 700;
+    color: var(--gold-ink);
+    letter-spacing: 0.04em;
+    flex-shrink: 0;
+  }
+
+  /* ---------- diagram ---------- */
+
+  .plans {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(19rem, 1fr));
+    gap: 1.4rem;
+    margin: 2.1rem 0 0.5rem;
+  }
+  .plan {
+    background: var(--surface);
+    border: 1px solid var(--rule);
+    border-radius: var(--r);
+    box-shadow: var(--shadow);
+    padding: 1.15rem 1.15rem 1.3rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+  }
+  .plan svg { width: 100%; height: auto; display: block; }
+  .plan .cap { display: flex; flex-direction: column; gap: 0.25rem; }
+  .plan .cap b { font-size: 1rem; font-weight: 600; letter-spacing: -0.015em; }
+  .plan .cap span { font-size: 0.88rem; color: var(--ink-soft); line-height: 1.45; }
+  .plan.win { border-color: var(--gold); }
+
+  .legend {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem 1.4rem;
+    font-family: var(--f-mono);
+    font-size: 0.69rem;
+    letter-spacing: 0.03em;
+    color: var(--ink-faint);
+    margin-top: 1.05rem;
+  }
+  .legend i { display: inline-block; width: 20px; height: 3px; vertical-align: middle; margin-right: 0.4rem; border-radius: 2px; }
+
+  /* ---------- poziomy ---------- */
+
+  .tiers {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(20rem, 1fr));
+    gap: 1.2rem;
+    margin-top: 1.9rem;
+  }
+  .tier {
+    background: var(--surface);
+    border: 1px solid var(--rule);
+    border-radius: var(--r);
+    box-shadow: var(--shadow);
+    padding: 1.45rem 1.4rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.72rem;
+    position: relative;
+    overflow: hidden;
+  }
+  .tier::before {
+    content: "";
+    position: absolute;
+    inset: 0 0 auto 0;
+    height: 3px;
+    background: var(--rule-strong);
+  }
+  .tier.a::before { background: var(--gold); }
+  .tier.b::before { background: var(--graphite); }
+  .tier .cost {
+    font-family: var(--f-mono);
+    font-size: 0.69rem;
+    letter-spacing: 0.07em;
+    text-transform: uppercase;
+    color: var(--ink-faint);
+  }
+  .tier p { font-size: 0.96rem; line-height: 1.55; }
+  .tier ul { margin: 0; padding-left: 1.05rem; font-size: 0.93rem; color: var(--ink-soft); line-height: 1.5; }
+  .tier ul li { margin-bottom: 0.3rem; }
+
+  /* ---------- katalog klocków ---------- */
+
+  .catalog {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(15rem, 1fr));
+    gap: 1.5rem 1.7rem;
+    margin-top: 1.9rem;
+  }
+  .cat-group { display: flex; flex-direction: column; gap: 0.62rem; }
+  .cat-group h4 { color: var(--ink-soft); border-bottom: 1px solid var(--rule); padding-bottom: 0.42rem; }
+  .chips { display: flex; flex-wrap: wrap; gap: 0.34rem; }
+  .chip {
+    font-family: var(--f-mono);
+    font-size: 0.7rem;
+    background: var(--surface);
+    border: 1px solid var(--rule);
+    border-radius: 6px;
+    padding: 0.24rem 0.5rem;
+    color: var(--ink-soft);
+    white-space: nowrap;
+  }
+  .chip.pt { border-color: var(--gold); color: var(--gold-ink); background: var(--gold-soft); }
+
+  /* ---------- pipeline ---------- */
+
+  .pipe { display: flex; flex-direction: column; margin-top: 1.9rem; border-left: 2px solid var(--rule); }
+  .step {
+    display: grid;
+    grid-template-columns: 3.4rem 1fr;
+    gap: 0 1rem;
+    padding: 0.95rem 0 0.95rem 1.35rem;
+  }
+  .step + .step { border-top: 1px solid var(--rule); }
+  .step .k {
+    font-family: var(--f-mono);
+    font-size: 0.7rem;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    color: var(--gold-ink);
+    padding-top: 0.26rem;
+  }
+  .step .b { display: flex; flex-direction: column; gap: 0.3rem; }
+  .step .b b { font-size: 1rem; font-weight: 600; letter-spacing: -0.015em; }
+  .step .b span { font-size: 0.94rem; color: var(--ink-soft); line-height: 1.5; }
+
+  /* ---------- schemat ---------- */
+
+  .schema {
+    margin-top: 1.9rem;
+    background: var(--surface);
+    border: 1px solid var(--rule);
+    border-radius: var(--r);
+    box-shadow: var(--shadow);
+    overflow-x: auto;
+  }
+  .schema pre {
+    margin: 0;
+    padding: 1.4rem;
+    font-family: var(--f-mono);
+    font-size: 0.765rem;
+    line-height: 1.78;
+    color: var(--ink-soft);
+    white-space: pre;
+  }
+  .schema pre b { color: var(--ink); font-weight: 700; }
+  .schema pre i { color: var(--ink-faint); font-style: normal; }
+  .schema pre u { color: var(--gold-ink); text-decoration: none; font-weight: 500; }
+
+  /* ---------- tabela ---------- */
+
+  .tbl-wrap {
+    overflow-x: auto;
+    margin-top: 1.9rem;
+    border: 1px solid var(--rule);
+    border-radius: var(--r);
+    background: var(--surface);
+    box-shadow: var(--shadow);
+  }
+  table { border-collapse: collapse; width: 100%; min-width: 34rem; }
+  th, td { text-align: left; padding: 0.78rem 1rem; border-bottom: 1px solid var(--rule); vertical-align: top; }
+  th {
+    font-family: var(--f-mono);
+    font-size: 0.66rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--ink-faint);
+    font-weight: 500;
+    background: var(--surface-2);
+  }
+  tr:last-child td { border-bottom: none; }
+  td { font-size: 0.92rem; line-height: 1.5; color: var(--ink-soft); }
+  td:first-child { font-weight: 600; font-size: 0.94rem; white-space: nowrap; color: var(--ink); }
+  td b { color: var(--ink); font-weight: 600; }
+
+  /* ---------- fazy ---------- */
+
+  .phases { display: flex; flex-direction: column; margin-top: 1.9rem; }
+  .phase {
+    display: grid;
+    grid-template-columns: 4.4rem 1fr;
+    gap: 0 1.4rem;
+    padding: 1.4rem 0;
+    border-top: 1px solid var(--rule);
+  }
+  .phase:last-child { border-bottom: 1px solid var(--rule); }
+  .phase .idx { display: flex; flex-direction: column; gap: 0.22rem; }
+  .phase .idx b {
+    font-size: 1.95rem;
+    font-weight: 700;
+    line-height: 1;
+    color: var(--gold);
+    letter-spacing: -0.05em;
+  }
+  .phase .idx span { font-family: var(--f-mono); font-size: 0.64rem; letter-spacing: 0.07em; color: var(--ink-faint); text-transform: uppercase; }
+  .phase .body { display: flex; flex-direction: column; gap: 0.48rem; }
+  .phase .body p { font-size: 0.95rem; color: var(--ink-soft); line-height: 1.55; }
+  .phase .ship {
+    font-family: var(--f-mono);
+    font-size: 0.72rem;
+    color: var(--gold-ink);
+    background: var(--gold-soft);
+    border: 1px solid var(--rule);
+    border-radius: 6px;
+    padding: 0.35rem 0.6rem;
+    align-self: flex-start;
+    line-height: 1.45;
+  }
+
+  /* ---------- ryzyka ---------- */
+
+  .risks { display: flex; flex-direction: column; margin-top: 1.9rem; }
+  .risk {
+    display: grid;
+    grid-template-columns: minmax(9rem, 14rem) 1fr;
+    gap: 0.35rem 1.4rem;
+    padding: 1.05rem 0 1.05rem 1rem;
+    border-left: 3px solid var(--bad);
+    border-bottom: 1px solid var(--rule);
+  }
+  .risk:last-child { border-bottom: none; }
+  .risk b { font-size: 0.97rem; font-weight: 600; letter-spacing: -0.015em; }
+  .risk span { font-size: 0.94rem; color: var(--ink-soft); line-height: 1.55; }
+
+  /* ---------- decyzje ---------- */
+
+  .decisions { display: flex; flex-direction: column; gap: 0.85rem; margin-top: 1.9rem; max-width: 44rem; }
+  .dec {
+    display: grid;
+    grid-template-columns: 1.9rem 1fr;
+    gap: 0 0.85rem;
+    background: var(--surface);
+    border: 1px solid var(--rule);
+    border-radius: var(--r);
+    box-shadow: var(--shadow);
+    padding: 1.05rem 1.2rem;
+  }
+  .dec .q { font-family: var(--f-mono); font-size: 0.78rem; font-weight: 700; color: var(--gold-ink); padding-top: 0.18rem; }
+  .dec .t { display: flex; flex-direction: column; gap: 0.3rem; }
+  .dec .t b { font-size: 0.99rem; font-weight: 600; letter-spacing: -0.015em; }
+  .dec .t span { font-size: 0.93rem; color: var(--ink-soft); line-height: 1.5; }
+
+  .callout {
+    margin-top: 1.6rem;
+    padding: 1.1rem 1.3rem;
+    background: var(--gold-soft);
+    border: 1px solid var(--rule);
+    border-left: 3px solid var(--gold);
+    border-radius: 0 var(--r) var(--r) 0;
+    max-width: 44rem;
+  }
+  .callout p { font-size: 0.95rem; line-height: 1.55; }
+
+  ul.plain { margin: 0; padding-left: 1.15rem; display: flex; flex-direction: column; gap: 0.38rem; }
+  ul.plain li { line-height: 1.55; }
+
+  a { color: var(--gold-ink); text-underline-offset: 3px; }
+  a:focus-visible { outline: 2px solid var(--gold); outline-offset: 2px; border-radius: 3px; }
+
+  @media (max-width: 560px) {
+    body { font-size: 16px; padding: 0 1rem 4rem; }
+    .step { grid-template-columns: 1fr; gap: 0.3rem; }
+    .phase { grid-template-columns: 1fr; gap: 0.6rem; }
+    .phase .idx { flex-direction: row; align-items: baseline; gap: 0.6rem; }
+    .risk { grid-template-columns: 1fr; }
+    .masthead { padding-top: 3rem; }
+  }
+</style>
+
+<div class="wrap">
+
+  <header class="masthead">
+    <div class="col">
+      <div class="title-mark">
+        <h1>Alejka</h1>
+        <span class="tag">Plan produktu · v1</span>
+      </div>
+      <p class="lede">Lista zakupów, która układa się w kolejności przejścia przez konkretny sklep — od wejścia do kasy, bez wracania się po jogurt.</p>
+      <div class="meta-row">
+        <span><b>Data:</b> 26.08.2026</span>
+        <span><b>Status:</b> plan, przed pierwszą linią kodu</span>
+        <span><b>Priorytet:</b> iOS, potem Android</span>
+      </div>
+    </div>
+  </header>
+
+  <section>
+    <div class="sec-head"><span class="num">01</span><h2>Co tu naprawdę jest do rozwiązania</h2></div>
+    <div class="col">
+      <p>Lista zakupów to problem rozwiązany. Wyróżnikiem jest <strong>trasa</strong> — a trasa rozpada się na trzy niezależne problemy, z których każdy może zabić produkt osobno.</p>
+      <p><strong>Topografia sklepu.</strong> Trzeba mieć maszynowo czytelny plan konkretnego Lidla przy konkretnej ulicy. Sieci tego nie udostępniają, więc jedyna droga to mapowanie własne i społecznościowe.</p>
+      <p><strong>Przypisanie produktu do sekcji.</strong> „Mleko” musi trafić do <em>Nabiał</em>, „mlyko” też, a „ser żółty w plastrach” do <em>Nabiał</em>, ale w niektórych sklepach do <em>Lada</em>. To jest niewidoczna połowa produktu i to ona decyduje, czy trasa jest poprawna.</p>
+      <p><strong>Zimny start.</strong> Zanim mapy powstaną, aplikacja jest zwykłą listą. Bez odpowiedzi na to pytanie nie ma sensu pisać buildera.</p>
+      <p class="note">Cała reszta tego dokumentu wynika z tych trzech punktów. Kolejność faz też.</p>
+    </div>
+
+    <div class="plans">
+      <div class="plan">
+        <div class="cap">
+          <b>Kolejność wpisywania</b>
+          <span>Sześć produktów, tak jak przyszły do głowy. Cztery zawroty, dwa przejścia pokonane dwa razy.</span>
+        </div>
+        <svg viewBox="0 0 240 180" role="img" aria-label="Plan sklepu z chaotyczną trasą wynikającą z kolejności wpisywania produktów">
+          <g stroke="var(--rule-strong)" fill="var(--surface-3)" stroke-width="1">
+            <rect x="10" y="10" width="220" height="160" fill="none" stroke="var(--ink-faint)" stroke-width="1.4"/>
+            <rect x="20" y="20" width="200" height="18"/>
+            <rect x="45" y="48" width="16" height="88"/>
+            <rect x="85" y="48" width="16" height="88"/>
+            <rect x="125" y="48" width="16" height="88"/>
+            <rect x="165" y="48" width="16" height="88"/>
+            <rect x="200" y="48" width="20" height="92"/>
+            <rect x="150" y="152" width="72" height="14"/>
+          </g>
+          <polyline points="25,158 25,150 72,150 72,90 72,150 192,150 192,100 192,42 35,42 152,42 152,120 152,42 112,42 112,70 112,150 187,150 187,157"
+            fill="none" stroke="var(--bad)" stroke-width="2.2" stroke-linejoin="round" stroke-linecap="round" opacity="0.9"/>
+          <g font-family="JetBrains Mono, monospace" fill="var(--ink)">
+            <circle cx="72" cy="90" r="4.6" fill="var(--surface)" stroke="var(--bad)" stroke-width="1.7"/><text x="72" y="92.3" text-anchor="middle" font-size="6">1</text>
+            <circle cx="192" cy="100" r="4.6" fill="var(--surface)" stroke="var(--bad)" stroke-width="1.7"/><text x="192" y="102.3" text-anchor="middle" font-size="6">2</text>
+            <circle cx="35" cy="42" r="4.6" fill="var(--surface)" stroke="var(--bad)" stroke-width="1.7"/><text x="35" y="44.3" text-anchor="middle" font-size="6">3</text>
+            <circle cx="152" cy="120" r="4.6" fill="var(--surface)" stroke="var(--bad)" stroke-width="1.7"/><text x="152" y="122.3" text-anchor="middle" font-size="6">4</text>
+            <circle cx="150" cy="42" r="4.6" fill="var(--surface)" stroke="var(--bad)" stroke-width="1.7"/><text x="150" y="44.3" text-anchor="middle" font-size="6">5</text>
+            <circle cx="112" cy="70" r="4.6" fill="var(--surface)" stroke="var(--bad)" stroke-width="1.7"/><text x="112" y="72.3" text-anchor="middle" font-size="6">6</text>
+          </g>
+          <g font-family="JetBrains Mono, monospace" font-size="5.4" fill="var(--ink-faint)" letter-spacing="0.4">
+            <text x="20" y="167">WEJŚCIE</text>
+            <text x="186" y="162" text-anchor="middle" fill="var(--ink-soft)">KASY</text>
+          </g>
+        </svg>
+      </div>
+
+      <div class="plan win">
+        <div class="cap">
+          <b>Kolejność trasy</b>
+          <span>Te same sześć produktów. Jedno przejście przez sklep, zero zawrotów, koniec przy kasie.</span>
+        </div>
+        <svg viewBox="0 0 240 180" role="img" aria-label="Ten sam plan sklepu z trasą zoptymalizowaną w serpentynę od wejścia do kas">
+          <g stroke="var(--rule-strong)" fill="var(--surface-3)" stroke-width="1">
+            <rect x="10" y="10" width="220" height="160" fill="none" stroke="var(--ink-faint)" stroke-width="1.4"/>
+            <rect x="20" y="20" width="200" height="18"/>
+            <rect x="45" y="48" width="16" height="88"/>
+            <rect x="85" y="48" width="16" height="88"/>
+            <rect x="125" y="48" width="16" height="88"/>
+            <rect x="165" y="48" width="16" height="88"/>
+            <rect x="200" y="48" width="20" height="92"/>
+            <rect x="150" y="152" width="72" height="14"/>
+          </g>
+          <polyline points="25,158 25,150 30,150 30,42 35,42 72,42 72,90 72,150 112,150 112,70 112,42 150,42 152,42 152,120 152,150 192,150 192,100 192,150 187,150 187,157"
+            fill="none" stroke="var(--gold-ink)" stroke-width="2.8" stroke-linejoin="round" stroke-linecap="round"/>
+          <g font-family="JetBrains Mono, monospace" fill="var(--ink)">
+            <circle cx="35" cy="42" r="4.6" fill="var(--surface)" stroke="var(--gold-ink)" stroke-width="1.9"/><text x="35" y="44.3" text-anchor="middle" font-size="6">1</text>
+            <circle cx="72" cy="90" r="4.6" fill="var(--surface)" stroke="var(--gold-ink)" stroke-width="1.9"/><text x="72" y="92.3" text-anchor="middle" font-size="6">2</text>
+            <circle cx="112" cy="70" r="4.6" fill="var(--surface)" stroke="var(--gold-ink)" stroke-width="1.9"/><text x="112" y="72.3" text-anchor="middle" font-size="6">3</text>
+            <circle cx="150" cy="42" r="4.6" fill="var(--surface)" stroke="var(--gold-ink)" stroke-width="1.9"/><text x="150" y="44.3" text-anchor="middle" font-size="6">4</text>
+            <circle cx="152" cy="120" r="4.6" fill="var(--surface)" stroke="var(--gold-ink)" stroke-width="1.9"/><text x="152" y="122.3" text-anchor="middle" font-size="6">5</text>
+            <circle cx="192" cy="100" r="4.6" fill="var(--surface)" stroke="var(--gold-ink)" stroke-width="1.9"/><text x="192" y="102.3" text-anchor="middle" font-size="6">6</text>
+          </g>
+          <g font-family="JetBrains Mono, monospace" font-size="5.4" fill="var(--ink-faint)" letter-spacing="0.4">
+            <text x="20" y="167">WEJŚCIE</text>
+            <text x="186" y="162" text-anchor="middle" fill="var(--ink-soft)">KASY</text>
+          </g>
+        </svg>
+      </div>
+    </div>
+    <div class="legend">
+      <span><i style="background:var(--bad)"></i>trasa z kolejności wpisywania</span>
+      <span><i style="background:var(--gold-ink)"></i>trasa policzona z mapy</span>
+      <span>szare bloki — regały i lady</span>
+    </div>
+  </section>
+
+  <section>
+    <div class="sec-head"><span class="num">02</span><h2>Dwa poziomy mapowania</h2></div>
+    <div class="col">
+      <p>To jest najważniejsza rekomendacja w całym dokumencie. Builder 2D, który sobie wyobrażasz, jest właściwy — ale jako <em>jedyna</em> droga wejścia zabije kontrybucję. Człowiek stojący w sklepie z koszykiem nie ustawi trzydziestu regałów. Ty ustawisz. On nie.</p>
+      <p>Dlatego mapowanie ma dwa poziomy, a poziom niższy zaczyna działać natychmiast i sam w sobie daje większość wartości produktu.</p>
+    </div>
+
+    <div class="tiers">
+      <div class="tier a">
+        <span class="cost">Poziom 1 · ok. 2 minuty · w sklepie</span>
+        <h3>Marszruta</h3>
+        <p>Ekran z kaflami wszystkich sekcji. Idziesz przez sklep i stukasz sekcje w kolejności, w jakiej je mijasz. Efekt: uporządkowana lista sekcji.</p>
+        <ul>
+          <li>Wystarczy, żeby posortować dowolną listę zakupów</li>
+          <li>Robi to każdy, bez tłumaczenia</li>
+          <li>Nie wie, po której stronie alejki leży produkt</li>
+          <li>Nie narysuje mapy na ekranie</li>
+        </ul>
+      </div>
+      <div class="tier b">
+        <span class="cost">Poziom 2 · 15–30 minut · na spokojnie</span>
+        <h3>Plan</h3>
+        <p>Builder 2D z klocków. Układasz regały na siatce, oznaczasz wejście i kasy, przypisujesz sekcje do ścian regałów. Efekt: prawdziwa topologia.</p>
+        <ul>
+          <li>Trasa liczona algorytmem, nie odgadywana</li>
+          <li>Rozróżnia strony alejki i ślepe zaułki</li>
+          <li>Daje mapkę z narysowaną ścieżką w sklepie</li>
+          <li>Marszruta wypada z niego automatycznie</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="callout">
+      <p><strong>Konsekwencja dla planu:</strong> Marszruta wchodzi do MVP i jest domyślnym sposobem dodania sklepu. Plan jest ścieżką dla Ciebie i dla zaangażowanych kontrybutorów. Nigdy nie zmuszaj nikogo do poziomu 2, żeby dostać wartość z poziomu 1.</p>
+    </div>
+  </section>
+
+  <section>
+    <div class="sec-head"><span class="num">03</span><h2>Klocki</h2></div>
+    <div class="col">
+      <p>Masz rację, że schematy się powtarzają — różni je tylko rozłożenie. Klocek ma więc dwie niezależne warstwy: <strong>typ fizyczny</strong> (jak wygląda i czy przez niego przejdę) oraz <strong>sekcję</strong> (co na nim leży). Regał dwustronny może mieć makarony po jednej stronie i słodycze po drugiej — i to jest dokładnie ta informacja, która odróżnia dobrą trasę od średniej.</p>
+    </div>
+
+    <div class="catalog">
+      <div class="cat-group">
+        <h4>Typy fizyczne</h4>
+        <div class="chips">
+          <span class="chip">regał dwustronny</span>
+          <span class="chip">regał przyścienny</span>
+          <span class="chip">lada chłodnicza</span>
+          <span class="chip">wyspa mroźnicza</span>
+          <span class="chip">lada obsługowa</span>
+          <span class="chip">stoisko wolnostojące</span>
+          <span class="chip">ściana / słup</span>
+          <span class="chip pt">wejście</span>
+          <span class="chip pt">kasy</span>
+          <span class="chip pt">kasy samoobsługowe</span>
+          <span class="chip pt">wyjście</span>
+          <span class="chip pt">schody / winda</span>
+        </div>
+      </div>
+
+      <div class="cat-group">
+        <h4>Świeże</h4>
+        <div class="chips">
+          <span class="chip">warzywa i owoce</span>
+          <span class="chip">pieczywo</span>
+          <span class="chip">piekarnia</span>
+          <span class="chip">nabiał</span>
+          <span class="chip">jaja</span>
+          <span class="chip">sery — lada</span>
+          <span class="chip">wędliny — lada</span>
+          <span class="chip">mięso świeże</span>
+          <span class="chip">ryby</span>
+          <span class="chip">garmażerka</span>
+          <span class="chip">dania gotowe</span>
+        </div>
+      </div>
+
+      <div class="cat-group">
+        <h4>Suche</h4>
+        <div class="chips">
+          <span class="chip">makarony i ryże</span>
+          <span class="chip">kasze i strączki</span>
+          <span class="chip">płatki i musli</span>
+          <span class="chip">kawa i herbata</span>
+          <span class="chip">słodycze</span>
+          <span class="chip">chipsy i przekąski</span>
+          <span class="chip">konserwy</span>
+          <span class="chip">przetwory</span>
+          <span class="chip">sosy i oleje</span>
+          <span class="chip">przyprawy</span>
+          <span class="chip">do pieczenia</span>
+          <span class="chip">kuchnie świata</span>
+          <span class="chip">bio i wege</span>
+          <span class="chip">karma dla zwierząt</span>
+        </div>
+      </div>
+
+      <div class="cat-group">
+        <h4>Napoje i mrożone</h4>
+        <div class="chips">
+          <span class="chip">woda</span>
+          <span class="chip">napoje</span>
+          <span class="chip">soki</span>
+          <span class="chip">piwo</span>
+          <span class="chip">wino</span>
+          <span class="chip">alkohole mocne</span>
+          <span class="chip">mrożonki</span>
+          <span class="chip">lody</span>
+        </div>
+      </div>
+
+      <div class="cat-group">
+        <h4>Chemia i non-food</h4>
+        <div class="chips">
+          <span class="chip">chemia gospodarcza</span>
+          <span class="chip">środki czystości</span>
+          <span class="chip">higiena osobista</span>
+          <span class="chip">kosmetyki</span>
+          <span class="chip">papier i chusteczki</span>
+          <span class="chip">artykuły dla dzieci</span>
+          <span class="chip">artykuły domowe</span>
+          <span class="chip">tekstylia</span>
+          <span class="chip">prasa</span>
+          <span class="chip">aleja środkowa</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="col" style="margin-top:1.8rem">
+      <p class="note"><strong>„Aleja środkowa”</strong> to osobna sekcja celowo — w dyskontach to realny, stały element topologii, przez który ludzie i tak przechodzą. W innych sieciach po prostu jej nie ma.</p>
+      <p class="note">Około 55 sekcji to punkt startowy. Katalog jest wersjonowany i zamknięty — kontrybutorzy wybierają z listy, nie wpisują własnych nazw. Inaczej po trzech miesiącach masz „Nabiał”, „nabial”, „Mleczne” i „Lodówki” jako cztery różne byty i koniec z porównywalnością map.</p>
+    </div>
+  </section>
+
+  <section>
+    <div class="sec-head"><span class="num">04</span><h2>Builder na telefonie</h2></div>
+    <div class="col">
+      <p>Płótno to siatka, gdzie jedna kratka odpowiada mniej więcej metrowi. Typowy dyskont mieści się w 40×50 kratkach. Nie odwzorowujesz wymiarów, tylko układ — i to jest właściwa decyzja, bo do policzenia trasy geometria co do centymetra nie jest do niczego potrzebna.</p>
+      <ul class="plain">
+        <li><strong>Paleta na dole</strong> — klocki pogrupowane jak w katalogu powyżej. Stuknięcie dodaje klocek na środek widoku.</li>
+        <li><strong>Przeciąganie</strong> przyciąga do kratki. Dwa palce — przesuwanie i skala.</li>
+        <li><strong>Stuknięcie w klocek</strong> otwiera panel: długość i szerokość w kratkach, obrót o 90°, sekcja dla strony A, sekcja dla strony B, usuń.</li>
+        <li><strong>Przytrzymanie</strong> duplikuje — bo regały stawia się seriami.</li>
+        <li><strong>Cofnij i ponów</strong> na całą historię edycji. Bez tego nikt nie dokończy mapy.</li>
+      </ul>
+      <p>Zanim mapa da się opublikować, przechodzi automatyczną walidację. To nie jest bajer — to jedyna rzecz, która utrzyma jakość bazy przy setkach kontrybutorów.</p>
+      <ul class="plain">
+        <li>Jest wejście i co najmniej jedne kasy</li>
+        <li>Każdy klocek z sekcją ma przynajmniej jedną wolną kratkę przy swojej ścianie</li>
+        <li>Wszystkie sekcje są osiągalne z wejścia — przejście BFS po siatce wyłapuje odcięte alejki</li>
+        <li>Klocki się nie nakładają, żaden nie wystaje poza obrys</li>
+        <li>Da się dojść od wejścia do kas</li>
+      </ul>
+    </div>
+  </section>
+
+  <section>
+    <div class="sec-head"><span class="num">05</span><h2>Silnik trasy</h2></div>
+    <div class="col">
+      <p>Cały liczy się na telefonie, bez sieci. To nie jest optymalizacja na później — w sklepach zasięg jest fatalny, a aplikacja bez sieci w środku sklepu jest bezużyteczna.</p>
+    </div>
+
+    <div class="pipe">
+      <div class="step">
+        <span class="k">01</span>
+        <span class="b"><b>Rasteryzacja</b><span>Mapa zamienia się w siatkę wartości logicznych. Kratki zajęte przez klocki to ściany, reszta to podłoga. Dla 40×50 to 2000 komórek.</span></span>
+      </div>
+      <div class="step">
+        <span class="k">02</span>
+        <span class="b"><b>Punkty dostępu</b><span>Każda sekcja dostaje zbiór kratek podłogi przylegających do <em>swojej</em> ściany klocka. Regał dwustronny daje dwa różne zbiory dla dwóch różnych sekcji.</span></span>
+      </div>
+      <div class="step">
+        <span class="k">03</span>
+        <span class="b"><b>Macierz odległości</b><span>BFS wielopunktowy z każdego zbioru — siatka jest nieważona, więc BFS wystarczy i jest dokładny. Przy 15 sekcjach to 15 przebiegów po 2000 komórek. Ułamek milisekundy.</span></span>
+      </div>
+      <div class="step">
+        <span class="k">04</span>
+        <span class="b"><b>Kolejność</b><span>Otwarty problem komiwojażera: start w wejściu, koniec w kasach, po drodze wszystkie potrzebne sekcje. Do 16 sekcji — Held-Karp, wynik dokładnie optymalny (<code>2^16 · 16²</code> to około 17 mln operacji, rzędu 100 ms). Powyżej — najbliższy sąsiad plus 2-opt.</span></span>
+      </div>
+      <div class="step">
+        <span class="k">05</span>
+        <span class="b"><b>Ścieżka</b><span>A* między kolejnymi punktami daje łamaną do narysowania na mapce. Lista produktów zostaje przesortowana według wynikowej kolejności sekcji.</span></span>
+      </div>
+      <div class="step">
+        <span class="k">06</span>
+        <span class="b"><b>Przeliczanie w locie</b><span>Odhaczenie produktu albo dopisanie czegoś w środku sklepu uruchamia ponowne liczenie od bieżącej sekcji. Przy tych rozmiarach jest to natychmiastowe, więc trasa jest zawsze żywa.</span></span>
+      </div>
+    </div>
+
+    <div class="col" style="margin-top:1.8rem">
+      <p class="note">Przy mapie z poziomu 1 kroki 01–05 odpadają — lista jest po prostu sortowana według zapisanej kolejności sekcji. Ten sam interfejs, uboższe dane, wciąż działa.</p>
+    </div>
+  </section>
+
+  <section>
+    <div class="sec-head"><span class="num">06</span><h2>Od produktu do sekcji</h2></div>
+    <div class="col">
+      <p>Najlepsza mapa świata jest bezużyteczna, jeśli „passata” wyląduje w warzywach. Ta warstwa decyduje o odbiorze produktu i jest dużo bardziej pracochłonna, niż wygląda.</p>
+      <ul class="plain">
+        <li><strong>Katalog bazowy</strong> — od dwóch do trzech tysięcy najczęstszych polskich produktów spożywczych z domyślną sekcją, aliasami i popularnością. Wpisywane raz, przez Ciebie, wspomagane modelem. To jest realnie kilka dni pracy i trzeba to zaplanować, nie odkryć w trakcie.</li>
+        <li><strong>Normalizacja wejścia</strong> — polska odmiana, literówki, liczba mnoga. Sprowadzenie do formy podstawowej plus dopasowanie rozmyte po nazwach i aliasach.</li>
+        <li><strong>Furtka modelowa</strong> — czego katalog nie zna, klasyfikuje model językowy raz, po stronie serwera, a wynik ląduje w katalogu globalnym. Każde nieznane słowo kosztuje jedno zapytanie w całej historii aplikacji, nie jedno na użytkownika.</li>
+        <li><strong>Nadpisania per sklep</strong> — osobna tabela, kiedy w danym sklepie coś leży gdzie indziej. Użytkownik zgłasza to jednym gestem: „to było w innej sekcji”.</li>
+        <li><strong>Nadpisania osobiste</strong> — bez recenzji, natychmiast. Jeżeli ktoś uważa, że jego chleb tostowy to pieczywo, a nie pieczywo pakowane, to jego sprawa i jego lista.</li>
+      </ul>
+    </div>
+  </section>
+
+  <section>
+    <div class="sec-head"><span class="num">07</span><h2>Model danych</h2></div>
+    <div class="schema">
+<pre><b>section_types</b>      id · klucz · nazwa_pl · ikona · aliasy[] · domyslna_kolejnosc · wersja_katalogu
+<b>chains</b>             id · nazwa <i>(sieci handlowe)</i>
+<b>chain_orders</b>       chain_id · section_type_id · pozycja   <i>← typowa kolejność sieci, fallback bez mapy</i>
+<b>stores</b>             id · chain_id · nazwa · adres · lat · lng · osm_id · aktywny
+
+<b>store_maps</b>         id · store_id · wersja · <u>poziom: marszruta | plan</u> · status: szkic|zgloszona|zatwierdzona
+                   autor_id · siatka_w · siatka_h · zatwierdzil_id · utworzono
+<b>map_blocks</b>         id · map_id · typ_fizyczny · x · y · w · h · obrot
+<b>block_faces</b>        id · block_id · strona: N|S|E|W · section_type_id   <i>← dwie strony regału</i>
+<b>map_nodes</b>          id · map_id · typ: wejscie|kasy|kasy_samo|wyjscie|schody · x · y
+<b>walk_orders</b>        map_id · section_type_id · pozycja   <i>← poziom 1, i wynik z poziomu 2</i>
+
+<b>products</b>           id · nazwa_kanoniczna · znormalizowana · section_type_id · aliasy[] · popularnosc
+<b>store_overrides</b>    store_id · product_id · section_type_id · zglosil_id · glosy
+<b>user_overrides</b>     user_id · product_id · section_type_id
+
+<b>lists</b>              id · user_id · nazwa · store_id <i>(opcjonalnie)</i> · udostepniona
+<b>list_items</b>         id · list_id · product_id | tekst_wolny · ilosc · jednostka · odhaczony
+
+<b>contributions</b>      user_id · map_id · status · nagroda_przyznana
+<b>map_reports</b>        map_id · user_id · typ: nieaktualna|blad_sekcji|duplikat · opis
+<b>profiles</b>           id · reputacja · dostep_dozywotni · zatwierdzonych_map</pre>
+    </div>
+    <div class="col" style="margin-top:1.6rem">
+      <p class="note">Mapy są wersjonowane, nie nadpisywane. Sklep przestawia regały mniej więcej raz lub dwa razy w roku i musisz umieć wrócić do poprzedniej wersji, kiedy ktoś zepsuje dobrą mapę.</p>
+    </div>
+  </section>
+
+  <section>
+    <div class="sec-head"><span class="num">08</span><h2>Stack</h2></div>
+    <div class="tbl-wrap">
+      <table>
+        <thead>
+          <tr><th>Warstwa</th><th>Wybór</th><th>Dlaczego akurat to</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Aplikacja</td>
+            <td><b>Expo (React Native) + TypeScript</b></td>
+            <td>Jeden kod na iOS i Android. iOS wychodzi pierwszy przez TestFlight, Android dochodzi bez przepisywania. Expo Router, EAS Build.</td>
+          </tr>
+          <tr>
+            <td>Motyw</td>
+            <td><b>NativeWind v4 + tokeny</b></td>
+            <td>Motyw z <code>design/theme.css</code> jest w formacie Tailwind v4, więc NativeWind czyta go wprost. Dla kodu poza klasami jest <code>design/tokens.ts</code> z tymi samymi wartościami.</td>
+          </tr>
+          <tr>
+            <td>Builder</td>
+            <td><b>Reanimated + Gesture Handler</b></td>
+            <td>Klocki jako pozycjonowane widoki na siatce. Przy mniej niż stu blokach wydajność jest w porządku. Skia dopiero gdyby to przestało wystarczać — nie zaczynaj od niej.</td>
+          </tr>
+          <tr>
+            <td>Silnik trasy</td>
+            <td><b>Czysty TypeScript</b></td>
+            <td>Zero zależności, działa offline, ten sam kod użyty w testach jednostkowych i w podglądzie w builderze.</td>
+          </tr>
+          <tr>
+            <td>Dane lokalne</td>
+            <td><b>expo-sqlite + MMKV</b></td>
+            <td>Listy i pobrane mapy żyją na urządzeniu. Aplikacja w sklepie musi działać z wyłączonym internetem.</td>
+          </tr>
+          <tr>
+            <td>Backend</td>
+            <td><b>Supabase</b></td>
+            <td>Postgres, autoryzacja, RLS, realtime dla list współdzielonych. Znasz go z poprzedniego projektu, więc nie jest to nowa niewiadoma.</td>
+          </tr>
+          <tr>
+            <td>Klasyfikacja</td>
+            <td><b>Edge Function + Claude</b></td>
+            <td>Tylko dla nieznanych produktów, wynik trafia do wspólnego katalogu. Nigdy na ścieżce krytycznej — jak nie odpowie, produkt ląduje w „Inne”.</td>
+          </tr>
+          <tr>
+            <td>Panel moderacji</td>
+            <td><b>Next.js na Vercelu</b></td>
+            <td>Przeglądanie zgłoszonych map na dużym ekranie. Ten sam motyw i ten sam komponent buildera przez Expo Web.</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <section>
+    <div class="sec-head"><span class="num">09</span><h2>Zimny start i kontrybutorzy</h2></div>
+    <div class="col">
+      <p>Pierwszy użytkownik otwiera aplikację i zastaje pustą bazę map. Trzeba mu dać coś użytecznego mimo to — inaczej wyjdzie i nie wróci.</p>
+      <ul class="plain">
+        <li><strong>Kolejność sieci jako podkładka.</strong> Nawet bez mapy konkretnego sklepu sortuj listę według typowej kolejności sekcji w danej sieci. To już jest wyraźnie lepsze niż kolejność wpisywania i działa dla każdego sklepu w Polsce od pierwszego dnia.</li>
+        <li><strong>Szablony układów.</strong> Dyskonty mają kilka powtarzalnych formatów. Trzy do pięciu gotowych szablonów na sieć, które kontrybutor wybiera i poprawia, skracają mapowanie z pół godziny do kilku minut.</li>
+        <li><strong>Import sklepów z OpenStreetMap.</strong> Adresy i lokalizacje sklepów są tam już opisane. Kilka tysięcy punktów bez ręcznego wpisywania. Licencja ODbL wymaga podania źródła w aplikacji.</li>
+        <li><strong>Jedno miasto na start.</strong> Dwadzieścia dobrych map w Twoim mieście jest warte więcej niż dwieście przypadkowych w całym kraju. Gęstość, nie zasięg.</li>
+      </ul>
+
+      <p style="margin-top:0.9rem">Model kontrybucji: zmapowanie sklepu daje dożywotni dostęp. Żeby to nie zostało wydrenowane pierwszego tygodnia, potrzebne są trzy zabezpieczenia.</p>
+      <ul class="plain">
+        <li><strong>Kolejka recenzji.</strong> Na starcie sprawdzasz mapy osobiście. Po kilkunastu zatwierdzonych mapach kontrybutor dostaje automatyczne zatwierdzanie z kontrolą po fakcie.</li>
+        <li><strong>Nagroda za zatwierdzoną mapę,</strong> nie za zgłoszoną. Duplikat istniejącego sklepu wchodzi jako propozycja zmiany, nie jako nowa mapa.</li>
+        <li><strong>Świeżość.</strong> Po zakupach pytanie jednym stuknięciem: „mapa się zgadzała?”. Kilka zgłoszeń pod rząd oznacza mapę jako nieaktualną i otwiera ją do poprawy.</li>
+      </ul>
+    </div>
+  </section>
+
+  <section>
+    <div class="sec-head"><span class="num">10</span><h2>Fazy</h2></div>
+    <div class="phases">
+      <div class="phase">
+        <div class="idx"><b>1</b><span>2–3 tyg.</span></div>
+        <div class="body">
+          <h3>Lista, która już coś daje</h3>
+          <p>Aplikacja Expo na motywie z <code>design/</code>, listy zakupów, katalog produktów PL, normalizacja wejścia, sortowanie po typowej kolejności sieci. Bez kont, bez backendu, wszystko lokalnie.</p>
+          <span class="ship">Efekt: działająca aplikacja na Twoim telefonie, już lepsza od notatnika</span>
+        </div>
+      </div>
+      <div class="phase">
+        <div class="idx"><b>2</b><span>1 tydz.</span></div>
+        <div class="body">
+          <h3>Marszruta</h3>
+          <p>Tryb rejestrowania kolejności sekcji, zapis lokalny, sortowanie listy po własnej marszrucie. Ekran zakupów: duża bieżąca sekcja, produkty do odhaczenia, następna sekcja.</p>
+          <span class="ship">Efekt: pełna obietnica produktu spełniona dla sklepów, które sam zmapujesz</span>
+        </div>
+      </div>
+      <div class="phase">
+        <div class="idx"><b>3</b><span>3–4 tyg.</span></div>
+        <div class="body">
+          <h3>Builder i silnik trasy</h3>
+          <p>Edytor 2D z klockami, walidacja mapy, rasteryzacja, BFS, TSP, rysowanie ścieżki. Podgląd trasy na przykładowej liście wprost w builderze.</p>
+          <span class="ship">Efekt: to, co odróżnia Alejkę od czterdziestu innych list zakupów</span>
+        </div>
+      </div>
+      <div class="phase">
+        <div class="idx"><b>4</b><span>2–3 tyg.</span></div>
+        <div class="body">
+          <h3>Backend i wspólna baza map</h3>
+          <p>Supabase, konta, import sklepów z OSM, publikowanie i pobieranie map, kolejka moderacji, panel na Vercelu, synchronizacja list.</p>
+          <span class="ship">Efekt: mapa zrobiona przez jedną osobę działa u wszystkich</span>
+        </div>
+      </div>
+      <div class="phase">
+        <div class="idx"><b>5</b><span>3–4 tyg.</span></div>
+        <div class="body">
+          <h3>Beta na iOS</h3>
+          <p>TestFlight, szablony układów dla głównych sieci, zgłaszanie nieaktualnych map, onboarding, telemetria. Zmapowanie dwudziestu sklepów w jednym mieście i test na prawdziwych zakupach.</p>
+          <span class="ship">Efekt: pierwsi użytkownicy spoza kręgu znajomych</span>
+        </div>
+      </div>
+      <div class="phase">
+        <div class="idx"><b>6</b><span>—</span></div>
+        <div class="body">
+          <h3>Android i skala</h3>
+          <p>Build na Androida, listy współdzielone w czasie rzeczywistym, reputacja kontrybutorów, kolejne miasta.</p>
+          <span class="ship">Efekt: produkt, a nie projekt</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <div class="sec-head"><span class="num">11</span><h2>Ryzyka, bez upiększania</h2></div>
+    <div class="risks">
+      <div class="risk">
+        <b>Mapowanie się nie rozkręci</b>
+        <span>Największe ryzyko całego przedsięwzięcia i powód, dla którego Marszruta jest w MVP. Jeśli po fazie 5 obcy ludzie nie mapują sklepów, produkt musi się utrzymać na kolejności sieci plus mapach robionych przez Ciebie.</span>
+      </div>
+      <div class="risk">
+        <b>Katalog produktów to prawdziwa robota</b>
+        <span>Kilka dni pracy, których nie widać w interfejsie, a od których zależy, czy trasa jest poprawna. Zaplanuj je w fazie 1, nie odkryj w fazie 5.</span>
+      </div>
+      <div class="risk">
+        <b>Mapy się starzeją</b>
+        <span>Sklepy przestawiają regały. Bez mechanizmu świeżości baza po roku zaczyna kłamać, a nic tak nie zniechęca jak trasa prowadząca do pustej ściany.</span>
+      </div>
+      <div class="risk">
+        <b>Znaki towarowe sieci</b>
+        <span>Nazwy sklepów w tekście są w porządku, ale logotypów sieci nie używaj — sugerują współpracę, której nie ma. Neutralne ikony i kolory własne.</span>
+      </div>
+      <div class="risk">
+        <b>Mapowanie w sklepie</b>
+        <span>Fotografowanie wnętrz bywa zakazane regulaminem sklepu. Dlatego builder jest oparty wyłącznie na stukaniu w klocki — żadnych zdjęć, żadnego skanowania półek.</span>
+      </div>
+      <div class="risk">
+        <b>Rozjazd nazw sekcji</b>
+        <span>Otwarty katalog sekcji rozsypie porównywalność map w kilka miesięcy. Katalog musi zostać zamknięty i wersjonowany od pierwszego dnia.</span>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <div class="sec-head"><span class="num">12</span><h2>Decyzje po Twojej stronie</h2></div>
+    <div class="col">
+      <p>Tego nie rozstrzygnę za Ciebie, a każda z tych odpowiedzi zmienia zakres pierwszych faz.</p>
+    </div>
+    <div class="decisions">
+      <div class="dec">
+        <span class="q">A</span>
+        <span class="t"><b>Model płatności i zakres darmowy</b><span>„Darmowy dostęp na zawsze dla mapujących” zakłada, że reszta płaci. Za co dokładnie i ile — Twoja decyzja, nie wstawiam własnych liczb.</span></span>
+      </div>
+      <div class="dec">
+        <span class="q">B</span>
+        <span class="t"><b>Nazwa</b><span>„Alejka” to nazwa robocza, którą przyjąłem na potrzeby tego dokumentu. Alternatywy w tym samym duchu: Marszruta, Trasownik, Koszyk.</span></span>
+      </div>
+      <div class="dec">
+        <span class="q">C</span>
+        <span class="t"><b>Repo i sposób pracy</b><span>Folder <code>smart lista zakupów</code> nie jest jeszcze repozytorium git. Proponuję ten sam schemat co przy CV: gałąź <code>dev</code> i podgląd, <code>main</code> na Twoją prośbę.</span></span>
+      </div>
+      <div class="dec">
+        <span class="q">D</span>
+        <span class="t"><b>Sieć i miasto na start</b><span>Jedna sieć i jedno miasto do fazy 5. Podpowiedź: zacznij od tej sieci, w której sam robisz zakupy — pierwsze dwadzieścia map i tak będzie Twoich.</span></span>
+      </div>
+      <div class="dec">
+        <span class="q">E</span>
+        <span class="t"><b>Konto Apple Developer</b><span>TestFlight w fazie 5 wymaga aktywnego programu deweloperskiego. Warto założyć wcześniej, bo weryfikacja potrafi trwać.</span></span>
+      </div>
+    </div>
+  </section>
+
+</div>
