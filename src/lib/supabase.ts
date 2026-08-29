@@ -16,7 +16,18 @@ import { Platform } from 'react-native';
 import * as SecureStore from 'expo-secure-store';
 
 const URL = process.env.EXPO_PUBLIC_SUPABASE_URL;
-const KLUCZ = process.env.EXPO_PUBLIC_SUPABASE_ANON_KEY;
+
+/**
+ * Klucz publikowalny (`sb_publishable_...`).
+ *
+ * Następca dawnego klucza `anon` — jest przeznaczony do zaszycia w aplikacji
+ * i respektuje reguły RLS. Nie mylić z kluczem tajnym (`sb_secret_...`), który
+ * RLS OMIJA i nie ma prawa znaleźć się po stronie klienta.
+ *
+ * Starą nazwę zmiennej czytamy nadal, żeby nie zepsuć istniejących plików .env.
+ */
+const KLUCZ =
+  process.env.EXPO_PUBLIC_SUPABASE_PUBLISHABLE_KEY ?? process.env.EXPO_PUBLIC_SUPABASE_ANON_KEY;
 
 /**
  * Sesja trzymana bezpiecznie na telefonie, zwyczajnie w przeglądarce.
