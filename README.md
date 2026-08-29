@@ -203,6 +203,24 @@ i mówi, ile minimum wchodzi.
 | kółko myszy | przybliż pod kursorem |
 | wciśnięte kółko | przesuń widok |
 
+## Wersja webowa i Vercel
+
+```bash
+npm run build:web
+```
+
+Eksportuje statyczną stronę do `dist/`. `app.json` ma `web.output: "static"`,
+więc expo-router generuje osobny plik HTML dla każdej trasy.
+
+Wdrożenie na Vercel czyta `vercel.json` i nie potrzebuje żadnych ustawień
+w panelu — preset zostaje na „Other". Plik ustawia komendę budowania, katalog
+wyjściowy i **przekierowania dla tras dynamicznych**.
+
+To ostatnie jest konieczne: eksport tworzy pliki o nazwach `lista/[id].html`,
+z nawiasami w nazwie. Bez przekierowań wejście na `/lista/abc123` kończy się
+404, bo Vercel szuka pliku o dokładnie takiej ścieżce. Każda nowa trasa
+dynamiczna wymaga dopisania reguły.
+
 ## Testy
 
 ```bash

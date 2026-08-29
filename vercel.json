@@ -1,0 +1,10 @@
+{
+  "$schema": "https://openapi.vercel.sh/vercel.json",
+  "buildCommand": "npx expo export -p web",
+  "outputDirectory": "dist",
+  "rewrites": [
+    { "source": "/sklepy/plan/:id", "destination": "/sklepy/plan/[id].html" },
+    { "source": "/sklepy/:id", "destination": "/sklepy/[id].html" },
+    { "source": "/lista/:id", "destination": "/lista/[id].html" }
+  ]
+}
