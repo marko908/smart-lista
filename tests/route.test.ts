@@ -86,7 +86,8 @@ ok('regal dwustronny ma zawsze co najmniej dwie kratki glebokosci', (() => {
   const [w, h] = clampSize('regal', 6, 1);
   return Math.min(w, h) >= 2;
 })(), clampSize('regal', 6, 1).join('x'));
-ok('wejscie ma zawsze 3 kratki szerokosci', BLOCK_BY_KEY['wejscie'].min[0] === 3);
+// Wejscie schodzi do 1x1 jak reszta — bywaja bramy i pojedyncze drzwi.
+ok('wejscie schodzi do 1x1', clampSize('wejscie', 1, 1).join('x') === '1x1', clampSize('wejscie', 1, 1).join('x'));
 
 // Minimum trzymamy tylko tam, gdzie wynika z rzeczy. Male lodowki, krotkie lady
 // i pojedyncze regaliki istnieja, a zawyzone minimum rozpychalo plan i psulo skale.

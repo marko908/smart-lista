@@ -167,7 +167,9 @@ export const BLOCK_DEFS: BlockDef[] = [
     key: 'wejscie',
     name: 'Wejście',
     size: [3, 1],
-    min: [3, 1],
+    // Bez minimum: bywają wejścia szerokie na bramę i wąskie na jedne drzwi,
+    // a wymuszone trzy kratki zawyżały skalę małych sklepów.
+    min: [1, 1],
     blocking: false,
     sections: false,
     twoSided: false,
