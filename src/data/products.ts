@@ -2490,6 +2490,326 @@ const SEED: Seed[] = [
   ['mokra karma dla kotów', 'karma-koty'],
   ['przysmaki dla kotów', 'karma-koty'],
   ['sucha karma dla kotów', 'karma-koty'],
+
+  // ═══════════════════════════════════════════════════════════════════
+  // Frazy wykopane z nazw 49 287 polskich produktow Open Food Facts.
+  //
+  // Kryterium: fraza uzywana przez co najmniej cztery ROZNE MARKI jest
+  // generyczna, a nie handlowa - „jogurt grecki" ma dwudziestu producentow,
+  // „Serek Danio Waniliowy" jednego.
+  //
+  // To zrodlo jest SLABSZE niz taksonomia wyzej i Marko przyjal je swiadomie,
+  // bez przegladania: bledy maja wyjsc w praktyce. Widac tu artefakty po
+  // usunietych przyimkach („jogurt picia" z „jogurt do picia") - sa martwe,
+  // bo nikt tak nie napisze, ale nie szkodza.
+  // ═══════════════════════════════════════════════════════════════════
+  // --- Warzywa ---
+  ['pieczarki marynowane', 'warzywa'],
+  ['szpinak baby', 'warzywa'],
+  // --- Owoce ---
+  ['borówki amerykańskie', 'owoce'],
+  // --- Sałaty i warzywa pakowane ---
+  ['penne kurczakiem', 'salaty'],
+  ['sałatka kurczakiem', 'salaty'],
+  ['sałatka tuńczykiem', 'salaty'],
+  ['sałatka warzywna', 'salaty'],
+  // --- Pieczywo świeże ---
+  ['bułki pszenne', 'pieczywo-swieze'],
+  ['chleb pszenno', 'pieczywo-swieze'],
+  ['chleb słonecznikowy', 'pieczywo-swieze'],
+  ['chleb wiejski', 'pieczywo-swieze'],
+  ['mąką pełnoziarnistą', 'pieczywo-swieze'],
+  ['paluszki solone', 'pieczywo-swieze'],
+  // --- Jaja ---
+  ['jaja chowu', 'jaja'],
+  ['jaja wolnego', 'jaja'],
+  // --- Mleko ---
+  ['mleko laktozy', 'mleko'],
+  ['mleko proszku', 'mleko'],
+  ['mleko świeże', 'mleko'],
+  ['serek naturalny', 'mleko'],
+  // --- Napoje roślinne ---
+  ['ananas mango', 'napoje-roslinne'],
+  ['mango jabłko', 'napoje-roslinne'],
+  ['mleczko kokosowe', 'napoje-roslinne'],
+  ['napój sojowy', 'napoje-roslinne'],
+  ['smoothie jabłko', 'napoje-roslinne'],
+  // --- Jogurty ---
+  ['jogurt greckiego', 'jogurty'],
+  ['jogurt jagodowy', 'jogurty'],
+  ['jogurt kremowy', 'jogurty'],
+  ['jogurt mango', 'jogurty'],
+  ['jogurt picia', 'jogurty'],
+  ['jogurt truskawka', 'jogurty'],
+  ['jogurt wiśniowy', 'jogurty'],
+  ['jogurt śmietankowy', 'jogurty'],
+  ['mango marakuja', 'jogurty'],
+  ['mleko fermentowane', 'jogurty'],
+  ['napój jogurtowy', 'jogurty'],
+  ['serek truskawkowy', 'jogurty'],
+  ['serek waniliowym', 'jogurty'],
+  ['skyr jogurt', 'jogurty'],
+  ['skyr truskawkowy', 'jogurty'],
+  ['skyr waniliowy', 'jogurty'],
+  ['twarożek grani', 'jogurty'],
+  // --- Kefiry i maślanki ---
+  ['kefir truskawkowy', 'kefiry'],
+  ['maślanka naturalna', 'kefiry'],
+  ['maślanka truskawkowa', 'kefiry'],
+  // --- Serki i twarogi ---
+  ['mleko zagęszczone', 'serki-twarogi'],
+  ['napój mleczny', 'serki-twarogi'],
+  ['serek twarogowy', 'serki-twarogi'],
+  ['serek śmietankowy', 'serki-twarogi'],
+  ['skyr malina', 'serki-twarogi'],
+  ['twaróg chudy', 'serki-twarogi'],
+  ['twaróg śmietankowy', 'serki-twarogi'],
+  // --- Sery żółte ---
+  ['camembert ziołami', 'sery-zolte'],
+  ['gouda ser', 'sery-zolte'],
+  ['ser edam', 'sery-zolte'],
+  ['ser gouda', 'sery-zolte'],
+  ['ser morski', 'sery-zolte'],
+  ['ser owczy', 'sery-zolte'],
+  ['ser plastrach', 'sery-zolte'],
+  ['ser salami', 'sery-zolte'],
+  ['ser tylżycki', 'sery-zolte'],
+  ['serek topiony', 'sery-zolte'],
+  ['twaróg wędzony', 'sery-zolte'],
+  // --- Sery pleśniowe i specjalne ---
+  ['camembert naturalny', 'sery-plesniowe'],
+  ['mozzarella bufala', 'sery-plesniowe'],
+  ['mozzarella light', 'sery-plesniowe'],
+  ['mozzarella mini', 'sery-plesniowe'],
+  ['ser mozzarella', 'sery-plesniowe'],
+  // --- Śmietany ---
+  ['śmietanka uht', 'smietany'],
+  // --- Masła i margaryny ---
+  ['masło ekstra', 'masla'],
+  ['masło klarowane', 'masla'],
+  // --- Desery mleczne ---
+  ['brzoskwinie syropie', 'desery-mleczne'],
+  ['budyń czekoladowy', 'desery-mleczne'],
+  ['kaszka mleczna', 'desery-mleczne'],
+  ['sernik zimno', 'desery-mleczne'],
+  // --- Mięso świeże ---
+  ['burger wołowy', 'mieso-swieze'],
+  ['filet wędzony', 'mieso-swieze'],
+  ['mięso uda', 'mieso-swieze'],
+  ['pierś pieczona', 'mieso-swieze'],
+  ['schab pieczony', 'mieso-swieze'],
+  ['schab wędzony', 'mieso-swieze'],
+  // --- Drób ---
+  ['filet pieczony', 'drob'],
+  ['filet piersi', 'drob'],
+  ['mięso kotlety', 'drob'],
+  ['skrzydełka kurczaka', 'drob'],
+  // --- Wędliny pakowane ---
+  ['boczek surowy', 'wedliny'],
+  ['boczek wędzony', 'wedliny'],
+  ['filet indyka', 'wedliny'],
+  ['gouda cheese', 'wedliny'],
+  ['krakowska sucha', 'wedliny'],
+  ['szynka drobiowa', 'wedliny'],
+  ['szynka gotowana', 'wedliny'],
+  ['szynka wędzona', 'wedliny'],
+  ['łopatka wieprzowa', 'wedliny'],
+  // --- Kiełbasy ---
+  ['kiełbasa sucha', 'kielbasy'],
+  ['kiełbasa żywiecka', 'kielbasy'],
+  ['parówki kurczaka', 'kielbasy'],
+  ['sucha szynki', 'kielbasy'],
+  ['żywiecka szynki', 'kielbasy'],
+  // --- Ryby świeże ---
+  ['pasta tuńczyka', 'ryby-swieze'],
+  ['pasta łososia', 'ryby-swieze'],
+  ['pstrąg tęczowy', 'ryby-swieze'],
+  ['łosoś pieczony', 'ryby-swieze'],
+  // --- Ryby wędzone i marynowane ---
+  ['papryką chilli', 'ryby-wedzone'],
+  ['łosoś atlantycki', 'ryby-wedzone'],
+  // --- Garmażerka ---
+  ['paluszki solą', 'garmazerka'],
+  // --- Dania gotowe chłodzone ---
+  ['chili sin', 'dania-gotowe'],
+  ['gołąbki sosie', 'dania-gotowe'],
+  ['kotlet drobiowy', 'dania-gotowe'],
+  ['kotlet volaille', 'dania-gotowe'],
+  ['krokiety kapustą', 'dania-gotowe'],
+  ['krokiety mięsem', 'dania-gotowe'],
+  ['kurczak curry', 'dania-gotowe'],
+  ['kurczak sosie', 'dania-gotowe'],
+  ['lasagne bolognese', 'dania-gotowe'],
+  ['pierogi serem', 'dania-gotowe'],
+  ['spaghetti bolognese', 'dania-gotowe'],
+  // --- Mrożone warzywa ---
+  ['kalafior różyczki', 'mrozone-warzywa'],
+  ['zupa jarzynowa', 'mrozone-warzywa'],
+  // --- Mrożone owoce ---
+  ['wiśnie pestek', 'mrozone-owoce'],
+  // --- Mrożone dania i pizze ---
+  ['mieszanka chińska', 'mrozone-dania'],
+  ['pizza salami', 'mrozone-dania'],
+  ['pizza sery', 'mrozone-dania'],
+  ['pizza szynką', 'mrozone-dania'],
+  ['szynką serem', 'mrozone-dania'],
+  ['warzywa patelnię', 'mrozone-dania'],
+  // --- Mrożone ryby ---
+  ['krewetki białe', 'mrozone-ryby'],
+  // --- Lody ---
+  ['lody czekoladowe', 'lody'],
+  ['lody truskawkowe', 'lody'],
+  ['lody waniliowe', 'lody'],
+  // --- Makarony ---
+  ['makaron jajeczny', 'makarony'],
+  ['makaron orkiszowy', 'makarony'],
+  ['makaron penne', 'makarony'],
+  ['makaron ramen', 'makarony'],
+  ['makaron semoliny', 'makarony'],
+  ['makaron soczewicy', 'makarony'],
+  ['makaron spaghetti', 'makarony'],
+  ['makaron świderki', 'makarony'],
+  ['zupa błyskawiczna', 'makarony'],
+  // --- Kasze ---
+  ['ciasto francuskie', 'kasze'],
+  ['kasza bulgur', 'kasze'],
+  ['kasza kuskus', 'kasze'],
+  ['kasza orkiszowa', 'kasze'],
+  ['kasza pęczak', 'kasze'],
+  ['mąka ryżowa', 'kasze'],
+  ['mąka tortowa', 'kasze'],
+  ['napój owsiany', 'kasze'],
+  ['pasta sezamowa', 'kasze'],
+  ['wafle kukurydziane', 'kasze'],
+  // --- Strączki ---
+  ['biała konserwowa', 'straczki'],
+  ['groch łuskany', 'straczki'],
+  // --- Mąki ---
+  ['mąka ciecierzycy', 'maki'],
+  // --- Cukier i słodziki ---
+  ['cukier biały', 'cukier'],
+  ['syrop agawy', 'cukier'],
+  // --- Bakalie i orzechy ---
+  ['daktyle suszone', 'bakalie'],
+  ['grill sal', 'bakalie'],
+  ['mieszanka orzechów', 'bakalie'],
+  ['migdały łuskane', 'bakalie'],
+  ['napój migdałowy', 'bakalie'],
+  ['orzechy makadamia', 'bakalie'],
+  ['pistacje prażone', 'bakalie'],
+  ['rodzynki sułtańskie', 'bakalie'],
+  ['snack mix', 'bakalie'],
+  // --- Płatki śniadaniowe ---
+  ['granola czekoladowa', 'platki'],
+  ['płatki ryżowe', 'platki'],
+  // --- Musli i granola ---
+  ['musli owocami', 'musli'],
+  ['musli owocowe', 'musli'],
+  // --- Oleje i oliwy ---
+  ['olej pestek', 'oleje'],
+  ['oliwa oliwek', 'oleje'],
+  // --- Sosy ---
+  ['hummus paprykowy', 'sosy'],
+  ['majonez wegański', 'sosy'],
+  ['sałatka stylu', 'sosy'],
+  ['sos bbq', 'sosy'],
+  ['sos chili', 'sosy'],
+  ['sos chilli', 'sosy'],
+  ['sos sezamowy', 'sosy'],
+  ['sos stylu', 'sosy'],
+  ['sriracha hot', 'sosy'],
+  // --- Ketchupy i majonezy ---
+  ['ketchup hot', 'ketchup-majonez'],
+  ['ketchup pikantny', 'ketchup-majonez'],
+  // --- Musztardy i chrzany ---
+  ['musztarda francuska', 'musztardy'],
+  // --- Przyprawy ---
+  ['kurkuma mielona', 'przyprawy'],
+  ['papryka zielona', 'przyprawy'],
+  ['pieprz czarny', 'przyprawy'],
+  ['przyprawa kurczaka', 'przyprawy'],
+  // --- Zupy i buliony ---
+  ['bulion warzywny', 'zupy-buliony'],
+  ['krem dyni', 'zupy-buliony'],
+  ['rosół kury', 'zupy-buliony'],
+  ['rosół wołowy', 'zupy-buliony'],
+  ['zupa grochowa', 'zupy-buliony'],
+  ['zupa krem', 'zupy-buliony'],
+  ['zupa ogórkowa', 'zupy-buliony'],
+  // --- Pomidory i passaty ---
+  ['pomidory całe', 'pomidory-passaty'],
+  ['sos spaghetti', 'pomidory-passaty'],
+  // --- Konserwy rybne ---
+  ['sardynki oleju', 'konserwy-rybne'],
+  ['sardynki sosie', 'konserwy-rybne'],
+  ['tuńczyk kawałki', 'konserwy-rybne'],
+  ['tuńczyk sosie', 'konserwy-rybne'],
+  ['tuńczyk wędzony', 'konserwy-rybne'],
+  // --- Konserwy warzywne ---
+  ['buraczki wiórki', 'konserwy-warzywne'],
+  ['kukurydza słodka', 'konserwy-warzywne'],
+  ['passata pomidorowa', 'konserwy-warzywne'],
+  // --- Konserwy mięsne ---
+  ['boczek wieprzowy', 'konserwy-miesne'],
+  ['golonka wieprzowa', 'konserwy-miesne'],
+  // --- Marynaty i oliwki ---
+  ['oliwki czarne', 'marynaty'],
+  ['oliwki pestek', 'marynaty'],
+  ['oliwki zielone', 'marynaty'],
+  ['pastą paprykową', 'marynaty'],
+  // --- Dżemy i powidła ---
+  ['dżem brzoskwiniowy', 'dzemy'],
+  ['dżem malinowy', 'dzemy'],
+  ['dżem owoców', 'dzemy'],
+  ['dżem wiśniowy', 'dzemy'],
+  ['powidła śliwkowe', 'dzemy'],
+  // --- Miody ---
+  ['miód nektarowy', 'miody'],
+  // --- Kremy do smarowania ---
+  ['krem czekoladowy', 'kremy-smarowanie'],
+  ['krem orzechów', 'kremy-smarowanie'],
+  // --- Czekolady ---
+  ['biała czekolada', 'czekolady'],
+  // --- Cukierki i żelki ---
+  ['rodzynki czekoladzie', 'cukierki'],
+  // --- Ciastka i herbatniki ---
+  ['ciastka kawałkami', 'ciastka'],
+  ['ciastka zbożowe', 'ciastka'],
+  ['pierniki czekoladzie', 'ciastka'],
+  ['rurki kremem', 'ciastka'],
+  ['wafle kremem', 'ciastka'],
+  // --- Chipsy ---
+  ['prażynki solone', 'chipsy'],
+  ['ser cebula', 'chipsy'],
+  // --- Popcorn ---
+  ['popcorn ziarno', 'popcorn'],
+  // --- Napoje gazowane ---
+  ['oranżada biała', 'napoje-gazowane'],
+  // --- Soki i nektary ---
+  ['mango banan', 'soki'],
+  ['marchew banan', 'soki'],
+  ['marchew jabłko', 'soki'],
+  ['sok buraków', 'soki'],
+  ['sok grejpfrutowy', 'soki'],
+  ['sok jabłko', 'soki'],
+  ['sok mandarynkowy', 'soki'],
+  ['sok marchew', 'soki'],
+  ['sok marchwi', 'soki'],
+  ['sok pomarańcza', 'soki'],
+  ['sok pomidor', 'soki'],
+  ['sok tłoczony', 'soki'],
+  ['sok wieloowocowy', 'soki'],
+  // --- Herbata ---
+  ['herbatka owocowa', 'herbata'],
+  // --- Piwo ---
+  ['piwo jasne', 'piwo'],
+  // --- Zamienniki wege ---
+  ['kiełbaski białe', 'wege-zamienniki'],
+  ['pasta warzywna', 'wege-zamienniki'],
+  ['pasztet żurawiną', 'wege-zamienniki'],
+  // --- Zdrowa żywność ---
+  ['nasiona chia', 'zdrowa-zywnosc'],
+  ['słonecznik łuskany', 'zdrowa-zywnosc'],
 ];
 
 export type Product = {
