@@ -8,7 +8,7 @@ declare const process: { exit(code: number): never };
  * kosztuje człowieka listy zakupów, nie komunikat o błędzie.
  */
 
-import { ostempluj } from '../src/lib/storage';
+import { kluczStanu, ostempluj } from '../src/lib/storage';
 import { EMPTY_STATE, type AppState, type ShoppingList } from '../src/lib/types';
 
 let fail = 0;
@@ -72,6 +72,18 @@ const zeSladem = stan([lista('l1', 'A', 'uuid-1')], [{ zdalneId: 'stary', tabela
 const poDrugim = ostempluj(zeSladem, stan([], zeSladem.nagrobki));
 ok('wcześniejszy ślad przeżywa kolejne kasowanie',
    poDrugim.nagrobki.length === 2, JSON.stringify(poDrugim.nagrobki.map((n) => n.zdalneId)));
+
+console.log('');
+console.log('--- kazde konto ma wlasna szuflade ---');
+// To pilnuje bledu, ktory naprawde sie wydarzyl: jeden klucz na urzadzenie
+// sprawial, ze nowe konto zastawalo listy poprzedniego i wypychalo je do bazy
+// jako wlasne. RLS nie mial czego zatrzymac - dane docieraly juz podpisane.
+ok('dwa konta to dwa klucze', kluczStanu('uzytkownik-a') !== kluczStanu('uzytkownik-b'),
+   `${kluczStanu('uzytkownik-a')} vs ${kluczStanu('uzytkownik-b')}`);
+ok('niezalogowany ma osobna szuflade',
+   kluczStanu(null) !== kluczStanu('uzytkownik-a'), kluczStanu(null));
+ok('klucz zawiera identyfikator konta', kluczStanu('abc123').includes('abc123'),
+   kluczStanu('abc123'));
 
 console.log(fail === 0 ? '\nWSZYSTKO OK' : `\n${fail} BLEDOW`);
 process.exit(fail === 0 ? 0 : 1);

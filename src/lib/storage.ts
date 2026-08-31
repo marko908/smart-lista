@@ -14,9 +14,26 @@ import type { MapBlock } from './mapModel';
 import type { AppState, Nagrobek, Store } from './types';
 import { EMPTY_STATE } from './types';
 
-// v2: kasy i wejscie przestaly byc punktami, staly sie klockami z rozmiarem.
-// Stare plany nie dadza sie odczytac, wiec zaczynamy od czystego.
-const KEY = 'alejka:state:v2';
+/**
+ * Klucz zapisu — OSOBNY DLA KAŻDEGO KONTA.
+ *
+ * Wcześniej był jeden na urządzenie i to był poważny błąd. Wylogowanie nie
+ * czyści danych (i słusznie — w sklepie bez zasięgu utrata listy byłaby
+ * katastrofą), więc następne konto zastawało cudze listy, a synchronizacja
+ * brała je za jego własne i wypychała do bazy pod nowym właścicielem.
+ * Reguły RLS nie miały czego zatrzymać: dane docierały do nich już podpisane.
+ *
+ * Rozdzielenie po identyfikatorze konta załatwia to bez kasowania czegokolwiek.
+ * Przełączanie się między kontami na jednym telefonie zachowuje dane obu.
+ *
+ * v2: kasy i wejscie przestaly byc punktami, staly sie klockami z rozmiarem.
+ */
+const PRZEDROSTEK = 'alejka:state:v2';
+
+/** `null` znaczy „przed zalogowaniem" i ma własną, osobną szufladę. */
+export function kluczStanu(uid: string | null): string {
+  return `${PRZEDROSTEK}:${uid ?? 'gosc'}`;
+}
 
 /**
  * Migracja zapisanych planów.
@@ -86,9 +103,9 @@ export function migrateStore(raw: unknown): Store | null {
   return { ...(s as unknown as Store), map };
 }
 
-export async function loadState(): Promise<AppState> {
+export async function loadState(uid: string | null): Promise<AppState> {
   try {
-    const raw = await AsyncStorage.getItem(KEY);
+    const raw = await AsyncStorage.getItem(kluczStanu(uid));
     if (!raw) return EMPTY_STATE;
     const parsed = JSON.parse(raw) as Partial<AppState>;
     return {
@@ -110,16 +127,16 @@ export async function loadState(): Promise<AppState> {
   }
 }
 
-export async function saveState(state: AppState): Promise<void> {
+export async function saveState(uid: string | null, state: AppState): Promise<void> {
   try {
-    await AsyncStorage.setItem(KEY, JSON.stringify(state));
+    await AsyncStorage.setItem(kluczStanu(uid), JSON.stringify(state));
   } catch {
     // Zapis lokalny jest wygodą, nie kontraktem — brak miejsca nie wywala apki.
   }
 }
 
-export async function clearState(): Promise<void> {
-  await AsyncStorage.removeItem(KEY);
+export async function clearState(uid: string | null): Promise<void> {
+  await AsyncStorage.removeItem(kluczStanu(uid));
 }
 
 /**

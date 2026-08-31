@@ -35,6 +35,8 @@ export default function RootLayout() {
   const [ready, setReady] = useState(false);
   const dirty = useRef(false);
 
+  const konto = useKonto();
+
   const [fontsLoaded] = useFonts({
     Inter_400Regular,
     Inter_500Medium,
@@ -44,19 +46,31 @@ export default function RootLayout() {
     JetBrainsMono_700Bold,
   });
 
+  /**
+   * Stan wczytujemy DLA KONKRETNEGO KONTA i przeładowujemy przy jego zmianie.
+   *
+   * Bez tego zalogowanie się na drugie konto na tym samym telefonie zastawało
+   * listy poprzedniego i wypychało je do bazy jako własne. Póki nie wiadomo,
+   * kto jest zalogowany (`sesja === undefined`), nie ruszamy niczego — inaczej
+   * przy każdym starcie mignęłaby szuflada gościa.
+   */
+  const uid = konto.sesja === undefined ? undefined : (konto.sesja?.user?.id ?? null);
   useEffect(() => {
-    loadState().then((loaded) => {
+    if (uid === undefined) return;
+    setReady(false);
+    dirty.current = false;
+    loadState(uid).then((loaded) => {
       setState(loaded);
       setReady(true);
     });
-  }, []);
+  }, [uid]);
 
   // Zapis po każdej zmianie. Przy tej wielkości danych nie ma sensu
   // debouncować — AsyncStorage i tak jest asynchroniczny.
   useEffect(() => {
-    if (!ready || !dirty.current) return;
-    saveState(state);
-  }, [state, ready]);
+    if (!ready || !dirty.current || uid === undefined) return;
+    saveState(uid, state);
+  }, [state, ready, uid]);
 
   /**
    * Każda zmiana stanu przechodzi tędy, więc tutaj stawiamy stempel czasu
@@ -68,7 +82,6 @@ export default function RootLayout() {
     setState((prev) => ostempluj(prev, fn(prev)));
   }, []);
 
-  const konto = useKonto();
   /** Ekran powitalny po kliknięciu w link z maila znika po potwierdzeniu. */
   const [powitanieZamkniete, setPowitanieZamkniete] = useState(false);
 
