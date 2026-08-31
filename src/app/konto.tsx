@@ -8,39 +8,26 @@
  */
 
 import { router } from 'expo-router';
+import { useState } from 'react';
 import { View } from 'react-native';
 import { Body, Button, Card, H1, Label, Screen } from '../components/ui';
 import { Logowanie } from '../components/Logowanie';
 import { useKonto, wyloguj } from '../lib/konto';
 
-import { useSync, type StanSync } from '../lib/syncContext';
 import { useApp } from '../lib/storage';
-
-/**
- * Opis stanu po ludzku.
- *
- * „Ostatnio: 14:32" mówi człowiekowi więcej niż kręcące się kółko: widzi, że
- * jego listy są w bazie, i wie, kiedy to sprawdzono.
- */
-function opisSynchronizacji(stan: StanSync | undefined): string {
-  if (!stan) return 'Niedostępna w tej wersji.';
-  if (stan.stan === 'pracuje') return 'Trwa wymiana z bazą…';
-  if (stan.stan === 'blad') return `Nie udało się: ${stan.powod}`;
-  if (!stan.kiedy) return 'Jeszcze nie synchronizowano.';
-  const d = new Date(stan.kiedy);
-  return `Ostatnio o ${d.getHours()}:${String(d.getMinutes()).padStart(2, '0')}.`;
-}
+import { WyborSklepu } from '../components/WyborSklepu';
 
 export default function Konto() {
   const { sesja, wlaczone, email: zalogowanyJako } = useKonto();
-  const sync = useSync();
-  const { state: stan } = useApp();
+  const { state: stan, update } = useApp();
+  const [ulubionyOtwarty, setUlubionyOtwarty] = useState(false);
+  const ulubiony = stan.stores.find((x) => x.id === stan.ulubionySklep) ?? null;
 
 
   if (!wlaczone) {
     return (
       <Screen>
-        <H1>Konto</H1>
+        <H1>Profil</H1>
         <Card>
           <Body muted>
             Ta wersja aplikacji działa wyłącznie lokalnie. Wszystko, co zrobisz, zostaje na tym
@@ -55,7 +42,7 @@ export default function Konto() {
   if (sesja === undefined) {
     return (
       <Screen>
-        <H1>Konto</H1>
+        <H1>Profil</H1>
         <Body muted>Sprawdzam, czy jesteś zalogowany…</Body>
       </Screen>
     );
@@ -65,34 +52,37 @@ export default function Konto() {
     return (
       <Screen>
         <View style={{ gap: 4 }}>
-          <H1>Konto</H1>
+          <H1>Profil</H1>
           <Body muted>Zalogowany jako {zalogowanyJako}</Body>
         </View>
 
+        {/* Ulubiony sklep: większość ludzi robi zakupy w kółko w tym samym
+            miejscu, więc wybieranie go przy każdej liście jest podatkiem od
+            przyzwyczajenia. Nowa lista startuje właśnie od niego. */}
         <Card>
-          <Label>Synchronizacja</Label>
-          <Body>{opisSynchronizacji(sync?.stan)}</Body>
-          <Body muted>
-            {stan.lists.length === 1 ? '1 lista' : `${stan.lists.length} listy`} ·{' '}
-            {stan.stores.length === 1 ? '1 sklep' : `${stan.stores.length} sklepów`}
-          </Body>
-          <Button
-            title={sync?.stan.stan === 'pracuje' ? 'Trwa…' : 'Synchronizuj teraz'}
-            variant="secondary"
-            disabled={!sync || sync.stan.stan === 'pracuje'}
-            onPress={() => void sync?.zsynchronizuj()}
-          />
-        </Card>
-
-        <Card>
-          <Body muted>
-            Wylogowanie niczego nie kasuje — twoje listy zostają na tym urządzeniu i wrócą do
-            konta przy następnym zalogowaniu.
-          </Body>
+          <Label>Ulubiony sklep</Label>
+          <Body muted>Każda nowa lista zacznie od niego.</Body>
+          {ulubionyOtwarty ? (
+            <WyborSklepu
+              sklepy={stan.stores}
+              wybrany={stan.ulubionySklep ?? null}
+              onWybierz={(id) => {
+                update((prev) => ({ ...prev, ulubionySklep: id }));
+                setUlubionyOtwarty(false);
+              }}
+              onZamknij={() => setUlubionyOtwarty(false)}
+              onNowy={() => setUlubionyOtwarty(false)}
+            />
+          ) : (
+            <Button
+              title={ulubiony ? ulubiony.name : 'Nie wybrano'}
+              variant="secondary"
+              onPress={() => setUlubionyOtwarty(true)}
+            />
+          )}
         </Card>
 
         <Button title="Wyloguj" variant="ghost" onPress={wyloguj} />
-        <Button title="Wróć" variant="ghost" onPress={() => router.back()} />
       </Screen>
     );
   }

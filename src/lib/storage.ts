@@ -102,6 +102,7 @@ export async function loadState(): Promise<AppState> {
       // Ani zapisy sprzed synchronizacji tego.
       nagrobki: Array.isArray(parsed.nagrobki) ? parsed.nagrobki : [],
       ostatniSklep: typeof parsed.ostatniSklep === 'string' ? parsed.ostatniSklep : null,
+      ulubionySklep: typeof parsed.ulubionySklep === 'string' ? parsed.ulubionySklep : null,
     };
   } catch {
     // Uszkodzony zapis nie może zablokować startu aplikacji.

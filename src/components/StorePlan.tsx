@@ -9,7 +9,7 @@
 import { memo } from 'react';
 import Svg, { Circle, G, Line, Polyline, Rect, Text as SvgText } from 'react-native-svg';
 import { categoryColors } from '../../design/tokens';
-import { BLOCK_BY_KEY } from '../data/blocks';
+import { BLOCK_BY_KEY, isCheckout } from '../data/blocks';
 import { sectionCategory, sectionName, type SectionKey } from '../data/sections';
 import { useTheme } from '../lib/theme';
 import { cellsOf, type MapBlock, type StoreMap } from '../lib/mapModel';
@@ -248,6 +248,48 @@ function StorePlanInner({ map, cell, selectedIds, path, uproszczony, punkty }: P
         strokeLinejoin="miter"
         opacity={0.75}
       />
+      {/*
+        WEJŚCIE i KASY podpisane wprost.
+        Na podglądzie trasy człowiek musi wiedzieć, skąd zaczyna i gdzie
+        kończy — bez tego numerowane kropki są ciągiem bez początku i końca.
+        Podpis idzie na wierzch klocka, żeby był czytelny niezależnie od
+        tego, jak klocek jest obrócony.
+      */}
+      {uproszczony &&
+        map.blocks
+          .filter((b) => b.type === 'wejscie' || isCheckout(b.type))
+          .map((b) => {
+            const wejscie = b.type === 'wejscie';
+            const cx = (b.x + b.w / 2) * cell;
+            const cy = (b.y + b.h / 2) * cell;
+            const wys = Math.max(11, cell * 0.9);
+            const tekst = wejscie ? 'WEJŚCIE' : 'KASY';
+            const szer = tekst.length * wys * 0.62 + wys * 0.7;
+            return (
+              <G key={`etykieta-${b.id}`}>
+                <Rect
+                  x={cx - szer / 2}
+                  y={cy - wys * 0.72}
+                  width={szer}
+                  height={wys * 1.44}
+                  rx={wys * 0.4}
+                  fill={wejscie ? t.colors.primary : t.colors.foreground}
+                  opacity={0.94}
+                />
+                <SvgText
+                  x={cx}
+                  y={cy + wys * 0.34}
+                  fontSize={wys}
+                  fontWeight="700"
+                  fill={wejscie ? t.colors.primaryForeground : t.colors.background}
+                  textAnchor="middle"
+                >
+                  {tekst}
+                </SvgText>
+              </G>
+            );
+          })}
+
       {punkty?.map((p) => {
         const cx = ((p.cell % map.gridW) + 0.5) * cell;
         const cy = (Math.floor(p.cell / map.gridW) + 0.5) * cell;

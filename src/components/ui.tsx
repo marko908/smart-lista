@@ -7,6 +7,7 @@
  */
 
 import { forwardRef, ReactNode } from 'react';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import {
   ActivityIndicator,
   Pressable,
@@ -32,12 +33,28 @@ export const FONT = {
 
 export function Screen({ children, scroll = true }: { children: ReactNode; scroll?: boolean }) {
   const t = useTheme();
+  const insets = useSafeAreaInsets();
   const style = { flex: 1, backgroundColor: t.colors.background };
-  if (!scroll) return <View style={style}>{children}</View>;
+
+  /**
+   * Górny margines bierze się z telefonu, nie z naszej stałej.
+   *
+   * Wcięcie na aparat jest inne na każdym modelu — notch, dziurka, wyspa —
+   * a treść wrenderowana od samej góry chowa się pod nim. `insets.top` mówi,
+   * ile miejsca zabiera sprzęt; 16 to nasz zwykły oddech na ekranach, które
+   * niczego nie zabierają.
+   */
+  const gora = Math.max(insets.top, 16);
+  if (!scroll) return <View style={[style, { paddingTop: gora }]}>{children}</View>;
   return (
     <ScrollView
       style={style}
-      contentContainerStyle={{ padding: 16, paddingBottom: 48, gap: 14 }}
+      contentContainerStyle={{
+        paddingTop: gora,
+        paddingHorizontal: 16,
+        paddingBottom: 48,
+        gap: 14,
+      }}
       keyboardShouldPersistTaps="handled"
     >
       {children}

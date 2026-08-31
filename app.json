@@ -1,11 +1,11 @@
 {
   "expo": {
-    "name": "Alejka",
-    "slug": "alejka",
+    "name": "Intelist",
+    "slug": "intelist",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
-    "scheme": "alejka",
+    "scheme": "intelist",
     "userInterfaceStyle": "automatic",
     "ios": {
       "icon": "./assets/expo.icon"

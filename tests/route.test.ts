@@ -152,8 +152,27 @@ ok('ulamek posrod innych', splitEntries('chleb, 1,5 kg maki, mleko').join('|') =
    splitEntries('chleb, 1,5 kg maki, mleko').join('|'));
 ok('cyfra po przecinku to nadal nowa pozycja', splitEntries('chleb, 2 mleka').join('|') === 'chleb|2 mleka',
    splitEntries('chleb, 2 mleka').join('|'));
-ok('ilosc z ulamka trafia do qty', parseEntry(splitEntries('1,5 kg maki')[0]).qty === '1,5 kg',
-   String(parseEntry(splitEntries('1,5 kg maki')[0]).qty));
+const ulamek = parseEntry(splitEntries('1,5 kg maki')[0]);
+ok('ulamek trafia do ilosci', ulamek.ilosc === '1,5' && ulamek.miara === 'kg',
+   `${ulamek.ilosc} / ${ulamek.miara} / ${ulamek.name}`);
+const zlepek = parseEntry('3kg ziemniakow');
+ok('liczba zlepiona z miara', zlepek.ilosc === '3' && zlepek.miara === 'kg' && zlepek.name === 'ziemniakow',
+   `${zlepek.ilosc} / ${zlepek.miara} / ${zlepek.name}`);
+const zTylu = parseEntry('mleko 2l');
+ok('miara na koncu', zTylu.ilosc === '2' && zTylu.miara === 'l' && zTylu.name === 'mleko',
+   `${zTylu.ilosc} / ${zTylu.miara} / ${zTylu.name}`);
+const bezMiary = parseEntry('2 mleka');
+ok('sama liczba tez jest iloscia', bezMiary.ilosc === '2' && !bezMiary.miara && bezMiary.name === 'mleka',
+   `${bezMiary.ilosc} / ${bezMiary.miara} / ${bezMiary.name}`);
+const gramy = parseEntry('500g sera');
+ok('gramy', gramy.ilosc === '500' && gramy.miara === 'g', `${gramy.ilosc} / ${gramy.miara}`);
+const mililitry = parseEntry('300ml smietany');
+ok('mililitry', mililitry.ilosc === '300' && mililitry.miara === 'ml', `${mililitry.ilosc} / ${mililitry.miara}`);
+const bezIlosci = parseEntry('chleb razowy');
+ok('nazwa bez liczby zostaje cala', !bezIlosci.ilosc && bezIlosci.name === 'chleb razowy', bezIlosci.name);
+const liczbaWNazwie = parseEntry('woda 33');
+ok('liczba bez miary na koncu to nadal nazwa', !liczbaWNazwie.ilosc && liczbaWNazwie.name === 'woda 33',
+   `${liczbaWNazwie.ilosc} / ${liczbaWNazwie.name}`);
 
 
 console.log('');

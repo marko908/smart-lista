@@ -5,9 +5,9 @@
  * używana jedną ręką z koszykiem w drugiej. Dlatego przejścia między
  * głównymi miejscami siedzą na dole.
  *
- * TRZY POZYCJE, NIE CZTERY. Czwarta musiałaby być czymś wymyślonym na siłę,
- * a pusty przycisk kosztuje więcej niż jego brak — każda pozycja zabiera
- * miejsce pozostałym i podnosi próg trafienia kciukiem.
+ * DWIE POZYCJE. Sklepy wypadły stąd, bo sklep wybiera się w konkretnej liście,
+ * a nie zarządza się nimi osobno — katalog sklepów należy do administratora,
+ * nie do człowieka robiącego zakupy.
  *
  * Pasek chowa się na szerokich ekranach: na monitorze dolna belka jest
  * wzorcem z telefonu przeniesionym bez powodu.
@@ -23,14 +23,12 @@ type Pozycja = { klucz: string; etykieta: string; ikona: string; sciezka: string
 
 const POZYCJE: Pozycja[] = [
   { klucz: 'listy', etykieta: 'Listy', ikona: '☰', sciezka: '/' },
-  { klucz: 'sklepy', etykieta: 'Sklepy', ikona: '⌂', sciezka: '/sklepy' },
-  { klucz: 'konto', etykieta: 'Konto', ikona: '☺', sciezka: '/konto' },
+  { klucz: 'profil', etykieta: 'Profil', ikona: '☺', sciezka: '/konto' },
 ];
 
 /** Do której pozycji należy bieżący adres. Podstrony liczą się do swojej sekcji. */
 function aktywna(sciezka: string): string {
-  if (sciezka.startsWith('/sklepy')) return 'sklepy';
-  if (sciezka.startsWith('/konto')) return 'konto';
+  if (sciezka.startsWith('/konto')) return 'profil';
   return 'listy';
 }
 
@@ -63,7 +61,13 @@ export function Nawigacja() {
         return (
           <Pressable
             key={p.klucz}
-            onPress={() => router.push(p.sciezka as never)}
+            /* Stukniecie w zakladke, na ktorej juz jestesmy, nie robi nic.
+               Bez tego kazde takie stukniecie dokladalo ekran na stos i puszczalo
+               animacje przejscia do samego siebie. */
+            onPress={() => {
+              if (wybrana) return;
+              router.replace(p.sciezka as never);
+            }}
             accessibilityRole="button"
             accessibilityState={{ selected: wybrana }}
             style={st.pozycja}

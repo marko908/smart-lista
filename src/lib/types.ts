@@ -50,7 +50,12 @@ export type ListItem = {
   id: string;
   /** Co użytkownik faktycznie wpisał — to pokazujemy na liście. */
   text: string;
-  qty?: string;
+  /**
+   * Ilość i miara osobno, bo człowiek poprawia je niezależnie — może skasować
+   * samą miarę, zostawiając liczbę. Puste znaczy „nie pokazuj".
+   */
+  ilosc?: string;
+  miara?: string;
   /** Sekcja po dopasowaniu; użytkownik może ją nadpisać. */
   section: SectionKey;
   /** true, gdy sekcję ustawił człowiek — wtedy nie nadpisujemy jej automatem. */
@@ -108,6 +113,8 @@ export type AppState = {
    * od nowa byłoby podatkiem od przyzwyczajenia.
    */
   ostatniSklep?: string | null;
+  /** Ulubiony sklep z profilu. Ma pierwszeństwo przed ostatnio używanym. */
+  ulubionySklep?: string | null;
 };
 
 export const EMPTY_STATE: AppState = { stores: [], lists: [], wybory: {}, nagrobki: [] };

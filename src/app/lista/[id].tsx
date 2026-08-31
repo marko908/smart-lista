@@ -5,9 +5,10 @@ import { Body, Button, Card, Empty, FONT, H2, Input, Label, Pill, Screen } from 
 import { StorePlan } from '../../components/StorePlan';
 import { chainName } from '../../data/chains';
 import { WyborSklepu, opisSklepu } from '../../components/WyborSklepu';
+import { EdytorIlosci } from '../../components/EdytorIlosci';
 import type { SectionKey } from '../../data/sections';
 import { matchProduct, suggest } from '../../lib/match';
-import { parseEntry, splitEntries } from '../../lib/normalize';
+import { opisIlosci, parseEntry, splitEntries } from '../../lib/normalize';
 import { buildRoute, currentGroup, nextGroup, type RouteGroup } from '../../lib/sort';
 import { potwierdz } from '../../lib/potwierdz';
 import { newId, useApp } from '../../lib/storage';
@@ -54,6 +55,7 @@ export default function ListScreen() {
   const [draft, setDraft] = useState('');
   const [mode, setMode] = useState<SortMode>('trasa');
   const [wyborSklepu, setWyborSklepu] = useState(false);
+  const [edytowana, setEdytowana] = useState<string | null>(null);
 
   const list = state.lists.find((l) => l.id === id) ?? null;
   const store = state.stores.find((s) => s.id === list?.storeId) ?? null;
@@ -130,12 +132,13 @@ export default function ListScreen() {
 
     const teraz = new Date().toISOString();
     const nowe: ListItem[] = czesci.map((czesc) => {
-      const { name, qty } = parseEntry(czesc);
+      const { name, ilosc, miara } = parseEntry(czesc);
       const match = matchProduct(name);
       const wspolne = {
         id: newId('item'),
         text: name,
-        qty,
+        ilosc,
+        miara,
         matchedProductId: match.product?.id ?? null,
         checked: false,
         createdAt: teraz,
@@ -211,6 +214,11 @@ export default function ListScreen() {
 
   function toggleChecked(itemId: string) {
     mutate((items) => items.map((i) => (i.id === itemId ? { ...i, checked: !i.checked } : i)));
+  }
+
+  function ustawIlosc(itemId: string, ilosc: string | undefined, miara: string | undefined) {
+    mutate((items) => items.map((i) => (i.id === itemId ? { ...i, ilosc, miara } : i)));
+    setEdytowana(null);
   }
 
   function removeItem(itemId: string) {
@@ -333,12 +341,7 @@ export default function ListScreen() {
           >
             <View style={{ flex: 1, gap: 2 }}>
               <Text style={[st.routeSrc, { color: t.colors.mutedForeground }]}>{sourceLabel}</Text>
-              {here ? (
-                <Text style={[st.routeHere, { color: t.colors.foreground }]}>
-                  Teraz: {here.name}
-                  {next ? ` → ${next.name}` : ''}
-                </Text>
-              ) : (
+              {!here && (
                 <Text style={[st.routeHere, { color: t.colors.foreground }]}>
                   Wszystko odhaczone
                 </Text>
@@ -393,6 +396,7 @@ export default function ListScreen() {
                     item={item}
                     onToggle={() => toggleChecked(item.id)}
                     onRemove={() => removeItem(item.id)}
+                    onEdytuj={() => setEdytowana(item.id)}
                   />
                 ))
               )}
@@ -412,6 +416,7 @@ export default function ListScreen() {
                   item={item}
                   onToggle={() => toggleChecked(item.id)}
                   onRemove={() => removeItem(item.id)}
+                    onEdytuj={() => setEdytowana(item.id)}
                 />
               ))}
             </View>
@@ -421,6 +426,20 @@ export default function ListScreen() {
 
       <View style={{ marginTop: 10 }}>
         <Button title="Usuń listę" variant="ghost" onPress={confirmDeleteList} />
+
+      {edytowana && (() => {
+        const poz = list.items.find((i) => i.id === edytowana);
+        if (!poz) return null;
+        return (
+          <EdytorIlosci
+            nazwa={poz.text}
+            ilosc={poz.ilosc}
+            miara={poz.miara}
+            onZapisz={(il, mi) => ustawIlosc(poz.id, il, mi)}
+            onZamknij={() => setEdytowana(null)}
+          />
+        );
+      })()}
       </View>
     </Screen>
   );
@@ -430,10 +449,12 @@ function Row({
   item,
   onToggle,
   onRemove,
+  onEdytuj,
 }: {
   item: ListItem;
   onToggle: () => void;
   onRemove: () => void;
+  onEdytuj: () => void;
 }) {
   const t = useTheme();
   return (
@@ -448,11 +469,14 @@ function Row({
           },
         ]}
       >
+        {/* Odhaczanie tylko z kwadracika, ale z zapasem na nieprecyzyjny
+            kciuk — 14 punktów w każdą stronę robi z 20-punktowego pola
+            48-punktowy cel, czyli tyle, ile zalecają wytyczne dotyku. */}
         <Pressable
           onPress={onToggle}
           accessibilityRole="checkbox"
           accessibilityState={{ checked: item.checked }}
-          hitSlop={6}
+          hitSlop={14}
           style={[
             st.check,
             {
@@ -466,7 +490,10 @@ function Row({
           )}
         </Pressable>
 
-        <Pressable onPress={onToggle} style={{ flex: 1 }}>
+        {/* Dotknięcie nazwy otwiera poprawianie ilości, a nie odhacza.
+            Wcześniej cały wiersz odhaczał i wystarczyło chybić, żeby skreślić
+            coś, czego się jeszcze nie ma w koszyku. */}
+        <Pressable onPress={onEdytuj} style={{ flex: 1 }}>
           <Text
             style={[
               st.itemText,
@@ -477,7 +504,9 @@ function Row({
             ]}
           >
             {item.text}
-            {item.qty ? <Text style={{ color: t.colors.mutedForeground }}> · {item.qty}</Text> : null}
+            {opisIlosci(item.ilosc, item.miara) ? (
+              <Text style={{ color: t.colors.mutedForeground }}> · {opisIlosci(item.ilosc, item.miara)}</Text>
+            ) : null}
           </Text>
         </Pressable>
 
@@ -549,9 +578,6 @@ function PodgladTrasy({
         ))}
       </View>
 
-      <Text style={[st.footnote, { color: t.colors.mutedForeground }]}>
-        Podgląd roboczy — nie jest częścią gotowej aplikacji.
-      </Text>
     </View>
   );
 }
