@@ -1,13 +1,16 @@
 /**
  * Połączenie z Supabase.
  *
- * Konto jest DODATKIEM, nie warunkiem działania. W sklepie nie ma zasięgu,
- * więc aplikacja musi ruszyć i policzyć trasę bez logowania i bez sieci.
- * Konto dokłada trzy rzeczy: plany przeżywają zmianę telefonu, listę widać
- * na dwóch urządzeniach, a mapy da się komuś udostępnić.
+ * Konto jest WARUNKIEM wejścia do aplikacji — bramka stoi w `_layout.tsx`.
+ * Ale NIE jest warunkiem działania: w sklepie nie ma zasięgu, więc raz
+ * zalogowany człowiek liczy trasę i odhacza zakupy całkowicie offline.
+ * Bramka pyta o to, czy ktoś się tu kiedykolwiek zalogował, a nie o to, czy
+ * właśnie teraz da się to potwierdzić w sieci.
  *
- * Dlatego `supabase` może być `null` — gdy nie ma konfiguracji, cała warstwa
- * sieciowa po prostu nie istnieje, a reszta aplikacji działa jak dotąd.
+ * `supabase` może być `null` — gdy nie ma konfiguracji, cała warstwa sieciowa
+ * nie istnieje i bramka się nie pojawia. Bez tego pomyłka we wdrożeniu
+ * (zapomniane zmienne środowiskowe) zamieniłaby aplikację w martwy ekran
+ * logowania, przez który nie da się przejść.
  */
 
 import { createClient, type SupabaseClient } from '@supabase/supabase-js';

@@ -20,6 +20,8 @@ import { EMPTY_STATE, type AppState } from '../lib/types';
 import { synchronizuj } from '../lib/sync';
 import { useKonto } from '../lib/konto';
 import { SyncContext, type StanSync } from '../lib/syncContext';
+import { Logowanie } from '../components/Logowanie';
+import { Screen } from '../components/ui';
 
 export default function RootLayout() {
   const t = useTheme();
@@ -108,6 +110,36 @@ export default function RootLayout() {
   }, [state, ready, czyjaSesja, zsynchronizuj]);
 
   if (!ready || !fontsLoaded) return <Loading />;
+
+  /**
+   * Bramka: bez konta nie ma aplikacji.
+   *
+   * Pytamy o `kiedykolwiek`, a NIE o ważną sesję — i to jest tu najważniejsze
+   * rozstrzygnięcie. W sklepie nie ma zasięgu, więc gdyby wejście zależało od
+   * odświeżenia tokenu przez sieć, człowiek z wygasłą sesją zostałby odcięty
+   * od własnej listy dokładnie w chwili, gdy stoi przed półką. Raz zalogowany
+   * wchodzi zawsze, aż do świadomego wylogowania.
+   *
+   * Gdy konta są wyłączone (brak konfiguracji Supabase), bramki NIE MA.
+   * Inaczej pomyłka we wdrożeniu zamieniłaby aplikację w martwy ekran
+   * logowania, którego nie da się przejść.
+   */
+  if (konto.wlaczone) {
+    if (konto.kiedykolwiek === undefined || konto.sesja === undefined) return <Loading />;
+    if (!konto.sesja && !konto.kiedykolwiek) {
+      return (
+        <GestureHandlerRootView style={{ flex: 1 }}>
+          <StatusBar style={t.isDark ? 'light' : 'dark'} />
+          <Screen>
+            <Logowanie
+              naglowek="Alejka"
+              wstep="Lista zakupów, która układa się w kolejności przejścia przez sklep. Zaloguj się, żeby zacząć — listy i plany sklepów zostaną przypisane do twojego konta."
+            />
+          </Screen>
+        </GestureHandlerRootView>
+      );
+    }
+  }
 
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
