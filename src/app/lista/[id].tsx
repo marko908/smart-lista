@@ -14,6 +14,8 @@ import { newId, useApp } from '../../lib/storage';
 import { radius, useTheme } from '../../lib/theme';
 import type { ListItem } from '../../lib/types';
 import { sectionGroups, type StoreMap } from '../../lib/mapModel';
+import { kluczWyboru, wieloznacznosc, zawez } from '../../lib/wieloznacznosc';
+import { WyborWieloznaczny } from '../../components/WyborWieloznaczny';
 
 type SortMode = 'trasa' | 'wpisywanie' | 'podglad';
 
@@ -53,9 +55,23 @@ export default function ListScreen() {
   const [draft, setDraft] = useState('');
   const [mode, setMode] = useState<SortMode>('trasa');
   const [pickerFor, setPickerFor] = useState<string | null>(null);
+  /** Pozycje, dla których człowiek chciał zobaczyć pełną listę sekcji zamiast krótkiego wyboru. */
+  const [pelnaLista, setPelnaLista] = useState<string | null>(null);
 
   const list = state.lists.find((l) => l.id === id) ?? null;
   const store = state.stores.find((s) => s.id === list?.storeId) ?? null;
+
+  /**
+   * Sekcje, które ten sklep faktycznie ma.
+   *
+   * Służy do zawężania fraz wieloznacznych — bez planu nie ma czego zawężać.
+   * Liczone raz na zmianę planu, bo `sectionGroups` rasteryzuje całą mapę
+   * i wołanie tego przy każdej dodawanej pozycji byłoby marnotrawstwem.
+   */
+  const dostepneSekcje = useMemo(
+    () => (store?.map ? new Set(sectionGroups(store.map).keys()) : null),
+    [store?.map]
+  );
 
   useLayoutEffect(() => {
     navigation.setOptions({ title: list?.name ?? 'Lista' });
@@ -119,15 +135,43 @@ export default function ListScreen() {
     const nowe: ListItem[] = czesci.map((czesc) => {
       const { name, qty } = parseEntry(czesc);
       const match = matchProduct(name);
-      return {
+      const wspolne = {
         id: newId('item'),
         text: name,
         qty,
-        section: match.section,
-        sectionLocked: false,
         matchedProductId: match.product?.id ?? null,
         checked: false,
         createdAt: teraz,
+      };
+
+      /**
+       * Zapamiętany wybór bije wszystko.
+       *
+       * Człowiek już raz powiedział, co ma na myśli przez „płyn". Pytanie go
+       * o to drugi raz byłoby lekceważeniem jego czasu — a to jest aplikacja,
+       * której cały sens polega na oszczędzaniu kroków.
+       */
+      const zapamietany = state.wybory?.[kluczWyboru(list!.storeId, name)];
+      if (zapamietany) {
+        return { ...wspolne, section: zapamietany, sectionLocked: true };
+      }
+
+      /**
+       * Wątpliwość zgłaszamy tylko przy słowach twardo wieloznacznych — takich,
+       * które nie mają własnego znaczenia w katalogu. „Mleko" ma i rozstrzyga
+       * się samo; „płyn" nie ma i naprawdę może znaczyć cztery różne regały.
+       *
+       * Zawężenie do planu sklepu robi resztę: jeśli ten sklep ma tylko jedną
+       * z tych sekcji, to nie ma o co pytać i po cichu bierzemy ją.
+       */
+      const w = wieloznacznosc(name);
+      const kandydaci = w?.twarda ? zawez(w, dostepneSekcje) : [];
+
+      return {
+        ...wspolne,
+        section: kandydaci.length >= 1 ? kandydaci[0] : match.section,
+        sectionLocked: false,
+        ambiguous: kandydaci.length > 1 ? kandydaci : undefined,
       };
     });
 
@@ -173,10 +217,37 @@ export default function ListScreen() {
   }
 
   function setSection(itemId: string, section: SectionKey) {
-    mutate((items) =>
-      items.map((i) => (i.id === itemId ? { ...i, section, sectionLocked: true } : i))
-    );
+    const pozycja = list?.items.find((i) => i.id === itemId) ?? null;
+    /**
+     * Zapamiętujemy TYLKO odpowiedzi na zadane pytanie.
+     *
+     * Przeniesienie „chleba" do innej sekcji to poprawka jednej pozycji w tej
+     * jednej liście — być może dlatego, że w tym sklepie pieczywo stoi gdzie
+     * indziej. To nie jest deklaracja, co słowo „chleb" znaczy na zawsze.
+     * Rozstrzygnięcie „płynu" nią jest, bo o to wprost zapytaliśmy.
+     */
+    const pytalismy = (pozycja?.ambiguous?.length ?? 0) > 0;
+
+    update((prev) => ({
+      ...prev,
+      wybory: pytalismy
+        ? { ...prev.wybory, [kluczWyboru(list!.storeId, pozycja!.text)]: section }
+        : prev.wybory,
+      lists: prev.lists.map((l) =>
+        l.id === list!.id
+          ? {
+              ...l,
+              items: l.items.map((i) =>
+                i.id === itemId
+                  ? { ...i, section, sectionLocked: true, ambiguous: undefined }
+                  : i
+              ),
+            }
+          : l
+      ),
+    }));
     setPickerFor(null);
+    setPelnaLista(null);
   }
 
   function setStore(storeId: string | null) {
@@ -337,9 +408,14 @@ export default function ListScreen() {
                     showSection
                     onToggle={() => toggleChecked(item.id)}
                     onRemove={() => removeItem(item.id)}
-                    onSection={() => setPickerFor(pickerFor === item.id ? null : item.id)}
+                    onSection={() => {
+                      setPickerFor(pickerFor === item.id ? null : item.id);
+                      setPelnaLista(null);
+                    }}
                     picking={pickerFor === item.id}
                     onPick={(s) => setSection(item.id, s)}
+                    pelnaLista={pelnaLista === item.id}
+                    onPelnaLista={() => setPelnaLista(item.id)}
                   />
                 ))
               )}
@@ -360,9 +436,14 @@ export default function ListScreen() {
                   showSection
                   onToggle={() => toggleChecked(item.id)}
                   onRemove={() => removeItem(item.id)}
-                  onSection={() => setPickerFor(pickerFor === item.id ? null : item.id)}
+                  onSection={() => {
+                    setPickerFor(pickerFor === item.id ? null : item.id);
+                    setPelnaLista(null);
+                  }}
                   picking={pickerFor === item.id}
                   onPick={(s) => setSection(item.id, s)}
+                  pelnaLista={pelnaLista === item.id}
+                  onPelnaLista={() => setPelnaLista(item.id)}
                 />
               ))}
             </View>
@@ -385,6 +466,8 @@ function Row({
   onSection,
   picking,
   onPick,
+  pelnaLista,
+  onPelnaLista,
 }: {
   item: ListItem;
   showSection: boolean;
@@ -393,8 +476,17 @@ function Row({
   onSection: () => void;
   picking: boolean;
   onPick: (s: SectionKey) => void;
+  /** Czy człowiek poprosił o pełną listę sekcji zamiast krótkiego wyboru. */
+  pelnaLista: boolean;
+  onPelnaLista: () => void;
 }) {
   const t = useTheme();
+  /** Przykłady do krótkiego wyboru bierzemy z katalogu — nazwa sekcji sama bywa myląca. */
+  const niejasne = useMemo(
+    () => (item.ambiguous?.length ? wieloznacznosc(item.text) : null),
+    [item.ambiguous, item.text]
+  );
+  const wahaSie = (item.ambiguous?.length ?? 0) > 1;
   return (
     <View style={{ gap: 6 }}>
       <View
@@ -445,12 +537,27 @@ function Row({
             style={[
               st.secTag,
               {
-                color: item.section === 'inne' ? t.colors.destructive : t.colors.mutedForeground,
-                borderColor: t.colors.border,
+                /**
+                 * Wahanie to nie błąd, więc nie krzyczymy na czerwono jak przy
+                 * „Inne". To znak „wybrałem jedną z kilku, dotknij jeśli źle" —
+                 * ma być widoczny, ale nie ma budzić poczucia, że coś się zepsuło.
+                 */
+                color: item.section === 'inne'
+                  ? t.colors.destructive
+                  : wahaSie
+                    ? t.colors.primary
+                    : t.colors.mutedForeground,
+                borderColor: wahaSie ? t.colors.primary : t.colors.border,
               },
             ]}
           >
-            {showSection || item.section === 'inne' ? sectionName(item.section) : '⋯'}
+            {/* Przy wahaniu nazwa sekcji jest zawsze widoczna — bez niej nie
+                wiadomo, co właściwie trzeba potwierdzić. */}
+            {wahaSie
+              ? `${sectionName(item.section)} ?`
+              : showSection || item.section === 'inne'
+                ? sectionName(item.section)
+                : '⋯'}
           </Text>
         </Pressable>
 
@@ -459,13 +566,19 @@ function Row({
         </Pressable>
       </View>
 
-      {picking && (
-        <SectionPicker
-          title="Przenieś do sekcji"
-          selected={item.section}
-          onPick={onPick}
-        />
-      )}
+      {picking &&
+        (wahaSie && niejasne && !pelnaLista ? (
+          <WyborWieloznaczny
+            fraza={item.text}
+            sekcje={item.ambiguous!}
+            przyklady={niejasne.przyklady}
+            wybrana={item.section}
+            onPick={onPick}
+            onPelnaLista={onPelnaLista}
+          />
+        ) : (
+          <SectionPicker title="Przenieś do sekcji" selected={item.section} onPick={onPick} />
+        ))}
     </View>
   );
 }

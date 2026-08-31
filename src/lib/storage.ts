@@ -96,6 +96,9 @@ export async function loadState(): Promise<AppState> {
         ? parsed.stores.map(migrateStore).filter((s): s is Store => s !== null)
         : [],
       lists: Array.isArray(parsed.lists) ? parsed.lists : [],
+      // Zapisy sprzed rozstrzygania fraz wieloznacznych nie mają tego pola.
+      wybory:
+        parsed.wybory && typeof parsed.wybory === 'object' ? (parsed.wybory as AppState['wybory']) : {},
     };
   } catch {
     // Uszkodzony zapis nie może zablokować startu aplikacji.
