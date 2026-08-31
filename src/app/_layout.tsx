@@ -93,12 +93,12 @@ export default function RootLayout() {
   biezacy.current = state;
   const trwa = useRef(false);
 
-  const zsynchronizuj = useCallback(async () => {
+  const zsynchronizuj = useCallback(async (pobieraj = true) => {
     if (trwa.current) return;
     trwa.current = true;
     setStanSync({ stan: 'pracuje' });
     try {
-      const wynik = await synchronizuj(biezacy.current);
+      const wynik = await synchronizuj(biezacy.current, { pobieraj });
       if (wynik) {
         dirty.current = true;
         setState(wynik);
@@ -129,7 +129,11 @@ export default function RootLayout() {
    */
   useEffect(() => {
     if (!ready || !czyjaSesja || !dirty.current) return;
-    const h = setTimeout(() => void zsynchronizuj(), 2500);
+    // Piętnaście sekund, nie dwie i pół: człowiek odhacza zakupy w tempie
+    // kilku pozycji na minutę, więc dłuższe okno skleja je w jeden zapis
+    // zamiast robić osobny za każdym razem. Bez pobierania — nasze własne
+    // zmiany nie wymagają dociągania niczego z bazy.
+    const h = setTimeout(() => void zsynchronizuj(false), 15000);
     return () => clearTimeout(h);
   }, [state, ready, czyjaSesja, zsynchronizuj]);
 
@@ -149,6 +153,7 @@ export default function RootLayout() {
     // bo w pierwszym przerysowaniu sesji jeszcze nie ma.
     if (konto.wlaczone && konto.sesja === undefined) return <Loading />;
     return (
+      <SafeAreaProvider>
       <GestureHandlerRootView style={{ flex: 1 }}>
         <StatusBar style={t.isDark ? 'light' : 'dark'} />
         <PoAktywacji
@@ -157,6 +162,7 @@ export default function RootLayout() {
           onDalej={() => setPowitanieZamkniete(true)}
         />
       </GestureHandlerRootView>
+      </SafeAreaProvider>
     );
   }
 
@@ -177,6 +183,7 @@ export default function RootLayout() {
     if (konto.kiedykolwiek === undefined || konto.sesja === undefined) return <Loading />;
     if (!konto.sesja && !konto.kiedykolwiek) {
       return (
+        <SafeAreaProvider>
         <GestureHandlerRootView style={{ flex: 1 }}>
           <StatusBar style={t.isDark ? 'light' : 'dark'} />
           <Screen>
@@ -186,6 +193,7 @@ export default function RootLayout() {
             />
           </Screen>
         </GestureHandlerRootView>
+        </SafeAreaProvider>
       );
     }
   }

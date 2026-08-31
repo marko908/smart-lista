@@ -33,7 +33,15 @@
           "imageWidth": 76
         }
       ],
-      "expo-secure-store"
+      "expo-secure-store",
+      [
+        "expo-location",
+        {
+          "locationAlwaysAndWhenInUsePermission": "Intelist pokaże sklepy najbliżej ciebie. Lokalizacja zostaje na telefonie i nigdzie jej nie wysyłamy.",
+          "locationWhenInUsePermission": "Intelist pokaże sklepy najbliżej ciebie. Lokalizacja zostaje na telefonie i nigdzie jej nie wysyłamy.",
+          "isAndroidBackgroundLocationEnabled": false
+        }
+      ]
     ],
     "experiments": {
       "typedRoutes": false

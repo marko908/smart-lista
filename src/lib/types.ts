@@ -46,6 +46,13 @@ export type Store = Synchronizowany & {
    * skasowanie nie.
    */
   ukryty?: boolean;
+  /**
+   * Współrzędne — do pokazywania pobliskich sklepów. Puste znaczy, że sklep
+   * nie bierze udziału w filtrowaniu po odległości; wtedy widać go zawsze,
+   * bo brak danych nie może wykluczać z katalogu.
+   */
+  szerokosc?: number;
+  dlugosc?: number;
   /** Plan 2D — pełna topologia. Ma pierwszeństwo przed marszrutą. */
   map: StoreMap | null;
   /** Marszruta — kolejność sekcji od wejścia do kas. Zapasowa, gdy nie ma planu. */

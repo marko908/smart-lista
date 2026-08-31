@@ -9,7 +9,7 @@ import { EdytorIlosci } from '../../components/EdytorIlosci';
 import type { SectionKey } from '../../data/sections';
 import { matchProduct, suggest } from '../../lib/match';
 import { opisIlosci, parseEntry, splitEntries } from '../../lib/normalize';
-import { buildRoute, currentGroup, nextGroup, type RouteGroup } from '../../lib/sort';
+import { buildRoute, type RouteGroup } from '../../lib/sort';
 import { potwierdz } from '../../lib/potwierdz';
 import { newId, useApp } from '../../lib/storage';
 import { radius, useTheme } from '../../lib/theme';
@@ -246,18 +246,6 @@ export default function ListScreen() {
     ...(PODGLAD_TRASY && store?.map ? (['podglad'] as const) : []),
   ];
 
-  const left = list.items.filter((i) => !i.checked).length;
-  const here = currentGroup(route);
-  const next = nextGroup(route);
-
-  const sourceLabel =
-    route.source === 'plan'
-      ? `Trasa z planu · ${route.cost} kratek`
-      : route.source === 'marszruta'
-        ? 'Twoja marszruta'
-        : route.source === 'siec'
-          ? `Typowy układ — ${store ? chainName(store.chain) : 'sieć'}`
-          : 'Brak sklepu — kolejność wpisywania';
 
   return (
     <Screen>
@@ -331,24 +319,6 @@ export default function ListScreen() {
         />
       ) : (
         <>
-          {/* pasek trasy */}
-          <View
-            style={[
-              st.routeBar,
-              { backgroundColor: t.colors.muted, borderColor: t.colors.border },
-            ]}
-          >
-            <View style={{ flex: 1, gap: 2 }}>
-              <Text style={[st.routeSrc, { color: t.colors.mutedForeground }]}>{sourceLabel}</Text>
-              {!here && (
-                <Text style={[st.routeHere, { color: t.colors.foreground }]}>
-                  Wszystko odhaczone
-                </Text>
-              )}
-            </View>
-            <Text style={[st.routeLeft, { color: t.colors.primary }]}>{left}</Text>
-          </View>
-
           {/*
             Przełącznik pokazujemy tylko wtedy, gdy jest między czym wybierać.
             Jedno pole „Kolejność trasy" wyglądało jak zepsuty przycisk.
@@ -591,18 +561,6 @@ const st = StyleSheet.create({
   sklepOpis: { fontFamily: FONT.sans, fontSize: 12.5 },
   chev: { fontFamily: FONT.sans, fontSize: 20 },
   link: { fontFamily: FONT.sansMedium, fontSize: 14 },
-  routeBar: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 10,
-    borderWidth: 1,
-    borderRadius: radius.lg,
-    paddingVertical: 11,
-    paddingHorizontal: 14,
-  },
-  routeSrc: { fontFamily: FONT.mono, fontSize: 10.5, letterSpacing: 0.8, textTransform: 'uppercase' },
-  routeHere: { fontFamily: FONT.sansSemi, fontSize: 15, letterSpacing: -0.25 },
-  routeLeft: { fontFamily: FONT.monoBold, fontSize: 20 },
   seg: { flexDirection: 'row', borderWidth: 1, borderRadius: radius.lg, padding: 3, gap: 3 },
   segBtn: {
     flex: 1,

@@ -53,6 +53,11 @@ type WierszSklepu = {
   id: string;
   nazwa: string;
   siec: string;
+  ulica: string | null;
+  miasto: string | null;
+  publiczny: boolean | null;
+  szerokosc: number | null;
+  dlugosc: number | null;
   plan: unknown;
   marszruta: unknown;
   zmieniono: string;
@@ -65,7 +70,10 @@ type WierszSklepu = {
  * Zwraca nowy stan albo `null`, gdy nie było czego robić (brak konta, brak
  * sieci). `null` nie jest błędem — aplikacja ma wtedy działać tak jak zwykle.
  */
-export async function synchronizuj(stan: AppState): Promise<AppState | null> {
+export async function synchronizuj(
+  stan: AppState,
+  { pobieraj = true }: { pobieraj?: boolean } = {}
+): Promise<AppState | null> {
   if (!supabase) return null;
 
   const { data: sesja } = await supabase.auth.getSession();
@@ -75,20 +83,34 @@ export async function synchronizuj(stan: AppState): Promise<AppState | null> {
   // ── 1. Nagrobki najpierw, żeby pobranie nie wskrzesiło tego, co skasowane ──
   const zostaleNagrobki = await pochowaj(stan.nagrobki);
 
-  // ── 2. Pobranie ──
-  const [odpSklepy, odpListy] = await Promise.all([
-    supabase.from('sklepy').select('*').eq('wlasciciel', wlasciciel),
-    supabase.from('listy').select('*').eq('wlasciciel', wlasciciel),
-  ]);
-  if (odpSklepy.error) throw new Error(odpSklepy.error.message);
-  if (odpListy.error) throw new Error(odpListy.error.message);
+  /**
+   * ── 2. Pobranie, ale nie za każdym razem ──
+   *
+   * Pobieranie ma sens, gdy coś mogło się zmienić po drugiej stronie: przy
+   * wejściu do aplikacji i po zalogowaniu. Przy własnych zmianach nie ma czego
+   * dociągać — to MY jesteśmy tą drugą stroną.
+   *
+   * Bez tego rozróżnienia jedne zakupy kosztowały jakieś dziewięćdziesiąt
+   * zapytań: odhaczasz trzydzieści pozycji, każde odhaczenie wywołuje pełne
+   * pobranie dwóch tabel plus zapis. Teraz to jest jeden zapis na pozycję,
+   * a i te schodzą się w jeden przy szybszym odhaczaniu.
+   */
+  let zdalneSklepy: WierszSklepu[] = [];
+  let zdalneListy: WierszListy[] = [];
+  if (pobieraj) {
+    const [odpSklepy, odpListy] = await Promise.all([
+      supabase.from('sklepy').select('*').eq('wlasciciel', wlasciciel),
+      supabase.from('listy').select('*').eq('wlasciciel', wlasciciel),
+    ]);
+    if (odpSklepy.error) throw new Error(odpSklepy.error.message);
+    if (odpListy.error) throw new Error(odpListy.error.message);
+    const pochowane = new Set(stan.nagrobki.map((n) => n.zdalneId));
+    zdalneSklepy = (odpSklepy.data ?? []).filter((r) => !pochowane.has(r.id)) as WierszSklepu[];
+    zdalneListy = (odpListy.data ?? []).filter((r) => !pochowane.has(r.id)) as WierszListy[];
+  }
 
-  const pochowane = new Set(stan.nagrobki.map((n) => n.zdalneId));
-  const zdalneSklepy = (odpSklepy.data ?? []).filter((r) => !pochowane.has(r.id)) as WierszSklepu[];
-  const zdalneListy = (odpListy.data ?? []).filter((r) => !pochowane.has(r.id)) as WierszListy[];
-
-  const sklepy = scalSklepy(stan.stores, zdalneSklepy);
-  const listy = scalListy(stan.lists, zdalneListy);
+  const sklepy = pobieraj ? scalSklepy(stan.stores, zdalneSklepy) : stan.stores;
+  const listy = pobieraj ? scalListy(stan.lists, zdalneListy) : stan.lists;
 
   // ── 3. Odesłanie tego, co lokalnie nowsze albo jeszcze nieznane bazie ──
   const poSklepach = await wyslijSklepy(sklepy, wlasciciel, zdalneSklepy);
@@ -139,6 +161,12 @@ function zeSklepu(r: WierszSklepu): Store {
     walkOrder: Array.isArray(r.marszruta) ? r.marszruta : [],
     mappedAt: r.plan ? r.zmieniono : null,
     createdAt: r.utworzono,
+    street: r.ulica ?? undefined,
+    city: r.miasto ?? undefined,
+    // W bazie flaga jest odwrotna: `publiczny` znaczy „widoczny".
+    ukryty: r.publiczny === false,
+    szerokosc: r.szerokosc ?? undefined,
+    dlugosc: r.dlugosc ?? undefined,
   };
   // Plan przechodzi przez tę samą migrację co zapis lokalny — baza może
   // trzymać dokument zapisany starszą wersją modelu klocków.
@@ -195,6 +223,11 @@ async function wyslijSklepy(
       wlasciciel,
       nazwa: s.name,
       siec: s.chain,
+      ulica: s.street ?? null,
+      miasto: s.city ?? null,
+      publiczny: !s.ukryty,
+      szerokosc: s.szerokosc ?? null,
+      dlugosc: s.dlugosc ?? null,
       plan: s.map,
       marszruta: s.walkOrder,
     };

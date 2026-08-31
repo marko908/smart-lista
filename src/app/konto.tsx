@@ -86,6 +86,9 @@ export default function Konto() {
           <Button title="Katalog sklepów" variant="secondary" onPress={() => router.push('/admin')} />
         )}
 
+        {/* Wylogowanie zawsze na samym dole: to jedyna nieodwracalna rzecz
+            na tym ekranie i nie ma się mieszać z ustawieniami. */}
+        <View style={{ height: 8 }} />
         <Button title="Wyloguj" variant="ghost" onPress={wyloguj} />
       </Screen>
     );
