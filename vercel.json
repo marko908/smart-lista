@@ -2,6 +2,9 @@
   "$schema": "https://openapi.vercel.sh/vercel.json",
   "buildCommand": "npx expo export -p web",
   "outputDirectory": "dist",
+
+  "cleanUrls": true,
+
   "rewrites": [
     { "source": "/sklepy/plan/:id", "destination": "/sklepy/plan/[id].html" },
     { "source": "/sklepy/:id", "destination": "/sklepy/[id].html" },
