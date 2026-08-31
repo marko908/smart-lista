@@ -275,7 +275,6 @@ export default function ListScreen() {
               setWyborSklepu(false);
             }}
             onZamknij={() => setWyborSklepu(false)}
-            onNowy={() => router.push('/sklepy')}
           />
         ) : (
           <Pressable

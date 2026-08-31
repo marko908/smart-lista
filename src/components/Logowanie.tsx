@@ -7,8 +7,8 @@
  */
 
 import { useState } from 'react';
-import { StyleSheet, Text, View } from 'react-native';
-import { Body, Button, Card, FONT, H1, Input, Label, Pill } from './ui';
+import { Pressable, StyleSheet, Text, View } from 'react-native';
+import { Body, Button, Card, FONT, H1, Input, Label } from './ui';
 import { przypomnijHaslo, zaloguj, zarejestruj } from '../lib/konto';
 import { radius, useTheme } from '../lib/theme';
 
@@ -115,28 +115,16 @@ export function Logowanie({ naglowek, wstep }: { naglowek: string; wstep: string
 
   return (
     <>
-      <View style={{ gap: 4 }}>
-        <H1>{naglowek}</H1>
-        <Body muted>{wstep}</Body>
-      </View>
-
-      <View style={st.wrap}>
-        <Pill
-          label="Mam konto"
-          active={tryb === 'logowanie'}
-          onPress={() => {
-            setTryb('logowanie');
-            setBlad(null);
-          }}
-        />
-        <Pill
-          label="Zakładam konto"
-          active={tryb === 'rejestracja'}
-          onPress={() => {
-            setTryb('rejestracja');
-            setBlad(null);
-          }}
-        />
+      {/* Znak i powitanie na środku — układ pionowy, bo to pierwszy ekran
+          na telefonie i wszystko musi być w zasięgu kciuka. */}
+      <View style={st.szczyt}>
+        <View style={[st.znak, { backgroundColor: t.colors.muted }]}>
+          <Text style={st.znakIkona}>🛒</Text>
+        </View>
+        <H1>{tryb === 'logowanie' ? 'Dobrze cię widzieć' : 'Zakładamy konto'}</H1>
+        <Text style={[st.wstep, { color: t.colors.mutedForeground }]}>
+          {tryb === 'logowanie' ? wstep : 'Konto trzyma twoje listy i pozwala wrócić do nich z innego telefonu.'}
+        </Text>
       </View>
 
       <Card>
@@ -184,12 +172,71 @@ export function Logowanie({ naglowek, wstep }: { naglowek: string; wstep: string
           <Button title="Nie pamiętam hasła" variant="ghost" onPress={naPrzypomnienie} />
         )}
       </Card>
+
+      {/* Logowanie przez dostawców — przyciski stoją, ale jeszcze nie działają.
+          Zostawiam je widoczne i WYŁĄCZONE zamiast udawać, że działają:
+          przycisk, który nic nie robi po kliknięciu, jest gorszy niż przycisk,
+          po którym widać, że go jeszcze nie ma. Włączenie wymaga skonfigurowania
+          dostawcy w Supabase (Authentication → Sign In / Providers). */}
+      <View style={st.rozdzielacz}>
+        <View style={[st.kreska, { backgroundColor: t.colors.border }]} />
+        <Text style={[st.rozdzielaczText, { color: t.colors.mutedForeground }]}>albo</Text>
+        <View style={[st.kreska, { backgroundColor: t.colors.border }]} />
+      </View>
+
+      <View style={st.dostawcy}>
+        {[
+          { klucz: 'google', znak: 'G', nazwa: 'Google' },
+          { klucz: 'apple', znak: '', nazwa: 'Apple' },
+        ].map((d) => (
+          <View
+            key={d.klucz}
+            style={[st.dostawca, { borderColor: t.colors.border, backgroundColor: t.colors.card }]}
+          >
+            <Text style={[st.dostawcaZnak, { color: t.colors.mutedForeground }]}>{d.znak}</Text>
+            <Text style={[st.dostawcaText, { color: t.colors.mutedForeground }]}>{d.nazwa}</Text>
+          </View>
+        ))}
+      </View>
+      <Text style={[st.wkrotce, { color: t.colors.mutedForeground }]}>Wkrótce</Text>
+
+      <Pressable
+        onPress={() => {
+          setTryb(tryb === 'logowanie' ? 'rejestracja' : 'logowanie');
+          setBlad(null);
+          setNota(null);
+        }}
+        hitSlop={8}
+      >
+        <Text style={[st.przelacznik, { color: t.colors.mutedForeground }]}>
+          {tryb === 'logowanie' ? 'Nie masz konta? ' : 'Masz już konto? '}
+          <Text style={{ color: t.colors.primary, fontWeight: '700' }}>
+            {tryb === 'logowanie' ? 'Załóż je' : 'Zaloguj się'}
+          </Text>
+        </Text>
+      </Pressable>
     </>
   );
 }
 
 const st = StyleSheet.create({
   wrap: { flexDirection: 'row', flexWrap: 'wrap', gap: 6 },
+  szczyt: { alignItems: 'center', gap: 8, paddingTop: 8, paddingBottom: 4 },
+  znak: { width: 68, height: 68, borderRadius: radius.full, alignItems: 'center', justifyContent: 'center' },
+  znakIkona: { fontSize: 30, lineHeight: 36 },
+  wstep: { fontFamily: FONT.sans, fontSize: 13.5, lineHeight: 19, textAlign: 'center' },
+  rozdzielacz: { flexDirection: 'row', alignItems: 'center', gap: 10 },
+  kreska: { flex: 1, height: 1 },
+  rozdzielaczText: { fontFamily: FONT.sans, fontSize: 12, textTransform: 'uppercase', letterSpacing: 1 },
+  dostawcy: { flexDirection: 'row', gap: 8 },
+  dostawca: {
+    flex: 1, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 6,
+    borderWidth: 1, borderRadius: radius.md, paddingVertical: 12, opacity: 0.55,
+  },
+  dostawcaZnak: { fontFamily: FONT.sans, fontSize: 16, fontWeight: '700' },
+  dostawcaText: { fontFamily: FONT.sans, fontSize: 14, fontWeight: '600' },
+  wkrotce: { fontFamily: FONT.sans, fontSize: 11.5, textAlign: 'center', marginTop: -6 },
+  przelacznik: { fontFamily: FONT.sans, fontSize: 13.5, textAlign: 'center', paddingVertical: 4 },
   komunikat: { borderWidth: 1, borderRadius: radius.md, padding: 10 },
   komunikatText: { fontFamily: FONT.sans, fontSize: 13.5, lineHeight: 19 },
 });

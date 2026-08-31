@@ -13,6 +13,7 @@ import { View } from 'react-native';
 import { Body, Button, Card, H1, Label, Screen } from '../components/ui';
 import { Logowanie } from '../components/Logowanie';
 import { useKonto, wyloguj } from '../lib/konto';
+import { czyAdmin } from '../lib/admin';
 
 import { useApp } from '../lib/storage';
 import { WyborSklepu } from '../components/WyborSklepu';
@@ -71,7 +72,6 @@ export default function Konto() {
                 setUlubionyOtwarty(false);
               }}
               onZamknij={() => setUlubionyOtwarty(false)}
-              onNowy={() => setUlubionyOtwarty(false)}
             />
           ) : (
             <Button
@@ -81,6 +81,10 @@ export default function Konto() {
             />
           )}
         </Card>
+
+        {czyAdmin(sesja) && (
+          <Button title="Katalog sklepów" variant="secondary" onPress={() => router.push('/admin')} />
+        )}
 
         <Button title="Wyloguj" variant="ghost" onPress={wyloguj} />
       </Screen>

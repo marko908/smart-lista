@@ -3,6 +3,8 @@ import { useEffect, useState } from 'react';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 import { Body, Button, Card, Empty, FONT, H1, Input, Label, Pill, Screen } from '../../components/ui';
 import { CHAINS, chainName, type ChainKey } from '../../data/chains';
+import { czyAdmin } from '../../lib/admin';
+import { useKonto } from '../../lib/konto';
 import { BLOCK_BY_KEY } from '../../data/blocks';
 import { openTextFile } from '../../lib/fileIO';
 import { parseStoreFile } from '../../lib/mapFile';
@@ -12,6 +14,7 @@ import { radius, useTheme } from '../../lib/theme';
 import type { Store } from '../../lib/types';
 
 export default function Stores() {
+  const { sesja } = useKonto();
   const t = useTheme();
   const { state, update } = useApp();
   const [adding, setAdding] = useState(false);
@@ -95,6 +98,28 @@ export default function Stores() {
     setCity('');
     setAdding(false);
     router.push(`/sklepy/plan/${store.id}`);
+  }
+
+  /**
+   * Rysowanie planów i wgrywanie plików należy do administratora.
+   *
+   * Plan zrobiony byle jak daje bezsensowną trasę, a człowiek obciąży winą
+   * aplikację, nie własny rysunek. Użytkownik dostaje gotowy katalog i wybiera
+   * z niego w konkretnej liście.
+   */
+  if (!czyAdmin(sesja)) {
+    return (
+      <Screen>
+        <H1>Sklepy</H1>
+        <Card>
+          <Body muted>
+            Katalog sklepów prowadzimy my. Sklep wybierzesz w każdej liście osobno, a ulubiony
+            ustawisz w profilu.
+          </Body>
+        </Card>
+        <Button title="Wróć" variant="ghost" onPress={() => router.back()} />
+      </Screen>
+    );
   }
 
   return (

@@ -27,18 +27,19 @@ type Props = {
   wybrany: string | null;
   onWybierz: (storeId: string | null) => void;
   onZamknij: () => void;
-  /** Przejście do zakładania nowego sklepu. */
-  onNowy: () => void;
 };
 
-export function WyborSklepu({ sklepy, wybrany, onWybierz, onZamknij, onNowy }: Props) {
+export function WyborSklepu({ sklepy, wybrany, onWybierz, onZamknij }: Props) {
   const t = useTheme();
   const [szukaj, setSzukaj] = useState('');
 
   const widoczne = useMemo(() => {
+    // Sklepy ukryte przez administratora nie istnieją dla użytkownika —
+    // zwykle są w budowie i policzyłyby bezsensowną trasę.
+    const dostepne = sklepy.filter((s) => !s.ukryty);
     const q = normalize(szukaj);
-    if (!q) return sklepy;
-    return sklepy.filter((s) => normalize(`${s.name} ${s.street ?? ''} ${s.city ?? ''}`).includes(q));
+    if (!q) return dostepne;
+    return dostepne.filter((s) => normalize(`${s.name} ${s.street ?? ''} ${s.city ?? ''}`).includes(q));
   }, [sklepy, szukaj]);
 
   return (
@@ -78,13 +79,12 @@ export function WyborSklepu({ sklepy, wybrany, onWybierz, onZamknij, onNowy }: P
             „Nic nie pasuje do »«" przy zerze sklepów brzmiało jak awaria. */}
         {widoczne.length === 0 &&
           (sklepy.length === 0 ? (
-            <Body muted>Nie masz jeszcze żadnego sklepu. Zmapuj pierwszy, żeby trasa miała sens.</Body>
+            <Body muted>Nie ma jeszcze żadnego sklepu w katalogu.</Body>
           ) : (
             <Body muted>Nic nie pasuje do „{szukaj}".</Body>
           ))}
       </ScrollView>
 
-      <Button title="Dodaj nowy sklep" variant="secondary" onPress={onNowy} />
       <Button title="Zamknij" variant="ghost" onPress={onZamknij} />
     </View>
   );

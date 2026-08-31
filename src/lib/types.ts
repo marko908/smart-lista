@@ -38,6 +38,14 @@ export type Store = Synchronizowany & {
    */
   street?: string;
   city?: string;
+  /**
+   * Ukryty przed użytkownikami. W bazie odpowiada mu odwrotność `publiczny`.
+   *
+   * Sklep w budowie — z niedokończonym planem — nie może trafić na listę
+   * wyboru, bo policzy bezsensowną trasę. Ukrycie jest odwracalne;
+   * skasowanie nie.
+   */
+  ukryty?: boolean;
   /** Plan 2D — pełna topologia. Ma pierwszeństwo przed marszrutą. */
   map: StoreMap | null;
   /** Marszruta — kolejność sekcji od wejścia do kas. Zapasowa, gdy nie ma planu. */
