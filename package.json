@@ -41,7 +41,7 @@
     "ios": "expo start --ios",
     "web": "expo start --web",
     "lint": "expo lint",
-    "test": "tsc -p tests && node .test-build/tests/route.test.js && node .test-build/tests/mapFile.test.js && node .test-build/tests/wieloznacznosc.test.js",
+    "test": "tsc -p tests && node .test-build/tests/route.test.js && node .test-build/tests/mapFile.test.js && node .test-build/tests/wieloznacznosc.test.js && node .test-build/tests/match.test.js",
     "build:web": "expo export -p web"
   },
   "private": true
