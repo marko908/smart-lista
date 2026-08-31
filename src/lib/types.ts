@@ -2,8 +2,30 @@ import type { ChainKey } from '../data/chains';
 import type { SectionKey } from '../data/sections';
 import type { StoreMap } from './mapModel';
 
+/**
+ * Pola, które ma każdy dokument podlegający synchronizacji.
+ *
+ * `zmieniono` rozstrzyga konflikty: przy dwóch wersjach tego samego dokumentu
+ * wygrywa nowsza. Stempluje je jedno miejsce — `update` w `_layout.tsx` —
+ * więc żadne miejsce wywołania nie musi o tym pamiętać.
+ *
+ * `zdalneId` to identyfikator w bazie. Dopóki jest `null`, dokument istnieje
+ * tylko na tym urządzeniu. Dzięki temu nie trzeba było dokładać kolumny na
+ * lokalny identyfikator po stronie bazy.
+ */
+export type Synchronizowany = {
+  /**
+   * Nieobecne dopóki dokument nie przeszedł przez `ostempluj` — czyli tylko
+   * w momencie tworzenia. Nie wymagamy go przy tworzeniu celowo: gdyby był
+   * obowiązkowy, dwadzieścia miejsc musiałoby o nim pamiętać, a stempel
+   * i tak stawia jedno miejsce przy każdej zmianie stanu.
+   */
+  zmieniono?: string;
+  zdalneId?: string | null;
+};
+
 /** Sklep dodany przez użytkownika. */
-export type Store = {
+export type Store = Synchronizowany & {
   id: string;
   name: string;
   chain: ChainKey;
@@ -37,12 +59,25 @@ export type ListItem = {
   createdAt: string;
 };
 
-export type ShoppingList = {
+export type ShoppingList = Synchronizowany & {
   id: string;
   name: string;
   storeId: string | null;
   items: ListItem[];
   createdAt: string;
+};
+
+/**
+ * Ślad po skasowanym dokumencie.
+ *
+ * Bez tego kasowanie nie dotarłoby na drugie urządzenie: synchronizacja
+ * dociąga z bazy wszystko, czego nie ma lokalnie, więc skasowana lista
+ * wróciłaby przy najbliższym pobraniu jak bumerang. Ślad mówi „to zniknęło
+ * celowo" i jest kasowany, gdy baza potwierdzi usunięcie.
+ */
+export type Nagrobek = {
+  zdalneId: string;
+  tabela: 'listy' | 'sklepy';
 };
 
 export type AppState = {
@@ -56,6 +91,8 @@ export type AppState = {
    * jest krótka i wyczerpuje się po kilku zakupach.
    */
   wybory: Record<string, SectionKey>;
+  /** Skasowane dokumenty czekające na potwierdzenie usunięcia w bazie. */
+  nagrobki: Nagrobek[];
 };
 
-export const EMPTY_STATE: AppState = { stores: [], lists: [], wybory: {} };
+export const EMPTY_STATE: AppState = { stores: [], lists: [], wybory: {}, nagrobki: [] };

@@ -11,7 +11,7 @@ import { createContext, useContext } from 'react';
 import { normalizeType } from '../data/blocks';
 import { normalizeSection, type SectionKey } from '../data/sections';
 import type { MapBlock } from './mapModel';
-import type { AppState, Store } from './types';
+import type { AppState, Nagrobek, Store } from './types';
 import { EMPTY_STATE } from './types';
 
 // v2: kasy i wejscie przestaly byc punktami, staly sie klockami z rozmiarem.
@@ -99,6 +99,8 @@ export async function loadState(): Promise<AppState> {
       // Zapisy sprzed rozstrzygania fraz wieloznacznych nie mają tego pola.
       wybory:
         parsed.wybory && typeof parsed.wybory === 'object' ? (parsed.wybory as AppState['wybory']) : {},
+      // Ani zapisy sprzed synchronizacji tego.
+      nagrobki: Array.isArray(parsed.nagrobki) ? parsed.nagrobki : [],
     };
   } catch {
     // Uszkodzony zapis nie może zablokować startu aplikacji.
@@ -116,6 +118,59 @@ export async function saveState(state: AppState): Promise<void> {
 
 export async function clearState(): Promise<void> {
   await AsyncStorage.removeItem(KEY);
+}
+
+/**
+ * Ostemplowanie zmian czasem i zostawienie śladu po skasowanych.
+ *
+ * Wszystkie zmiany stanu przechodzą przez jedno `update`, więc porównanie
+ * „przed" z „po" załatwia obie rzeczy naraz i żadne miejsce wywołania nie musi
+ * o nich pamiętać. Gdyby stempel trzeba było stawiać ręcznie, ktoś kiedyś by
+ * zapomniał — i ta jedna lista przestałaby się synchronizować bez żadnego
+ * widocznego objawu.
+ *
+ * Porównujemy przez JSON, bo dokumenty są małe (kilka list po kilkanaście
+ * pozycji), a porównanie pole po polu trzeba by poprawiać przy każdej zmianie
+ * modelu.
+ */
+export function ostempluj(prev: AppState, next: AppState): AppState {
+  const teraz = new Date().toISOString();
+
+  function stempluj<T extends { id: string; zmieniono?: string }>(
+    stare: T[],
+    nowe: T[]
+  ): T[] {
+    const wgId = new Map(stare.map((d) => [d.id, d] as const));
+    return nowe.map((d) => {
+      const poprzedni = wgId.get(d.id);
+      if (poprzedni && JSON.stringify(poprzedni) === JSON.stringify(d)) return d;
+      return { ...d, zmieniono: teraz };
+    });
+  }
+
+  // Ślad zostawiamy tylko po dokumentach, które baza w ogóle widziała.
+  // Lista skasowana przed pierwszą synchronizacją nie ma czego kasować.
+  function nagrobki<T extends { id: string; zdalneId?: string | null }>(
+    stare: T[],
+    nowe: T[],
+    tabela: Nagrobek['tabela']
+  ): Nagrobek[] {
+    const zostaly = new Set(nowe.map((d) => d.id));
+    return stare
+      .filter((d) => !zostaly.has(d.id) && d.zdalneId)
+      .map((d) => ({ zdalneId: d.zdalneId as string, tabela }));
+  }
+
+  return {
+    ...next,
+    stores: stempluj(prev.stores, next.stores),
+    lists: stempluj(prev.lists, next.lists),
+    nagrobki: [
+      ...(next.nagrobki ?? []),
+      ...nagrobki(prev.stores, next.stores, 'sklepy'),
+      ...nagrobki(prev.lists, next.lists, 'listy'),
+    ],
+  };
 }
 
 export type StoreApi = {

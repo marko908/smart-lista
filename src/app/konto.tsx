@@ -13,12 +13,31 @@ import { StyleSheet, Text, View } from 'react-native';
 import { Body, Button, Card, FONT, H1, Input, Label, Pill, Screen } from '../components/ui';
 import { przypomnijHaslo, useKonto, wyloguj, zaloguj, zarejestruj } from '../lib/konto';
 import { radius, useTheme } from '../lib/theme';
+import { useSync, type StanSync } from '../lib/syncContext';
+import { useApp } from '../lib/storage';
+
+/**
+ * Opis stanu po ludzku.
+ *
+ * „Ostatnio: 14:32" mówi człowiekowi więcej niż kręcące się kółko: widzi, że
+ * jego listy są w bazie, i wie, kiedy to sprawdzono.
+ */
+function opisSynchronizacji(stan: StanSync | undefined): string {
+  if (!stan) return 'Niedostępna w tej wersji.';
+  if (stan.stan === 'pracuje') return 'Trwa wymiana z bazą…';
+  if (stan.stan === 'blad') return `Nie udało się: ${stan.powod}`;
+  if (!stan.kiedy) return 'Jeszcze nie synchronizowano.';
+  const d = new Date(stan.kiedy);
+  return `Ostatnio o ${d.getHours()}:${String(d.getMinutes()).padStart(2, '0')}.`;
+}
 
 type Tryb = 'logowanie' | 'rejestracja';
 
 export default function Konto() {
   const t = useTheme();
   const { sesja, wlaczone, email: zalogowanyJako } = useKonto();
+  const sync = useSync();
+  const { state: stan } = useApp();
 
   const [tryb, setTryb] = useState<Tryb>('logowanie');
   const [email, setEmail] = useState('');
@@ -95,9 +114,24 @@ export default function Konto() {
         </View>
 
         <Card>
+          <Label>Synchronizacja</Label>
+          <Body>{opisSynchronizacji(sync?.stan)}</Body>
           <Body muted>
-            Twoje sklepy i listy są na tym urządzeniu. Synchronizacja z kontem dopiero powstaje —
-            do tego czasu wylogowanie niczego nie kasuje.
+            {stan.lists.length === 1 ? '1 lista' : `${stan.lists.length} listy`} ·{' '}
+            {stan.stores.length === 1 ? '1 sklep' : `${stan.stores.length} sklepów`}
+          </Body>
+          <Button
+            title={sync?.stan.stan === 'pracuje' ? 'Trwa…' : 'Synchronizuj teraz'}
+            variant="secondary"
+            disabled={!sync || sync.stan.stan === 'pracuje'}
+            onPress={() => void sync?.zsynchronizuj()}
+          />
+        </Card>
+
+        <Card>
+          <Body muted>
+            Wylogowanie niczego nie kasuje — twoje listy zostają na tym urządzeniu i wrócą do
+            konta przy następnym zalogowaniu.
           </Body>
         </Card>
 

@@ -15,8 +15,11 @@ import { StatusBar } from 'expo-status-bar';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { Loading } from '../components/ui';
 import { useTheme } from '../lib/theme';
-import { AppStateContext, loadState, saveState } from '../lib/storage';
+import { AppStateContext, loadState, ostempluj, saveState } from '../lib/storage';
 import { EMPTY_STATE, type AppState } from '../lib/types';
+import { synchronizuj } from '../lib/sync';
+import { useKonto } from '../lib/konto';
+import { SyncContext, type StanSync } from '../lib/syncContext';
 
 export default function RootLayout() {
   const t = useTheme();
@@ -47,16 +50,69 @@ export default function RootLayout() {
     saveState(state);
   }, [state, ready]);
 
+  /**
+   * Każda zmiana stanu przechodzi tędy, więc tutaj stawiamy stempel czasu
+   * i zostawiamy ślad po skasowanych dokumentach. Dzięki temu ani jedno
+   * miejsce wywołania nie musi pamiętać o synchronizacji.
+   */
   const update = useCallback((fn: (prev: AppState) => AppState) => {
     dirty.current = true;
-    setState(fn);
+    setState((prev) => ostempluj(prev, fn(prev)));
   }, []);
+
+  const konto = useKonto();
+  const [stanSync, setStanSync] = useState<StanSync>({ stan: 'bezczynna', kiedy: null });
+  /** Świeży stan dla synchronizacji, która startuje z opóźnieniem. */
+  const biezacy = useRef(state);
+  biezacy.current = state;
+  const trwa = useRef(false);
+
+  const zsynchronizuj = useCallback(async () => {
+    if (trwa.current) return;
+    trwa.current = true;
+    setStanSync({ stan: 'pracuje' });
+    try {
+      const wynik = await synchronizuj(biezacy.current);
+      if (wynik) {
+        dirty.current = true;
+        setState(wynik);
+        setStanSync({ stan: 'bezczynna', kiedy: new Date().toISOString() });
+      } else {
+        setStanSync({ stan: 'bezczynna', kiedy: null });
+      }
+    } catch (e) {
+      // Brak sieci nie jest awarią — aplikacja ma działać dalej lokalnie.
+      setStanSync({ stan: 'blad', powod: e instanceof Error ? e.message : 'nieznany błąd' });
+    } finally {
+      trwa.current = false;
+    }
+  }, []);
+
+  // Zalogowanie i wylogowanie to moment, w którym trzeba się zejść z bazą.
+  const czyjaSesja = konto.sesja?.user?.id ?? null;
+  useEffect(() => {
+    if (!ready || !czyjaSesja) return;
+    void zsynchronizuj();
+  }, [ready, czyjaSesja, zsynchronizuj]);
+
+  /**
+   * Odsyłanie zmian z opóźnieniem.
+   *
+   * Pisanie listy to seria drobnych zmian — bez opóźnienia każda litera
+   * byłaby osobnym zapytaniem do bazy.
+   */
+  useEffect(() => {
+    if (!ready || !czyjaSesja || !dirty.current) return;
+    const h = setTimeout(() => void zsynchronizuj(), 2500);
+    return () => clearTimeout(h);
+  }, [state, ready, czyjaSesja, zsynchronizuj]);
 
   if (!ready || !fontsLoaded) return <Loading />;
 
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
     <AppStateContext.Provider value={{ state, ready, update }}>
+    <SyncContext.Provider value={{ stan: stanSync, zsynchronizuj }}>
       <StatusBar style={t.isDark ? 'light' : 'dark'} />
       <Stack
         screenOptions={{
@@ -73,6 +129,7 @@ export default function RootLayout() {
         <Stack.Screen name="sklepy/[id]" options={{ title: 'Marszruta' }} />
         <Stack.Screen name="sklepy/plan/[id]" options={{ title: 'Plan sklepu' }} />
       </Stack>
+    </SyncContext.Provider>
     </AppStateContext.Provider>
     </GestureHandlerRootView>
   );
