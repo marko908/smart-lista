@@ -22,6 +22,8 @@ import { useKonto } from '../lib/konto';
 import { SyncContext, type StanSync } from '../lib/syncContext';
 import { Logowanie } from '../components/Logowanie';
 import { Screen } from '../components/ui';
+import { PoAktywacji } from '../components/PoAktywacji';
+import { powrotZLinku } from '../lib/supabase';
 
 export default function RootLayout() {
   const t = useTheme();
@@ -63,6 +65,8 @@ export default function RootLayout() {
   }, []);
 
   const konto = useKonto();
+  /** Ekran powitalny po kliknięciu w link z maila znika po potwierdzeniu. */
+  const [powitanieZamkniete, setPowitanieZamkniete] = useState(false);
   const [stanSync, setStanSync] = useState<StanSync>({ stan: 'bezczynna', kiedy: null });
   /** Świeży stan dla synchronizacji, która startuje z opóźnieniem. */
   const biezacy = useRef(state);
@@ -110,6 +114,31 @@ export default function RootLayout() {
   }, [state, ready, czyjaSesja, zsynchronizuj]);
 
   if (!ready || !fontsLoaded) return <Loading />;
+
+  /**
+   * Powrót z maila pokazujemy PRZED bramką.
+   *
+   * Wygasły link nie zakłada sesji, więc bramka wyrzuciłaby człowieka na
+   * formularz logowania bez słowa wyjaśnienia — a on próbowałby się logować
+   * na konto, którego nie potwierdził. Ekran musi więc stać wyżej niż bramka,
+   * także wtedy (a właściwie zwłaszcza wtedy), gdy logowanie się nie udało.
+   */
+  if (powrotZLinku && !powitanieZamkniete) {
+    // Sesja z kotwicy adresu zakłada się asynchronicznie. Bez tego czekania
+    // każdy, komu link ZADZIAŁAŁ, zobaczyłby najpierw „Link nie zadziałał",
+    // bo w pierwszym przerysowaniu sesji jeszcze nie ma.
+    if (konto.wlaczone && konto.sesja === undefined) return <Loading />;
+    return (
+      <GestureHandlerRootView style={{ flex: 1 }}>
+        <StatusBar style={t.isDark ? 'light' : 'dark'} />
+        <PoAktywacji
+          powrot={powrotZLinku}
+          zalogowany={Boolean(konto.sesja)}
+          onDalej={() => setPowitanieZamkniete(true)}
+        />
+      </GestureHandlerRootView>
+    );
+  }
 
   /**
    * Bramka: bez konta nie ma aplikacji.

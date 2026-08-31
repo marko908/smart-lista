@@ -67,6 +67,53 @@ const magazyn = {
   },
 };
 
+/**
+ * Z czym człowiek wrócił z maila.
+ *
+ * Link aktywacyjny odsyła na stronę główną z danymi w KOTWICY adresu:
+ * `#access_token=…&type=signup`. Tak działa domyślny tryb `implicit`,
+ * którego nie zmieniamy.
+ *
+ * ODCZYT MUSI SIĘ WYDARZYĆ TERAZ, PRZED `createClient`. Klient Supabase sam
+ * czyta tę kotwicę i natychmiast ją kasuje z adresu, żeby token nie został
+ * w historii przeglądarki. To słuszne, ale znaczy tyle, że kto przyjdzie po
+ * nim, nie zastanie już niczego — a wtedy nie da się odróżnić świeżo
+ * potwierdzonego konta od zwyczajnego wejścia na stronę.
+ */
+export type Powrot =
+  | { rodzaj: 'rejestracja' }
+  | { rodzaj: 'odzyskiwanie' }
+  | { rodzaj: 'blad'; opis: string };
+
+function poLudzkuOBledzie(kod: string, opis: string): string {
+  if (kod === 'otp_expired') return 'Link wygasł — te maile są ważne krótko.';
+  if (kod === 'access_denied') return 'Link został już użyty albo unieważniony.';
+  return opis.replace(/\+/g, ' ') || 'Link nie zadziałał.';
+}
+
+function odczytajPowrot(): Powrot | null {
+  if (!wPrzegladarce || typeof window.location?.hash !== 'string') return null;
+  const kotwica = window.location.hash.replace(/^#/, '');
+  if (!kotwica) return null;
+  const p = new URLSearchParams(kotwica);
+
+  const blad = p.get('error') ?? p.get('error_code');
+  if (blad) {
+    return {
+      rodzaj: 'blad',
+      opis: poLudzkuOBledzie(p.get('error_code') ?? '', p.get('error_description') ?? ''),
+    };
+  }
+  if (!p.get('access_token')) return null;
+
+  const typ = p.get('type');
+  if (typ === 'signup' || typ === 'email_change') return { rodzaj: 'rejestracja' };
+  if (typ === 'recovery') return { rodzaj: 'odzyskiwanie' };
+  return null;
+}
+
+export const powrotZLinku: Powrot | null = odczytajPowrot();
+
 export const supabase: SupabaseClient | null =
   URL && KLUCZ
     ? createClient(URL, KLUCZ, {
