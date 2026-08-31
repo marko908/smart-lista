@@ -29,6 +29,15 @@ export type Store = Synchronizowany & {
   id: string;
   name: string;
   chain: ChainKey;
+  /**
+   * Adres. Człowiek ma zwykle kilka Biedronek w zasięgu i bez ulicy nie
+   * odróżni ich na liście — a plan sklepu jest przypisany do konkretnego
+   * budynku, nie do sieci.
+   *
+   * Opcjonalne, bo zapisy sprzed tej zmiany ich nie mają.
+   */
+  street?: string;
+  city?: string;
   /** Plan 2D — pełna topologia. Ma pierwszeństwo przed marszrutą. */
   map: StoreMap | null;
   /** Marszruta — kolejność sekcji od wejścia do kas. Zapasowa, gdy nie ma planu. */
@@ -93,6 +102,12 @@ export type AppState = {
   wybory: Record<string, SectionKey>;
   /** Skasowane dokumenty czekające na potwierdzenie usunięcia w bazie. */
   nagrobki: Nagrobek[];
+  /**
+   * Ostatnio wybrany sklep. Nowa lista zaczyna od niego, bo ludzie robią
+   * zakupy w kółko w tym samym miejscu i wybieranie go za każdym razem
+   * od nowa byłoby podatkiem od przyzwyczajenia.
+   */
+  ostatniSklep?: string | null;
 };
 
 export const EMPTY_STATE: AppState = { stores: [], lists: [], wybory: {}, nagrobki: [] };

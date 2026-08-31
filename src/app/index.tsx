@@ -30,7 +30,8 @@ export default function Home() {
     const list: ShoppingList = {
       id: newId('list'),
       name: trimmed,
-      storeId: state.stores[0]?.id ?? null,
+      // Nowa lista zaczyna od sklepu, w którym byłeś ostatnio.
+      storeId: state.ostatniSklep ?? state.stores[0]?.id ?? null,
       items: [],
       createdAt: new Date().toISOString(),
     };

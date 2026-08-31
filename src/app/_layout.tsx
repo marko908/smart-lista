@@ -10,6 +10,7 @@ import {
 } from '@expo-google-fonts/jetbrains-mono';
 import { useFonts } from 'expo-font';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
+import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { Stack } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import { useCallback, useEffect, useRef, useState } from 'react';
@@ -23,6 +24,9 @@ import { SyncContext, type StanSync } from '../lib/syncContext';
 import { Logowanie } from '../components/Logowanie';
 import { Screen } from '../components/ui';
 import { PoAktywacji } from '../components/PoAktywacji';
+import { Nawigacja } from '../components/Nawigacja';
+import { Onboarding } from '../components/Onboarding';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import { powrotZLinku } from '../lib/supabase';
 
 export default function RootLayout() {
@@ -67,6 +71,22 @@ export default function RootLayout() {
   const konto = useKonto();
   /** Ekran powitalny po kliknięciu w link z maila znika po potwierdzeniu. */
   const [powitanieZamkniete, setPowitanieZamkniete] = useState(false);
+
+  /**
+   * Wprowadzenie pokazujemy raz na urządzenie. `undefined` znaczy „jeszcze nie
+   * odczytane" — bez tego stanu przy każdym starcie mignęłoby na ułamek sekundy
+   * osobom, które już je przeszły.
+   */
+  const [wprowadzenie, setWprowadzenie] = useState<boolean | undefined>(undefined);
+  useEffect(() => {
+    AsyncStorage.getItem('alejka:wprowadzenie')
+      .then((v) => setWprowadzenie(v !== 'zrobione'))
+      .catch(() => setWprowadzenie(false));
+  }, []);
+  const zamknijWprowadzenie = useCallback(() => {
+    setWprowadzenie(false);
+    void AsyncStorage.setItem('alejka:wprowadzenie', 'zrobione').catch(() => {});
+  }, []);
   const [stanSync, setStanSync] = useState<StanSync>({ stan: 'bezczynna', kiedy: null });
   /** Świeży stan dla synchronizacji, która startuje z opóźnieniem. */
   const biezacy = useRef(state);
@@ -171,6 +191,7 @@ export default function RootLayout() {
   }
 
   return (
+    <SafeAreaProvider>
     <GestureHandlerRootView style={{ flex: 1 }}>
     <AppStateContext.Provider value={{ state, ready, update }}>
     <SyncContext.Provider value={{ stan: stanSync, zsynchronizuj }}>
@@ -190,8 +211,11 @@ export default function RootLayout() {
         <Stack.Screen name="sklepy/[id]" options={{ title: 'Marszruta' }} />
         <Stack.Screen name="sklepy/plan/[id]" options={{ title: 'Plan sklepu' }} />
       </Stack>
+      <Nawigacja />
+      {wprowadzenie === true && <Onboarding onKoniec={zamknijWprowadzenie} />}
     </SyncContext.Provider>
     </AppStateContext.Provider>
     </GestureHandlerRootView>
+    </SafeAreaProvider>
   );
 }

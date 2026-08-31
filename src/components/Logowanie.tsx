@@ -14,8 +14,22 @@ import { radius, useTheme } from '../lib/theme';
 
 type Tryb = 'logowanie' | 'rejestracja';
 
+/**
+ * Co pokazać po udanej próbie.
+ *
+ * Rejestracja KOŃCZY SIĘ WYJŚCIEM z aplikacji do skrzynki pocztowej, więc musi
+ * mieć własny ekran — inaczej człowiek zostaje na formularzu i próbuje się
+ * zalogować na konto, którego jeszcze nie potwierdził.
+ *
+ * Błędy zostają PRZY POLACH, a nie na osobnym ekranie. Złe hasło poprawia się
+ * w tym samym miejscu, w którym się je wpisało; wyrzucenie człowieka na ekran
+ * „nie udało się" kazałoby mu wracać i wpisywać wszystko od nowa.
+ */
+type Wynik = null | { rodzaj: 'zalogowano' } | { rodzaj: 'zarejestrowano'; email: string };
+
 export function Logowanie({ naglowek, wstep }: { naglowek: string; wstep: string }) {
   const t = useTheme();
+  const [wynik, setWynik] = useState<Wynik>(null);
   const [tryb, setTryb] = useState<Tryb>('logowanie');
   const [email, setEmail] = useState('');
   const [haslo, setHaslo] = useState('');
@@ -38,9 +52,11 @@ export function Logowanie({ naglowek, wstep }: { naglowek: string; wstep: string
       return;
     }
     setHaslo('');
-    if (tryb === 'rejestracja') {
-      setNota('Konto założone. Sprawdź skrzynkę — trzeba potwierdzić adres, zanim się zalogujesz.');
-    }
+    setWynik(
+      tryb === 'rejestracja'
+        ? { rodzaj: 'zarejestrowano', email: email.trim() }
+        : { rodzaj: 'zalogowano' }
+    );
   }
 
   async function naPrzypomnienie() {
@@ -53,6 +69,48 @@ export function Logowanie({ naglowek, wstep }: { naglowek: string; wstep: string
     const wynik = await przypomnijHaslo(email);
     if (wynik.ok) setNota('Wysłane. Sprawdź skrzynkę.');
     else setBlad(wynik.blad);
+  }
+
+  if (wynik?.rodzaj === 'zarejestrowano') {
+    return (
+      <>
+        <View style={{ gap: 4 }}>
+          <H1>Sprawdź skrzynkę</H1>
+          <Body muted>Wysłaliśmy link na {wynik.email}.</Body>
+        </View>
+        <Card>
+          <Body>
+            Kliknij w link z maila, żeby potwierdzić adres. Bez tego nie da się zalogować.
+          </Body>
+          <Body muted>
+            Nie ma maila? Zajrzyj do spamu. Link jest ważny krótko — jeśli wygaśnie, załóż konto
+            ponownie tym samym adresem.
+          </Body>
+        </Card>
+        <Button
+          title="Wróć do logowania"
+          variant="secondary"
+          onPress={() => {
+            setWynik(null);
+            setTryb('logowanie');
+          }}
+        />
+      </>
+    );
+  }
+
+  if (wynik?.rodzaj === 'zalogowano') {
+    return (
+      <>
+        <View style={{ gap: 4 }}>
+          <H1>Zalogowano</H1>
+          <Body muted>Twoje listy i plany sklepów właśnie się pobierają.</Body>
+        </View>
+        <Card>
+          <Body>Możesz zaczynać. W sklepie aplikacja działa też bez zasięgu.</Body>
+        </Card>
+      </>
+    );
   }
 
   return (

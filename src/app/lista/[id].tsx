@@ -2,10 +2,10 @@ import { router, useLocalSearchParams, useNavigation } from 'expo-router';
 import { useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
 import { Platform, Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
 import { Body, Button, Card, Empty, FONT, H2, Input, Label, Pill, Screen } from '../../components/ui';
-import { SectionPicker } from '../../components/SectionPicker';
 import { StorePlan } from '../../components/StorePlan';
 import { chainName } from '../../data/chains';
-import { SECTIONS, SECTION_GROUPS, sectionName, type SectionKey } from '../../data/sections';
+import { WyborSklepu, opisSklepu } from '../../components/WyborSklepu';
+import type { SectionKey } from '../../data/sections';
 import { matchProduct, suggest } from '../../lib/match';
 import { parseEntry, splitEntries } from '../../lib/normalize';
 import { buildRoute, currentGroup, nextGroup, type RouteGroup } from '../../lib/sort';
@@ -15,7 +15,6 @@ import { radius, useTheme } from '../../lib/theme';
 import type { ListItem } from '../../lib/types';
 import { sectionGroups, type StoreMap } from '../../lib/mapModel';
 import { kluczWyboru, wieloznacznosc, zawez } from '../../lib/wieloznacznosc';
-import { WyborWieloznaczny } from '../../components/WyborWieloznaczny';
 
 type SortMode = 'trasa' | 'wpisywanie' | 'podglad';
 
@@ -54,9 +53,7 @@ export default function ListScreen() {
 
   const [draft, setDraft] = useState('');
   const [mode, setMode] = useState<SortMode>('trasa');
-  const [pickerFor, setPickerFor] = useState<string | null>(null);
-  /** Pozycje, dla których człowiek chciał zobaczyć pełną listę sekcji zamiast krótkiego wyboru. */
-  const [pelnaLista, setPelnaLista] = useState<string | null>(null);
+  const [wyborSklepu, setWyborSklepu] = useState(false);
 
   const list = state.lists.find((l) => l.id === id) ?? null;
   const store = state.stores.find((s) => s.id === list?.storeId) ?? null;
@@ -157,12 +154,16 @@ export default function ListScreen() {
       }
 
       /**
-       * Wątpliwość zgłaszamy tylko przy słowach twardo wieloznacznych — takich,
-       * które nie mają własnego znaczenia w katalogu. „Mleko" ma i rozstrzyga
-       * się samo; „płyn" nie ma i naprawdę może znaczyć cztery różne regały.
+       * Sekcję wybieramy sami i nigdy jej nie pokazujemy.
        *
-       * Zawężenie do planu sklepu robi resztę: jeśli ten sklep ma tylko jedną
-       * z tych sekcji, to nie ma o co pytać i po cichu bierzemy ją.
+       * Nazwy sekcji są nasze, nie ludzkie — „Kremy do smarowania" kontra
+       * „Dodatki i przetwory" nic nikomu nie mówi, a zmuszanie człowieka do
+       * wyboru między nimi przerzucało na niego problem, którego nie ma jak
+       * rozwiązać. Przy słowach wieloznacznych („płyn", „papier") bierzemy
+       * najlepszy strzał, zawężony do sekcji, które ten sklep w ogóle ma.
+       *
+       * `ambiguous` zostaje w danych, choć nic go już nie wyświetla: to ślad
+       * „tu zgadywaliśmy", przydatny, gdy zaczniemy analizować trafność.
        */
       const w = wieloznacznosc(name);
       const kandydaci = w?.twarda ? zawez(w, dostepneSekcje) : [];
@@ -216,43 +217,10 @@ export default function ListScreen() {
     mutate((items) => items.filter((i) => i.id !== itemId));
   }
 
-  function setSection(itemId: string, section: SectionKey) {
-    const pozycja = list?.items.find((i) => i.id === itemId) ?? null;
-    /**
-     * Zapamiętujemy TYLKO odpowiedzi na zadane pytanie.
-     *
-     * Przeniesienie „chleba" do innej sekcji to poprawka jednej pozycji w tej
-     * jednej liście — być może dlatego, że w tym sklepie pieczywo stoi gdzie
-     * indziej. To nie jest deklaracja, co słowo „chleb" znaczy na zawsze.
-     * Rozstrzygnięcie „płynu" nią jest, bo o to wprost zapytaliśmy.
-     */
-    const pytalismy = (pozycja?.ambiguous?.length ?? 0) > 0;
-
-    update((prev) => ({
-      ...prev,
-      wybory: pytalismy
-        ? { ...prev.wybory, [kluczWyboru(list!.storeId, pozycja!.text)]: section }
-        : prev.wybory,
-      lists: prev.lists.map((l) =>
-        l.id === list!.id
-          ? {
-              ...l,
-              items: l.items.map((i) =>
-                i.id === itemId
-                  ? { ...i, section, sectionLocked: true, ambiguous: undefined }
-                  : i
-              ),
-            }
-          : l
-      ),
-    }));
-    setPickerFor(null);
-    setPelnaLista(null);
-  }
-
   function setStore(storeId: string | null) {
     update((prev) => ({
       ...prev,
+      ostatniSklep: storeId,
       lists: prev.lists.map((l) => (l.id === list!.id ? { ...l, storeId } : l)),
     }));
   }
@@ -285,25 +253,43 @@ export default function ListScreen() {
 
   return (
     <Screen>
-      {/* wybór sklepu */}
+      {/* Wybór sklepu: widać tylko ostatni wybór, reszta chowa się w liście.
+          Rząd pigułek rósł z każdym zmapowanym sklepem i przy dziesięciu
+          Biedronkach zjadał pół ekranu. */}
       <View style={{ gap: 7 }}>
         <Label>Sklep</Label>
-        <View style={st.wrap}>
-          {state.stores.map((s) => (
-            <Pill
-              key={s.id}
-              label={s.name}
-              active={s.id === list.storeId}
-              onPress={() => setStore(s.id)}
-            />
-          ))}
-          <Pill label="Bez sklepu" active={!list.storeId} onPress={() => setStore(null)} />
-        </View>
-        {state.stores.length === 0 && (
-          <Pressable onPress={() => router.push('/sklepy')}>
-            <Text style={[st.link, { color: t.colors.primary }]}>
-              Dodaj sklep i ustaw marszrutę →
-            </Text>
+        {wyborSklepu ? (
+          <WyborSklepu
+            sklepy={state.stores}
+            wybrany={list.storeId}
+            onWybierz={(id) => {
+              setStore(id);
+              setWyborSklepu(false);
+            }}
+            onZamknij={() => setWyborSklepu(false)}
+            onNowy={() => router.push('/sklepy')}
+          />
+        ) : (
+          <Pressable
+            onPress={() => setWyborSklepu(true)}
+            style={({ pressed }) => [
+              st.sklepWiersz,
+              {
+                backgroundColor: t.colors.card,
+                borderColor: t.colors.border,
+                opacity: pressed ? 0.75 : 1,
+              },
+            ]}
+          >
+            <View style={{ flex: 1, gap: 1 }}>
+              <Text style={[st.sklepNazwa, { color: t.colors.foreground }]}>
+                {store ? store.name : 'Bez sklepu'}
+              </Text>
+              <Text style={[st.sklepOpis, { color: t.colors.mutedForeground }]}>
+                {store ? opisSklepu(store) : 'dotknij, żeby wybrać'}
+              </Text>
+            </View>
+            <Text style={[st.chev, { color: t.colors.primary }]}>›</Text>
           </Pressable>
         )}
       </View>
@@ -405,17 +391,8 @@ export default function ListScreen() {
                   <Row
                     key={item.id}
                     item={item}
-                    showSection
                     onToggle={() => toggleChecked(item.id)}
                     onRemove={() => removeItem(item.id)}
-                    onSection={() => {
-                      setPickerFor(pickerFor === item.id ? null : item.id);
-                      setPelnaLista(null);
-                    }}
-                    picking={pickerFor === item.id}
-                    onPick={(s) => setSection(item.id, s)}
-                    pelnaLista={pelnaLista === item.id}
-                    onPelnaLista={() => setPelnaLista(item.id)}
                   />
                 ))
               )}
@@ -433,17 +410,8 @@ export default function ListScreen() {
                 <Row
                   key={item.id}
                   item={item}
-                  showSection
                   onToggle={() => toggleChecked(item.id)}
                   onRemove={() => removeItem(item.id)}
-                  onSection={() => {
-                    setPickerFor(pickerFor === item.id ? null : item.id);
-                    setPelnaLista(null);
-                  }}
-                  picking={pickerFor === item.id}
-                  onPick={(s) => setSection(item.id, s)}
-                  pelnaLista={pelnaLista === item.id}
-                  onPelnaLista={() => setPelnaLista(item.id)}
                 />
               ))}
             </View>
@@ -460,33 +428,14 @@ export default function ListScreen() {
 
 function Row({
   item,
-  showSection,
   onToggle,
   onRemove,
-  onSection,
-  picking,
-  onPick,
-  pelnaLista,
-  onPelnaLista,
 }: {
   item: ListItem;
-  showSection: boolean;
   onToggle: () => void;
   onRemove: () => void;
-  onSection: () => void;
-  picking: boolean;
-  onPick: (s: SectionKey) => void;
-  /** Czy człowiek poprosił o pełną listę sekcji zamiast krótkiego wyboru. */
-  pelnaLista: boolean;
-  onPelnaLista: () => void;
 }) {
   const t = useTheme();
-  /** Przykłady do krótkiego wyboru bierzemy z katalogu — nazwa sekcji sama bywa myląca. */
-  const niejasne = useMemo(
-    () => (item.ambiguous?.length ? wieloznacznosc(item.text) : null),
-    [item.ambiguous, item.text]
-  );
-  const wahaSie = (item.ambiguous?.length ?? 0) > 1;
   return (
     <View style={{ gap: 6 }}>
       <View
@@ -532,53 +481,11 @@ function Row({
           </Text>
         </Pressable>
 
-        <Pressable onPress={onSection} hitSlop={4}>
-          <Text
-            style={[
-              st.secTag,
-              {
-                /**
-                 * Wahanie to nie błąd, więc nie krzyczymy na czerwono jak przy
-                 * „Inne". To znak „wybrałem jedną z kilku, dotknij jeśli źle" —
-                 * ma być widoczny, ale nie ma budzić poczucia, że coś się zepsuło.
-                 */
-                color: item.section === 'inne'
-                  ? t.colors.destructive
-                  : wahaSie
-                    ? t.colors.primary
-                    : t.colors.mutedForeground,
-                borderColor: wahaSie ? t.colors.primary : t.colors.border,
-              },
-            ]}
-          >
-            {/* Przy wahaniu nazwa sekcji jest zawsze widoczna — bez niej nie
-                wiadomo, co właściwie trzeba potwierdzić. */}
-            {wahaSie
-              ? `${sectionName(item.section)} ?`
-              : showSection || item.section === 'inne'
-                ? sectionName(item.section)
-                : '⋯'}
-          </Text>
-        </Pressable>
-
         <Pressable onPress={onRemove} hitSlop={6}>
           <Text style={[st.remove, { color: t.colors.mutedForeground }]}>✕</Text>
         </Pressable>
       </View>
 
-      {picking &&
-        (wahaSie && niejasne && !pelnaLista ? (
-          <WyborWieloznaczny
-            fraza={item.text}
-            sekcje={item.ambiguous!}
-            przyklady={niejasne.przyklady}
-            wybrana={item.section}
-            onPick={onPick}
-            onPelnaLista={onPelnaLista}
-          />
-        ) : (
-          <SectionPicker title="Przenieś do sekcji" selected={item.section} onPick={onPick} />
-        ))}
     </View>
   );
 }
@@ -651,6 +558,13 @@ function PodgladTrasy({
 
 const st = StyleSheet.create({
   wrap: { flexDirection: 'row', flexWrap: 'wrap', gap: 6 },
+  sklepWiersz: {
+    flexDirection: 'row', alignItems: 'center', gap: 10,
+    borderWidth: 1, borderRadius: radius.md, paddingVertical: 10, paddingHorizontal: 12,
+  },
+  sklepNazwa: { fontFamily: FONT.sans, fontSize: 15, fontWeight: '600' },
+  sklepOpis: { fontFamily: FONT.sans, fontSize: 12.5 },
+  chev: { fontFamily: FONT.sans, fontSize: 20 },
   link: { fontFamily: FONT.sansMedium, fontSize: 14 },
   routeBar: {
     flexDirection: 'row',

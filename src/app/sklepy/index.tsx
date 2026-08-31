@@ -16,6 +16,8 @@ export default function Stores() {
   const { state, update } = useApp();
   const [adding, setAdding] = useState(false);
   const [name, setName] = useState('');
+  const [street, setStreet] = useState('');
+  const [city, setCity] = useState('');
   const [chain, setChain] = useState<ChainKey>('lidl');
   const [note, setNote] = useState<string | null>(null);
 
@@ -80,6 +82,8 @@ export default function Stores() {
       id: newId('store'),
       name: name.trim() || `${chainName(chain)} — mój sklep`,
       chain,
+      street: street.trim() || undefined,
+      city: city.trim() || undefined,
       map: null,
       walkOrder: [],
       mappedAt: null,
@@ -87,6 +91,8 @@ export default function Stores() {
     };
     update((prev) => ({ ...prev, stores: [...prev.stores, store] }));
     setName('');
+    setStreet('');
+    setCity('');
     setAdding(false);
     router.push(`/sklepy/plan/${store.id}`);
   }
@@ -119,6 +125,18 @@ export default function Stores() {
             value={name}
             onChangeText={setName}
             placeholder="np. Lidl Poznańska"
+          />
+
+          {/* Adres, bo w zasięgu bywa kilka sklepów tej samej sieci, a plan
+              jest przypisany do konkretnego budynku, nie do szyldu. */}
+          <Label>Ulica</Label>
+          <Input value={street} onChangeText={setStreet} placeholder="np. Poznańska 12" />
+
+          <Label>Miasto</Label>
+          <Input
+            value={city}
+            onChangeText={setCity}
+            placeholder="np. Rybnik"
             returnKeyType="done"
             onSubmitEditing={createStore}
           />
@@ -176,7 +194,9 @@ export default function Stores() {
                 <View style={{ flex: 1, gap: 3 }}>
                   <Text style={[st.name, { color: t.colors.foreground }]}>{store.name}</Text>
                   <Text style={[st.meta, { color: t.colors.mutedForeground }]}>
-                    {chainName(store.chain)}
+                    {[chainName(store.chain), [store.street, store.city].filter(Boolean).join(', ')]
+                      .filter(Boolean)
+                      .join(' · ')}
                     {hasPlan
                       ? ` · plan: ${placed} klocków`
                       : store.walkOrder.length > 0
