@@ -48,22 +48,28 @@ as $$
   );
 $$;
 
+-- Sama funkcja nie musi być wystawiona niezalogowanym. Zalogowanym zostaje,
+-- bo to ONI ją wołają — polityki RLS liczą się z uprawnieniami pytającego,
+-- więc odebranie im prawa wykonania zablokowałoby cały mechanizm. Zwraca
+-- wyłącznie prawdę o samym pytającym, więc nic przez nią nie wycieka.
+revoke execute on function public.czy_admin() from public, anon;
+
 -- Pisanie po katalogu wyłącznie dla administratora.
 drop policy if exists "dodaje swoje sklepy" on public.sklepy;
 drop policy if exists "zmienia swoje sklepy" on public.sklepy;
 drop policy if exists "usuwa swoje sklepy" on public.sklepy;
 
 create policy "admin dodaje sklepy"
-  on public.sklepy for insert
+  on public.sklepy for insert to authenticated
   with check (public.czy_admin() and auth.uid() = wlasciciel);
 
 create policy "admin zmienia sklepy"
-  on public.sklepy for update
+  on public.sklepy for update to authenticated
   using (public.czy_admin() and auth.uid() = wlasciciel)
   with check (public.czy_admin() and auth.uid() = wlasciciel);
 
 create policy "admin usuwa sklepy"
-  on public.sklepy for delete
+  on public.sklepy for delete to authenticated
   using (public.czy_admin() and auth.uid() = wlasciciel);
 
 -- Rola nie może być polem, które użytkownik sam sobie ustawi.
@@ -78,9 +84,11 @@ revoke update on public.profiles from authenticated;
 grant update (nazwa) on public.profiles to authenticated;
 
 -- ────────────────────────────────────────────────────────────────────────────
--- PO WYKONANIU: nadaj sobie rolę administratora, inaczej stracisz dostęp
--- do zapisu katalogu z własnej aplikacji.
+-- WYKONANE 2026-09-01 na projekcie „Smart lista", razem z nadaniem roli
+-- administratora koncie Marka. Sprawdzone podszyciem się pod zwykłego
+-- użytkownika: próba wstawienia sklepu odbija się o politykę.
 --
+-- Nadanie roli kolejnej osobie:
 --   update public.profiles set rola = 'admin'
---   where id = (select id from auth.users where email = 'TWOJ@ADRES');
+--   where id = (select id from auth.users where email = 'ADRES');
 -- ────────────────────────────────────────────────────────────────────────────

@@ -84,15 +84,52 @@ export function WyborSklepu({ sklepy, wybrany, onWybierz, onZamknij }: Props) {
     <View style={[st.karta, { backgroundColor: t.colors.card, borderColor: t.colors.border }]}>
       <Label>W którym sklepie</Label>
 
-      {/* Pole zawsze widoczne. Chowanie go przy krótkiej liście oszczędzało
-          kilkanaście punktów wysokości i zabierało jedyny sposób, żeby dojść
-          do sklepu, nie przewijając całego katalogu. */}
-      <Input
-        value={szukaj}
-        onChangeText={setSzukaj}
-        placeholder="Wpisz nazwę, ulicę albo miasto"
-        autoCorrect={false}
-      />
+      {/* Pole i ikona obok siebie: wpisywanie jest podstawą, lokalizacja
+          skrótem. Ikona pyta o zgodę dopiero po dotknięciu — prośba przy
+          otwarciu, zanim wiadomo po co, jest zwykle odrzucana, a odmowy nie
+          da się cofnąć bez wejścia w ustawienia telefonu. */}
+      <View style={st.szukanie}>
+        <View style={{ flex: 1 }}>
+          <Input
+            value={szukaj}
+            onChangeText={setSzukaj}
+            placeholder="Wpisz nazwę, ulicę albo miasto"
+            autoCorrect={false}
+          />
+        </View>
+        <Pressable
+          onPress={pokazPobliskie}
+          disabled={pytamy}
+          hitSlop={8}
+          accessibilityLabel="Pokaż najbliższe"
+          style={[
+            st.ikonaLokalizacji,
+            {
+              borderColor: gdzieJestem?.stan === 'znana' ? t.colors.primary : t.colors.border,
+              backgroundColor: gdzieJestem?.stan === 'znana' ? t.colors.muted : 'transparent',
+            },
+          ]}
+        >
+          <Text
+            style={[
+              st.ikonaZnak,
+              {
+                color:
+                  gdzieJestem?.stan === 'znana' ? t.colors.primary : t.colors.mutedForeground,
+              },
+            ]}
+          >
+            {pytamy ? '…' : '◎'}
+          </Text>
+        </Pressable>
+      </View>
+
+      {gdzieJestem?.stan === 'odmowa' && (
+        <Body muted>
+          Bez dostępu do lokalizacji. Możesz go włączyć w ustawieniach telefonu — albo po prostu
+          wpisać nazwę.
+        </Body>
+      )}
 
       <ScrollView style={{ maxHeight: 260 }} keyboardShouldPersistTaps="handled">
         <Pressable
@@ -129,24 +166,6 @@ export function WyborSklepu({ sklepy, wybrany, onWybierz, onZamknij }: Props) {
           ))}
       </ScrollView>
 
-      {/* Pytamy o lokalizację dopiero, gdy człowiek sam po nią sięgnie.
-          Prośba przy starcie, zanim wiadomo po co, jest zwykle odrzucana,
-          a odmowy nie da się cofnąć bez wchodzenia w ustawienia systemu. */}
-      {gdzieJestem?.stan !== 'znana' && (
-        <Button
-          title={
-            pytamy
-              ? 'Sprawdzam…'
-              : gdzieJestem?.stan === 'odmowa'
-                ? 'Bez dostępu do lokalizacji'
-                : 'Pokaż najbliższe'
-          }
-          variant="secondary"
-          disabled={pytamy || gdzieJestem?.stan === 'odmowa'}
-          onPress={pokazPobliskie}
-        />
-      )}
-
       <Button title="Zamknij" variant="ghost" onPress={onZamknij} />
     </View>
   );
@@ -154,6 +173,12 @@ export function WyborSklepu({ sklepy, wybrany, onWybierz, onZamknij }: Props) {
 
 const st = StyleSheet.create({
   karta: { borderWidth: 1, borderRadius: radius.md, padding: 10, gap: 8 },
+  szukanie: { flexDirection: 'row', alignItems: 'center', gap: 8 },
+  ikonaLokalizacji: {
+    borderWidth: 1, borderRadius: radius.sm,
+    paddingVertical: 11, paddingHorizontal: 13,
+  },
+  ikonaZnak: { fontFamily: FONT.sans, fontSize: 17, lineHeight: 20 },
   wiersz: { borderWidth: 1, borderRadius: radius.sm, paddingVertical: 8, paddingHorizontal: 10, marginBottom: 6, gap: 1 },
   nazwa: { fontFamily: FONT.sans, fontSize: 14, fontWeight: '600' },
   opis: { fontFamily: FONT.sans, fontSize: 12 },

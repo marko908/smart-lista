@@ -106,6 +106,8 @@ function poLudzku(wiadomosc: string): string {
   if (m.includes('password should be at least')) return 'Hasło musi mieć co najmniej 6 znaków.';
   if (m.includes('unable to validate email')) return 'To nie wygląda na adres e-mail.';
   if (m.includes('rate limit') || m.includes('too many')) return 'Za dużo prób. Spróbuj za chwilę.';
+  if (m.includes('token has expired') || m.includes('expired')) return 'Kod wygasł. Poproś o nowy.';
+  if (m.includes('invalid token') || m.includes('otp')) return 'Ten kod się nie zgadza.';
   if (m.includes('failed to fetch') || m.includes('network')) {
     return 'Brak połączenia. Aplikacja działa dalej bez konta.';
   }
@@ -131,6 +133,42 @@ export async function zaloguj(email: string, haslo: string): Promise<Wynik> {
 export async function zarejestruj(email: string, haslo: string): Promise<Wynik> {
   if (!supabase) return BRAK_KONFIGURACJI;
   const { error } = await supabase.auth.signUp({ email: email.trim(), password: haslo });
+  return error ? { ok: false, blad: poLudzku(error.message) } : { ok: true };
+}
+
+/**
+ * Potwierdzenie rejestracji kodem z maila.
+ *
+ * Na telefonie link jest złym pomysłem: wyprowadza z aplikacji do skrzynki,
+ * a stamtąd do przeglądarki, i po drodze gubi się połowa ludzi. Kod widać nad
+ * klawiaturą w chwili, gdy przychodzi mail — nie trzeba nigdzie wychodzić.
+ *
+ * Po sprawdzeniu kodu Supabase od razu zakłada sesję, więc nie ma osobnego
+ * logowania po rejestracji.
+ *
+ * Próbujemy dwóch typów: `signup` dla świeżo założonego konta i `email` dla
+ * kodu wysłanego ponownie. Supabase rozróżnia je, a człowiek nie ma jak
+ * wiedzieć, który mu przyszedł.
+ */
+export async function potwierdzKodem(email: string, kod: string): Promise<Wynik> {
+  if (!supabase) return BRAK_KONFIGURACJI;
+  const czysty = kod.replace(/\D/g, '');
+  if (czysty.length < 6) return { ok: false, blad: 'Kod ma sześć cyfr.' };
+
+  for (const typ of ['signup', 'email'] as const) {
+    const { error } = await supabase.auth.verifyOtp({ email: email.trim(), token: czysty, type: typ });
+    if (!error) return { ok: true };
+    // Zły typ zgłasza się tak samo jak zły kod, więc pierwszej porażki nie
+    // traktujemy jako odpowiedzi — dopiero druga coś znaczy.
+    if (typ === 'email') return { ok: false, blad: poLudzku(error.message) };
+  }
+  return { ok: false, blad: 'Nie udało się potwierdzić kodu.' };
+}
+
+/** Wysłanie kodu jeszcze raz — mail bywa wolny albo ląduje w spamie. */
+export async function wyslijKodPonownie(email: string): Promise<Wynik> {
+  if (!supabase) return BRAK_KONFIGURACJI;
+  const { error } = await supabase.auth.resend({ type: 'signup', email: email.trim() });
   return error ? { ok: false, blad: poLudzku(error.message) } : { ok: true };
 }
 

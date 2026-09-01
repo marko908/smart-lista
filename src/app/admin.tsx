@@ -28,7 +28,7 @@ import { Body, Button, Card, FONT, H1, Input, Label, Pill, Screen } from '../com
 import { StorePlan } from '../components/StorePlan';
 import { CHAINS, chainName, type ChainKey } from '../data/chains';
 import { czyAdmin } from '../lib/admin';
-import { ustalPolozenie } from '../lib/lokalizacja';
+import { naWspolrzedne, wygladaNaPlusCode, type Wspolrzedne } from '../lib/pluscode';
 import { useKonto } from '../lib/konto';
 import { potwierdz } from '../lib/potwierdz';
 import { newId, useApp } from '../lib/storage';
@@ -44,9 +44,25 @@ type Brudnopis = {
   chain: ChainKey;
   street: string;
   city: string;
-  szerokosc?: number;
-  dlugosc?: number;
+  /** Surowy tekst z pola — para liczb albo Plus Code. */
+  polozenie: string;
 };
+
+/**
+ * Co pokazać pod polem współrzędnych.
+ *
+ * Wynik odczytu widać OD RAZU, bo inaczej dopiero zapis pokazałby, że kod był
+ * zły — a wtedy sklep siedzi w bazie w złym miejscu i nikt tego nie zauważy.
+ */
+function opisPolozenia(tekst: string, odniesienie: Wspolrzedne | null): string {
+  if (!tekst.trim()) return 'Puste — sklep nie pojawi się wśród najbliższych.';
+  const p = naWspolrzedne(tekst, odniesienie);
+  if (p) return `Odczytane: ${p.szerokosc.toFixed(5)}, ${p.dlugosc.toFixed(5)}`;
+  if (wygladaNaPlusCode(tekst) && !odniesienie) {
+    return 'Kod skrócony wymaga punktu odniesienia. Wklej pełny kod albo najpierw dodaj sklep w tej okolicy.';
+  }
+  return 'Nie rozpoznaję. Podaj parę liczb albo Plus Code.';
+}
 
 export default function Admin() {
   const t = useTheme();
@@ -55,10 +71,19 @@ export default function Admin() {
   const { width } = useWindowDimensions();
   const [otwarty, setOtwarty] = useState<string | null>(null);
   const [brudnopis, setBrudnopis] = useState<Brudnopis | null>(null);
-  const [pobieram, setPobieram] = useState(false);
 
   /** Na monitorze plan mieści się obok listy i nie ma powodu go chować. */
   const szeroki = Platform.OS === 'web' && width >= 900;
+
+  /**
+   * Punkt odniesienia dla kodów skróconych — pierwszy sklep, który ma już
+   * współrzędne. Kto dodaje sklepy w jednym mieście, dostaje rozwiązywanie
+   * krótkich kodów za darmo; kto skacze po kraju, wkleja kod pełny.
+   */
+  const odniesienie: Wspolrzedne | null = useMemo(() => {
+    const z = state.stores.find((x) => x.szerokosc != null && x.dlugosc != null);
+    return z ? { szerokosc: z.szerokosc as number, dlugosc: z.dlugosc as number } : null;
+  }, [state.stores]);
 
   const sklepy = useMemo(
     () => [...state.stores].sort((a, b) => a.name.localeCompare(b.name, 'pl')),
@@ -95,32 +120,26 @@ export default function Admin() {
       chain: s.chain,
       street: s.street ?? '',
       city: s.city ?? '',
-      szerokosc: s.szerokosc,
-      dlugosc: s.dlugosc,
+      polozenie:
+        s.szerokosc != null && s.dlugosc != null ? `${s.szerokosc}, ${s.dlugosc}` : '',
     });
   }
 
   function zapisz(id: string) {
     if (!brudnopis) return;
+    const p = naWspolrzedne(brudnopis.polozenie, odniesienie);
     zmien(id, {
       chain: brudnopis.chain,
       street: brudnopis.street.trim() || undefined,
       city: brudnopis.city.trim() || undefined,
-      szerokosc: brudnopis.szerokosc,
-      dlugosc: brudnopis.dlugosc,
+      szerokosc: p?.szerokosc,
+      dlugosc: p?.dlugosc,
       name: zlozNazwe(brudnopis.chain, brudnopis.street.trim(), brudnopis.city.trim()),
     });
     setOtwarty(null);
     setBrudnopis(null);
   }
 
-  async function zlapPolozenie() {
-    setPobieram(true);
-    const gdzie = await ustalPolozenie();
-    setPobieram(false);
-    if (gdzie.stan !== 'znana' || !brudnopis) return;
-    setBrudnopis({ ...brudnopis, szerokosc: gdzie.punkt.szerokosc, dlugosc: gdzie.punkt.dlugosc });
-  }
 
   async function usun(sklep: Store) {
     /**
@@ -247,18 +266,19 @@ export default function Admin() {
                   placeholder="np. Rybnik"
                 />
 
-                <Label>Współrzędne</Label>
-                <Body muted>
-                  {brudnopis.szerokosc != null && brudnopis.dlugosc != null
-                    ? `${brudnopis.szerokosc.toFixed(5)}, ${brudnopis.dlugosc.toFixed(5)}`
-                    : 'Brak — sklep nie pojawi się wśród najbliższych.'}
-                </Body>
-                <Button
-                  title={pobieram ? 'Pobieram…' : 'Użyj mojej lokalizacji'}
-                  variant="secondary"
-                  disabled={pobieram}
-                  onPress={zlapPolozenie}
+                {/* Współrzędne wpisuje się z palca albo wkleja Plus Code
+                    z map — administrator dodaje sklepy z domu, nie stojąc
+                    w nich, więc łapanie położenia z telefonu byłoby mu
+                    bezużyteczne. */}
+                <Label>Współrzędne albo Plus Code</Label>
+                <Input
+                  value={brudnopis.polozenie}
+                  onChangeText={(v) => setBrudnopis({ ...brudnopis, polozenie: v })}
+                  placeholder="50.0971, 18.5416   albo   3HV9+FP Rybnik"
+                  autoCapitalize="characters"
+                  autoCorrect={false}
                 />
+                <Body muted>{opisPolozenia(brudnopis.polozenie, odniesienie)}</Body>
 
                 <Button title="Zapisz" onPress={() => zapisz(s.id)} />
                 <Button

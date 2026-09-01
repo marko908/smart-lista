@@ -9,7 +9,7 @@
 import { useState } from 'react';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 import { Body, Button, Card, FONT, H1, Input, Label } from './ui';
-import { przypomnijHaslo, zaloguj, zarejestruj } from '../lib/konto';
+import { potwierdzKodem, przypomnijHaslo, wyslijKodPonownie, zaloguj, zarejestruj } from '../lib/konto';
 import { radius, useTheme } from '../lib/theme';
 
 type Tryb = 'logowanie' | 'rejestracja';
@@ -36,6 +36,25 @@ export function Logowanie({ naglowek, wstep }: { naglowek: string; wstep: string
   const [blad, setBlad] = useState<string | null>(null);
   const [nota, setNota] = useState<string | null>(null);
   const [czeka, setCzeka] = useState(false);
+  const [kod, setKod] = useState('');
+
+  async function potwierdz(adres: string) {
+    setBlad(null);
+    setCzeka(true);
+    const r = await potwierdzKodem(adres, kod);
+    setCzeka(false);
+    // Powodzenie nie wymaga niczego więcej: Supabase zakłada sesję, bramka
+    // w _layout.tsx podnosi się sama i człowiek jest już w aplikacji.
+    if (!r.ok) setBlad(r.blad);
+  }
+
+  async function ponownie(adres: string) {
+    setBlad(null);
+    setNota(null);
+    const r = await wyslijKodPonownie(adres);
+    if (r.ok) setNota('Wysłane. Kod bywa w drodze kilkanaście sekund.');
+    else setBlad(r.blad);
+  }
 
   async function wyslij() {
     setBlad(null);
@@ -75,23 +94,61 @@ export function Logowanie({ naglowek, wstep }: { naglowek: string; wstep: string
     return (
       <>
         <View style={{ gap: 4 }}>
-          <H1>Sprawdź skrzynkę</H1>
-          <Body muted>Wysłaliśmy link na {wynik.email}.</Body>
+          <H1>Wpisz kod</H1>
+          <Body muted>Wysłaliśmy sześciocyfrowy kod na {wynik.email}.</Body>
         </View>
+
         <Card>
-          <Body>
-            Kliknij w link z maila, żeby potwierdzić adres. Bez tego nie da się zalogować.
-          </Body>
-          <Body muted>
-            Nie ma maila? Zajrzyj do spamu. Link jest ważny krótko — jeśli wygaśnie, załóż konto
-            ponownie tym samym adresem.
-          </Body>
+          <Label>Kod z maila</Label>
+          {/* Klawiatura numeryczna i `one-time-code`: iOS podsuwa wtedy kod
+              nad klawiaturą, gdy tylko przyjdzie mail, a Android robi to samo
+              przez autouzupełnianie. Dzięki temu nie trzeba wychodzić
+              z aplikacji do skrzynki — o to w tym całym ekranie chodzi. */}
+          <Input
+            value={kod}
+            onChangeText={(v) => {
+              setKod(v.replace(/[^0-9]/g, '').slice(0, 6));
+              setBlad(null);
+            }}
+            placeholder="123456"
+            keyboardType="number-pad"
+            textContentType="oneTimeCode"
+            autoComplete="one-time-code"
+            maxLength={6}
+            autoFocus
+          />
+
+          {blad && (
+            <View style={[st.komunikat, { backgroundColor: t.colors.muted, borderColor: t.colors.destructive }]}>
+              <Text style={[st.komunikatText, { color: t.colors.foreground }]}>{blad}</Text>
+            </View>
+          )}
+          {nota && (
+            <View style={[st.komunikat, { backgroundColor: t.colors.muted, borderColor: t.colors.primary }]}>
+              <Text style={[st.komunikatText, { color: t.colors.foreground }]}>{nota}</Text>
+            </View>
+          )}
+
+          <Button
+            title={czeka ? 'Sprawdzam…' : 'Potwierdź'}
+            onPress={() => void potwierdz(wynik.email)}
+            disabled={czeka || kod.length < 6}
+          />
+          <Button
+            title="Wyślij kod jeszcze raz"
+            variant="ghost"
+            onPress={() => void ponownie(wynik.email)}
+          />
         </Card>
+
+        <Body muted>Nie ma maila? Zajrzyj do spamu — potrafi tam wylądować.</Body>
+
         <Button
           title="Wróć do logowania"
-          variant="secondary"
+          variant="ghost"
           onPress={() => {
             setWynik(null);
+            setKod('');
             setTryb('logowanie');
           }}
         />
