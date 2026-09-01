@@ -141,7 +141,17 @@ export function Logowanie({ naglowek, wstep }: { naglowek: string; wstep: string
           />
         </Card>
 
-        <Body muted>Nie ma maila? Zajrzyj do spamu — potrafi tam wylądować.</Body>
+        {/*
+          Dopóki szablon maila nie zawiera `{{ .Token }}`, Supabase wysyła sam
+          LINK — a wtedy człowiek stałby na tym ekranie bez kodu do wpisania,
+          czyli w ślepym zaułku. Mówimy więc o obu drogach: link nadal działa
+          i ląduje na ekranie potwierdzenia. Ten akapit można skasować, gdy
+          szablon będzie już wysyłał kod.
+        */}
+        <Body muted>
+          Nie ma maila? Zajrzyj do spamu. Jeśli w mailu jest link zamiast kodu — po prostu w niego
+          kliknij, zadziała tak samo.
+        </Body>
 
         <Button
           title="Wróć do logowania"
