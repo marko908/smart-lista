@@ -1,0 +1,262 @@
+/**
+ * Skan sklepu spacerem — nagrywanie.
+ *
+ * Telefon na uchwycie na klatce piersiowej, aparat szerokokątny, zwykły spacer
+ * po sklepie. Co sekundę jedno małe zdjęcie, a obok licznik kroków i kurs
+ * z kompasu. Na koniec wszystko leci jednym plikiem przez arkusz udostępniania;
+ * szkic planu robi z niego narzędzie `tools/skan` (patrz src/lib/skan.ts).
+ *
+ * Prototyp tylko dla administratora: to narzędzie do mapowania, nie funkcja
+ * dla klienta. Działa w Expo Go — kamera, krokomierz i kompas są tam dostępne.
+ */
+
+import { CameraView, useCameraPermissions } from 'expo-camera';
+import * as FileSystem from 'expo-file-system/legacy';
+import { activateKeepAwakeAsync, deactivateKeepAwake } from 'expo-keep-awake';
+import * as Location from 'expo-location';
+import { router } from 'expo-router';
+import { Pedometer } from 'expo-sensors';
+import * as Sharing from 'expo-sharing';
+import { useEffect, useRef, useState } from 'react';
+import { Platform, StyleSheet, Text, View } from 'react-native';
+import { Body, Button, Card, FONT, H1, Input, Label, Screen } from '../components/ui';
+import { czyAdmin } from '../lib/admin';
+import { useKonto } from '../lib/konto';
+import { polaczCzujniki, SKAN_FORMAT, SKAN_VERSION, type SkanKlatka, type SkanSesja } from '../lib/skan';
+import { useTheme } from '../lib/theme';
+
+const CO_ILE_MS = 1000;
+const KEEP_AWAKE = 'alejka-skan';
+
+type Stan = 'gotowy' | 'nagrywa' | 'pakuje' | 'koniec';
+
+export default function Skan() {
+  const { sesja } = useKonto();
+  const t = useTheme();
+  const [perm, prosOKamere] = useCameraPermissions();
+  const kamera = useRef<CameraView>(null);
+
+  const [stan, setStan] = useState<Stan>('gotowy');
+  const [obiektyw, setObiektyw] = useState<string | undefined>();
+  const [rozmiar, setRozmiar] = useState<string | undefined>();
+  const [krok, setKrok] = useState('0.7');
+  const [licznik, setLicznik] = useState({ klatki: 0, kroki: 0, kurs: null as number | null, sek: 0 });
+  const [info, setInfo] = useState<string | null>(null);
+
+  // Dane nagrania trzymamy w refach — zmieniają się co chwilę i nie powinny przerysowywać ekranu.
+  const start = useRef(0);
+  const katalog = useRef('');
+  const klatki = useRef<SkanKlatka[]>([]);
+  const kursy = useRef<{ t: number; kurs: number }[]>([]);
+  const kroki = useRef<{ t: number; kroki: number }[]>([]);
+  const ostatniKurs = useRef<number | null>(null);
+  const zajety = useRef(false);
+  const sprzataj = useRef<(() => void)[]>([]);
+
+  useEffect(() => () => zatrzymajCzujniki(), []);
+
+  if (!czyAdmin(sesja)) {
+    return (
+      <Screen>
+        <H1>Skan sklepu</H1>
+        <Body muted>To narzędzie do mapowania sklepów, dostępne dla administratora.</Body>
+        <Button title="Wróć" variant="ghost" onPress={() => router.back()} />
+      </Screen>
+    );
+  }
+
+  if (Platform.OS === 'web') {
+    return (
+      <Screen>
+        <H1>Skan sklepu</H1>
+        <Body muted>Skan działa tylko na telefonie: potrzebuje aparatu, krokomierza i kompasu.</Body>
+      </Screen>
+    );
+  }
+
+  /** Najszerszy dostępny obiektyw i najmniejsze sensowne zdjęcie (ok. 640 px). */
+  async function przygotujKamere() {
+    try {
+      const lenses = (await kamera.current?.getAvailableLensesAsync()) ?? [];
+      const szeroki = lenses.find((l) => /ultra/i.test(l));
+      if (szeroki) setObiektyw(szeroki);
+      const sizes = (await kamera.current?.getAvailablePictureSizesAsync()) ?? [];
+      const maly = ['640x480', 'vga', 'Medium', '1280x720'].find((s) => sizes.includes(s));
+      if (maly) setRozmiar(maly);
+    } catch {
+      // Bez wyboru obiektywu też się da — po prostu węższy kadr.
+    }
+  }
+
+  function zatrzymajCzujniki() {
+    for (const f of sprzataj.current) f();
+    sprzataj.current = [];
+    deactivateKeepAwake(KEEP_AWAKE);
+  }
+
+  async function startuj() {
+    setInfo(null);
+    if (!perm?.granted && !(await prosOKamere()).granted) {
+      setInfo('Bez dostępu do aparatu skan nie ruszy.');
+      return;
+    }
+    const loc = await Location.requestForegroundPermissionsAsync();
+    if (!loc.granted) {
+      setInfo('Kompas w iPhonie wymaga zgody na lokalizację (używamy tylko kierunku, nie pozycji).');
+      return;
+    }
+    if (!(await Pedometer.isAvailableAsync())) {
+      setInfo('Ten telefon nie ma krokomierza.');
+      return;
+    }
+    await Pedometer.requestPermissionsAsync().catch(() => null);
+
+    const dir = `${FileSystem.documentDirectory}skan-${Date.now()}/`;
+    await FileSystem.makeDirectoryAsync(dir, { intermediates: true });
+    katalog.current = dir;
+    klatki.current = [];
+    kursy.current = [];
+    kroki.current = [];
+    ostatniKurs.current = null;
+    start.current = Date.now();
+    const teraz = () => (Date.now() - start.current) / 1000;
+
+    await activateKeepAwakeAsync(KEEP_AWAKE);
+
+    const ped = Pedometer.watchStepCount((r) => {
+      kroki.current.push({ t: teraz(), kroki: r.steps });
+    });
+    const head = await Location.watchHeadingAsync((h) => {
+      const kurs = h.trueHeading >= 0 ? h.trueHeading : h.magHeading;
+      ostatniKurs.current = kurs;
+      kursy.current.push({ t: teraz(), kurs });
+    });
+
+    const timer = setInterval(async () => {
+      const ostKroki = kroki.current[kroki.current.length - 1]?.kroki ?? 0;
+      setLicznik({ klatki: klatki.current.length, kroki: ostKroki, kurs: ostatniKurs.current, sek: Math.round(teraz()) });
+      if (zajety.current || !kamera.current) return;
+      zajety.current = true;
+      try {
+        const tt = teraz();
+        const foto = await kamera.current.takePictureAsync({ quality: 0.4, shutterSound: false });
+        const plik = `f${String(klatki.current.length + 1).padStart(4, '0')}.jpg`;
+        await FileSystem.moveAsync({ from: foto.uri, to: katalog.current + plik });
+        klatki.current.push({ t: tt, plik });
+      } catch {
+        // Pojedyncza nieudana klatka nie przerywa skanu.
+      } finally {
+        zajety.current = false;
+      }
+    }, CO_ILE_MS);
+
+    sprzataj.current = [() => ped.remove(), () => head.remove(), () => clearInterval(timer)];
+    setStan('nagrywa');
+  }
+
+  async function zakoncz() {
+    zatrzymajCzujniki();
+    setStan('pakuje');
+    try {
+      const dl = Number(krok.replace(',', '.'));
+      const s: SkanSesja = {
+        format: SKAN_FORMAT,
+        version: SKAN_VERSION,
+        start: new Date(start.current).toISOString(),
+        dlugoscKroku: Number.isFinite(dl) && dl > 0.3 && dl < 1.5 ? dl : 0.7,
+        probki: polaczCzujniki(kursy.current, kroki.current),
+        klatki: klatki.current,
+      };
+      // Jeden plik: sesja + zdjęcia w base64. Łatwiej go przesłać niż setki osobnych plików.
+      const obrazy: Record<string, string> = {};
+      for (const k of klatki.current) {
+        obrazy[k.plik] = await FileSystem.readAsStringAsync(katalog.current + k.plik, {
+          encoding: FileSystem.EncodingType.Base64,
+        });
+      }
+      const nazwa = `skan-${s.start.slice(0, 16).replace(/[:T]/g, '-')}.alejka-skan.json`;
+      const uri = katalog.current + nazwa;
+      await FileSystem.writeAsStringAsync(uri, JSON.stringify({ ...s, obrazy }));
+      const mb = ((await FileSystem.getInfoAsync(uri)) as { size?: number }).size ?? 0;
+      setInfo(`Gotowe: ${klatki.current.length} klatek, ${(mb / 1e6).toFixed(1)} MB.`);
+      setStan('koniec');
+      if (await Sharing.isAvailableAsync()) {
+        await Sharing.shareAsync(uri, { mimeType: 'application/json', UTI: 'public.json', dialogTitle: 'Wyślij skan' });
+      }
+    } catch (e) {
+      setInfo(`Nie udało się spakować skanu: ${String(e)}`);
+      setStan('koniec');
+    }
+  }
+
+  const nagrywa = stan === 'nagrywa';
+
+  return (
+    <Screen>
+      <H1>Skan sklepu</H1>
+      {!nagrywa && (
+        <Card>
+          <Body>
+            Załóż telefon na uchwyt na klatce piersiowej, aparatem do przodu. Przejdź każdą alejkę
+            raz, środkiem, spokojnym krokiem. Na początku alejki zatrzymaj się na 2 sekundy przodem
+            do tablicy.
+          </Body>
+        </Card>
+      )}
+
+      <View style={[st.podglad, { borderColor: t.colors.border }]}>
+        <CameraView
+          ref={kamera}
+          style={StyleSheet.absoluteFill}
+          facing="back"
+          animateShutter={false}
+          selectedLens={obiektyw}
+          pictureSize={rozmiar}
+          onCameraReady={przygotujKamere}
+        />
+      </View>
+
+      {nagrywa ? (
+        <View style={st.liczniki}>
+          {[
+            ['czas', `${licznik.sek} s`],
+            ['klatki', String(licznik.klatki)],
+            ['kroki', String(licznik.kroki)],
+            ['kurs', licznik.kurs === null ? '—' : `${Math.round(licznik.kurs)}°`],
+          ].map(([k, v]) => (
+            <View key={k} style={st.licznik}>
+              <Text style={[st.wartosc, { color: t.colors.foreground }]}>{v}</Text>
+              <Text style={[st.etykieta, { color: t.colors.mutedForeground }]}>{k}</Text>
+            </View>
+          ))}
+        </View>
+      ) : (
+        <View style={{ gap: 6 }}>
+          <Label>Długość kroku (m)</Label>
+          <Input value={krok} onChangeText={setKrok} keyboardType="decimal-pad" />
+          <Body muted>
+            {obiektyw ? `Obiektyw: ${obiektyw}.` : 'Obiektyw szerokokątny niedostępny, używam zwykłego.'}
+          </Body>
+        </View>
+      )}
+
+      {info && <Body muted>{info}</Body>}
+
+      {stan === 'gotowy' || stan === 'koniec' ? (
+        <Button title={stan === 'koniec' ? 'Nowy skan' : 'Zacznij skan'} onPress={startuj} />
+      ) : nagrywa ? (
+        <Button title="Zakończ i wyślij" variant="danger" onPress={zakoncz} />
+      ) : (
+        <Button title="Pakuję…" disabled onPress={() => {}} />
+      )}
+    </Screen>
+  );
+}
+
+const st = StyleSheet.create({
+  podglad: { height: 260, borderRadius: 16, overflow: 'hidden', borderWidth: 1 },
+  liczniki: { flexDirection: 'row', justifyContent: 'space-between' },
+  licznik: { alignItems: 'center', flex: 1 },
+  wartosc: { fontFamily: FONT.monoBold, fontSize: 20 },
+  etykieta: { fontFamily: FONT.sans, fontSize: 12 },
+});

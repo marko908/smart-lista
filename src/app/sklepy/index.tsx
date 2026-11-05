@@ -181,6 +181,7 @@ export default function Stores() {
         <View style={{ gap: 8 }}>
           <Button title="Dodaj sklep" onPress={() => setAdding(true)} />
           <Button title="Wczytaj sklep z pliku" variant="secondary" onPress={importFromFile} />
+          <Button title="Skanuj sklep spacerem (prototyp)" variant="ghost" onPress={() => router.push('/skan')} />
         </View>
       )}
 

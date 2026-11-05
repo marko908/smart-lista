@@ -232,6 +232,7 @@ export default function RootLayout() {
         <Stack.Screen name="sklepy/[id]" options={{ title: 'Marszruta' }} />
         <Stack.Screen name="sklepy/plan/[id]" options={{ title: 'Plan sklepu' }} />
         <Stack.Screen name="admin" options={{ title: 'Katalog sklepów' }} />
+        <Stack.Screen name="skan" options={{ title: 'Skan sklepu' }} />
       </Stack>
       <Nawigacja />
       {wprowadzenie === true && <Onboarding onKoniec={zamknijWprowadzenie} />}
