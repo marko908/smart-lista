@@ -6,7 +6,30 @@ Ten plik zbiera decyzje Marko z przeglądu makiet. Każda nowa decyzja trafia tu
 - Przegląd ekran po ekranie: https://claude.ai/artifact/EX9MnZi7sRr8UGWbyNRMUP
 - Plan v2: https://claude.ai/artifact/NB22NzNfidwAKHJmQ7h6nL
 
-Oznaczenia ekranów (A–F, 00–09) odpowiadają tytułom plansz na płótnie.
+## Kody ekranów i stanów
+
+Kody odpowiadają tytułom plansz na płótnie. Stan zapisujemy po kropce, np. `N2.karta`.
+
+| Kod | Ekran | Stany |
+|---|---|---|
+| S0 | Start: pierwsze uruchomienie | |
+| S1 | Start: Twoje listy | |
+| L1 | Lista | `L1.ilość`, `L1.promocja`, `L1.sklepy`, `L1.umknęło` |
+| L2 | Lista: nowa, pusta | |
+| L3 | Lista: MVP bez cen | |
+| L4 | Lista: panel ilości (= `L1.ilość`) | |
+| N1 | Nowa lista: pusto | |
+| N2 | Nowa lista: wybór sklepu | `N2.wybór`, `N2.karta` |
+| N3 | Nowa lista: lista dla sklepu | `N3.lista`, `N3.ilość` |
+| N4 | Nowa lista: kolejny sklep (= N2) | |
+| N5 | Nowa lista: dwa sklepy | `N5.lista`, `N5.dymek`, `N5.ilość` |
+| N6 | Nowa lista: gotowe | `N6.lista`, `N6.odsłonięte`, `N6.cofnij` |
+| Z1 | Zakupy w sklepie | `Z1.sklep`, `Z1.trwa`, `Z1.cała`, `Z1.zmiana`, `Z1.przejście` |
+| Z2 | Zakupy: gdzie jest produkt | |
+| Z3 | Zakupy: koniec (do zrobienia) | |
+| PA0 | Skaner paragonu (do zrobienia) | |
+| PA1 | Paragon odczytany | |
+| PR1 | Promocje | `PR1.idealne`, `PR1.inne`, `PR1.pytanie` |
 
 ---
 
@@ -18,16 +41,16 @@ Oznaczenia ekranów (A–F, 00–09) odpowiadają tytułom plansz na płótnie.
 4. **Teksty neutralne płciowo** (np. „Nic Ci nie umknęło?”, a nie „Czy nie zapomniałeś?”).
 5. Stałe akcje są na dole, w zasięgu kciuka.
 
-## 1. Start (ekran 00)
+## 1. Start (S0, S1)
 
 - Aplikacja otwiera się na liście list („Twoje listy”), a nie na ostatniej liście.
 - Najbliższa lista jest pokazana jako duża karta z postępem, niżej pozostałe. Przycisk „Nowa lista” jest zawsze na dole.
 - Pierwsze uruchomienie: bez rejestracji i samouczka. Jedno zdanie, przykład listy i jeden przycisk. Onboarding projektujemy później.
 
-## 2. Tworzenie listy (A → F)
+## 2. Tworzenie listy (N1 → N6)
 
-1. **A · Pusto.** Jedyna akcja to „Nowa lista”.
-2. **B · Wybór sklepu** (styl InPost):
+1. **N1 · Pusto.** Jedyna akcja to „Nowa lista”.
+2. **N2 · Wybór sklepu** (styl InPost):
    - Pole adresu, przycisk „moja lokalizacja”, filtr sieci (chipy).
    - Mapa z pinezkami, pod nią lista sklepów od najbliższego.
    - Na górze „Najczęściej wybierasz”: 2 sklepy, które **ten użytkownik** wybiera najczęściej (z jego historii). Jedno stuknięcie od razu tworzy listę. Nowy użytkownik tej sekcji nie widzi.
@@ -40,10 +63,10 @@ Oznaczenia ekranów (A–F, 00–09) odpowiadają tytułom plansz na płótnie.
      - „Wybierasz często”, jeśli sklep jest w historii użytkownika.
      Ponowne stuknięcie odznacza sklep. Dolny przycisk: „Wybierz {sieć} · {adres}”.
    - Lista sklepów ma stały dolny margines na kartę, więc karta niczego nie przesuwa.
-3. **C · Lista dla sklepu.** Na dole zawsze dwa przyciski: „Kolejny sklep” i „Zakończ”. „Zakończ” jest nieaktywny, dopóki lista jest pusta.
-4. **D · Kolejny sklep.** Ten sam wybór sklepu, bez sklepów już dodanych. Wraca do tej samej listy.
-5. **E · Lista na kilka sklepów.** Patrz punkt 4.
-6. **F · Zakończ.** Prowadzi na Start z gotową listą na górze i przyciskiem „Zacznij zakupy”. Nazwę listy zmienia się na górze listy (domyślnie „Zakupy na sobotę”).
+3. **N3 · Lista dla sklepu.** Na dole zawsze dwa przyciski: „Kolejny sklep” i „Zakończ”. „Zakończ” jest nieaktywny, dopóki lista jest pusta.
+4. **N4 · Kolejny sklep.** Ten sam wybór sklepu, bez sklepów już dodanych. Wraca do tej samej listy.
+5. **N5 · Lista na kilka sklepów.** Patrz punkt 4.
+6. **N6 · Zakończ.** Prowadzi na Start z gotową listą na górze i przyciskiem „Zacznij zakupy”. Nazwę listy zmienia się na górze listy (domyślnie „Zakupy na sobotę”).
 
 ## 3. Dodawanie produktów i ilości
 
@@ -73,7 +96,7 @@ Oznaczenia ekranów (A–F, 00–09) odpowiadają tytułom plansz na płótnie.
   - W panelu ilości przełącznik „Kupuję w: Lidl / Biedronka” przenosi produkt od razu.
   - Po dodaniu produktu na liście z kilkoma sklepami pojawia się dymek-nakładka „Masło · dodane do: Lidl” z przyciskiem „Przenieś do Biedronka” (przy 3+ sklepach: „Zmień sklep”, który otwiera panel). Dymek nie przesuwa listy.
 
-## 5. Lista list: przesuwanie kart (ekran F i Start)
+## 5. Lista list: przesuwanie kart (N6 i S1)
 
 - Każdą kartę listy można przesunąć w bok:
   - **w prawo** odsłania z lewej przycisk **„Udostępnij”** (link do listy dla domowników),
@@ -83,7 +106,7 @@ Oznaczenia ekranów (A–F, 00–09) odpowiadają tytułom plansz na płótnie.
 - Usunięcie: karta wyjeżdża w lewo i płynnie się zwija. Dymek „Usunięto listę „…”” z przyciskiem „Cofnij”.
 - Pod listami jest jedna linijka podpowiedzi o przesuwaniu (do rozważenia, czy pokazywać ją tylko na początku).
 
-## 6. Tryb zakupów (ekran 04)
+## 6. Tryb zakupów (Z1)
 
 - Na starcie (lista na kilka sklepów): „W którym sklepie jesteś?”.
 - U góry: zmiana sklepu w każdej chwili oraz widok „Cała lista” bez podziału.
@@ -96,7 +119,7 @@ Oznaczenia ekranów (A–F, 00–09) odpowiadają tytułom plansz na płótnie.
 - Aplikacja wykrywa rytm zakupów (dni tygodnia, produkty kupowane regularnie).
 - Gdy regularny produkt nie trafił na listę w danym tygodniu, na liście pojawia się krótkie „Nic Ci nie umknęło?” z tymi produktami. Bez tłumaczenia, skąd to wiemy. Jedno stuknięcie dodaje produkt.
 
-## 8. Promocje (ekran 09)
+## 8. Promocje (PR1)
 
 - Personalizowane z historii list i paragonów (co i w jakim sklepie użytkownik kupuje). Na starcie ogólne, z czasem trafniejsze.
 - Sklepy wybiera użytkownik (chipy u góry, docelowo także w onboardingu).
@@ -105,7 +128,7 @@ Oznaczenia ekranów (A–F, 00–09) odpowiadają tytułom plansz na płótnie.
 - **Bez „realnej zniżki” i bez procentów z gazetek.** Pokazujemy tylko cenę i termin.
 - Z gazetek bierzemy tylko fakty i link, docelowo na licencji od sieci.
 
-## 9. Paragony i Premium (ekran 08)
+## 9. Paragony i Premium (PA1)
 
 - Aplikacja jest darmowa. Ceny z paragonów są kluczowymi danymi do wspólnej bazy cen.
 - **4 paragony w ciągu 30 dni = Premium za darmo.** Pasek postępu „x z 4” w Paragonach i komunikat „Premium odblokowane do {data}”.
