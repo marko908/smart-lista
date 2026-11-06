@@ -55,14 +55,14 @@ Kody odpowiadają tytułom plansz na płótnie. Stan zapisujemy po kropce, np. `
    - Mapa z pinezkami, pod nią lista sklepów od najbliższego.
    - Na górze „Najczęściej wybierasz”: 2 sklepy, które **ten użytkownik** wybiera najczęściej (z jego historii). Jedno stuknięcie od razu tworzy listę. Nowy użytkownik tej sekcji nie widzi.
    - „Mamy mapę sklepu” przy sklepach, dla których trasa będzie dokładna.
-   - **Karta sklepu:** stuknięcie pinezki lub wiersza zaznacza sklep (wiersz tylko zmienia tło, nic się nie przesuwa) i wysuwa nad dolnym przyciskiem kartę-nakładkę z:
-     - małym zdjęciem wejścia do sklepu (żeby sprawdzić, czy to ten sklep; źródło: Google Places Photos, później zdjęcia od użytkowników),
-     - nazwą, adresem i czasem dojścia pieszo,
-     - godzinami („Otwarte do 22:00” / „Zamknięte, od 7:00”),
+   - **Karta sklepu:** stuknięcie pinezki lub wiersza zaznacza sklep (wiersz tylko zmienia tło) i w miejscu mapy (ten sam stały obszar, płynne przejście) pokazuje kartę sklepu:
+     - zdjęcie wejścia do sklepu (żeby sprawdzić, czy to ten sklep; źródło: Google Places Photos, później zdjęcia od użytkowników),
+     - nazwę, adres i czas dojścia pieszo,
+     - godziny („Otwarte do 22:00” / „Zamknięte, od 7:00”),
      - „Mapa alejek”, jeśli ją mamy,
-     - „Wybierasz często”, jeśli sklep jest w historii użytkownika.
-     Ponowne stuknięcie odznacza sklep. Dolny przycisk: „Wybierz {sieć} · {adres}”.
-   - Lista sklepów ma stały dolny margines na kartę, więc karta niczego nie przesuwa.
+     - „Wybierasz często”, jeśli sklep jest w historii użytkownika,
+     - przycisk „Pokaż mapę” (wraca do pinezek, zaznaczenie zostaje).
+     Karta nie zasłania listy sklepów i niczego nie przesuwa. Ponowne stuknięcie wiersza odznacza sklep. Dolny przycisk: „Wybierz {sieć} · {adres}”.
 3. **N3 · Lista dla sklepu.** Na dole zawsze dwa przyciski: „Kolejny sklep” i „Zakończ”. „Zakończ” jest nieaktywny, dopóki lista jest pusta.
 4. **N4 · Kolejny sklep.** Ten sam wybór sklepu, bez sklepów już dodanych. Wraca do tej samej listy.
 5. **N5 · Lista na kilka sklepów.** Patrz punkt 4.
@@ -79,7 +79,7 @@ Kody odpowiadają tytułom plansz na płótnie. Stan zapisujemy po kropce, np. `
   - Domyślna jednostka i ilość wynikają z katalogu produktów.
 - **Panel ilości:** przy każdym produkcie jest chip z ilością („2 kg ▾”). Stuknięcie wysuwa arkusz z dołu (tło przyciemnione i rozmyte) z:
   - dużą ilością oraz przyciskami − i +,
-  - szybkimi wartościami (np. 250 g / 500 g / 1 kg / 2 kg),
+  - szybkimi wartościami, zawsze 4 w jednym rzędzie (kg: 250 g / 500 g / 1 kg / 2 kg; szt.: 1 / 2 / 4 / 6; butelki: 1 / 2 / 6 / 12), żeby zmiana jednostki nie zmieniała wysokości panelu,
   - przełącznikiem jednostki **Sztuki / Na wagę / Butelki**,
   - „Kupuję w” (tylko na liście z kilkoma sklepami, patrz punkt 4),
   - szacowaną ceną, przyciskiem „Usuń” i „Gotowe”.
@@ -108,6 +108,9 @@ Kody odpowiadają tytułom plansz na płótnie. Stan zapisujemy po kropce, np. `
 
 ## 6. Tryb zakupów (Z1)
 
+- **Widok „Po kolei”:** lista wszystkich działów bieżącego sklepu w kolejności trasy. Zrobione i kolejne działy są zwiniętymi paskami (numer lub ✓, nazwa, „1 z 2”), aktualny dział jest rozwinięty (duża nazwa, „Teraz · krok 2 z 4”, gdzie leży, produkty). Na końcu pasek „Kasa”.
+- **Animacje:** odhaczenie = kółko wypełnia się z „pyknięciem” i pulsem, ptaszek się rysuje, tekst szarzeje i przekreśla się od lewej. Po odhaczeniu ostatniego produktu działu jest ok. 0,65 s zwłoki (czas na cofnięcie pomyłki), potem dział płynnie zwija się do paska, a następny się rozwija (animacja wysokości, rozmiaru nazwy i tła). Odznaczenie działa odwrotnie.
+- Stuknięcie zwiniętego paska rozwija go podglądowo (np. żeby odznaczyć coś w zrobionym dziale). Po następnym odhaczeniu widok wraca do aktualnego działu.
 - Na starcie (lista na kilka sklepów): „W którym sklepie jesteś?”.
 - U góry: zmiana sklepu w każdej chwili oraz widok „Cała lista” bez podziału.
 - Po odhaczeniu wszystkiego w sklepie: „{Sklep} zrobiony, zapłać tutaj” i „Do którego sklepu teraz?” (przy jednym pozostałym: „Został {sklep}. Idziesz?”).
