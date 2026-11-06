@@ -179,6 +179,12 @@ Kody odpowiadają tytułom plansz na płótnie. Stan zapisujemy po kropce, np. `
 - Wariant 1: nagranie wideo z telefonu na uchwycie na klatce piersiowej (1 klatka/s) plus krokomierz i kompas (expo-sensors) w Expo Go. Model wizyjny przypisuje sekcje, a z kolejności klatek powstaje szkic planu do poprawy w edytorze 2D.
 - Bez AR/ARKit/Niantic na MVP (wymaga konta Apple Developer i własnego buildu).
 
+## Na później (nie budujemy teraz)
+
+Te pomysły wchodzą dopiero po dopracowaniu aplikacji i sprawdzeniu, że promocje w ogóle działają.
+
+- **„Taniej w innym sklepie”** (pomysł Marko, 2026-11-06). Jeśli produkt z listy jest tańszy w innym sklepie, który użytkownik ma w ulubionych, pokazujemy informację, np. „Taniej w Kauflandzie: 4,99 zł (o 1,50 zł mniej)”. Forma UX jest otwarta: na przykład ikonka z wykrzyknikiem przy produkcie, która po stuknięciu otwiera dymek lub arkusz. Musi spełniać zasadę „nic nie przeskakuje”. Źródło cen: paragony i gazetki.
+
 ## Otwarte pytania
 
 - ml/l jako osobna jednostka?
