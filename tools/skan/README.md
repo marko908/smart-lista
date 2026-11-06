@@ -40,3 +40,17 @@ i każda przerwa w nagraniu trafia do ostrzeżeń.
 
 Plik z telefonu ma też `dziennik` (zejście aplikacji w tło, stojący zegar, wolne zdjęcia) i oba strumienie
 kroków osobno (`surowe`). `rozpakuj` wypisuje jedno i drugie — tak sprawdzamy, skąd biorą się przerwy.
+
+## Osobna kamera zamiast telefonu
+
+Gdy zdjęcia robi kamera na szyi, telefon jedzie w kieszeni w trybie **„Zdjęcia robi: osobna kamera”**
+(liczy tylko kroki i kurs, ekran można wygasić stuknięciem w licznik). Na starcie pokaż kamerze duży
+licznik z ekranu telefonu. Potem zamiast `rozpakuj`:
+
+```
+npm run skan -- film film.mp4 czujniki-….alejka-skan.json ./moj-skan          # wycina synchro/
+npm run skan -- film film.mp4 czujniki-….alejka-skan.json ./moj-skan 12.4     # z przesunięciem
+```
+
+Przesunięcie = licznik widoczny na klatce − czas tej klatki w filmie (klatki `synchro/` są co 0,5 s).
+Dalej jak zwykle: `etykietuj`, `szkic`. Potrzebny ffmpeg.

@@ -4,6 +4,7 @@
  *   npm run skan -- rozpakuj  <plik.alejka-skan.json> <katalog>
  *   npm run skan -- etykietuj <katalog>
  *   npm run skan -- szkic     <katalog> "<nazwa sklepu>" [sieć]
+ *   npm run skan -- film      <film.mp4> <czujniki.alejka-skan.json> <katalog> [przesunięcie s]
  *
  * 1. rozpakuj  — wyciąga zdjęcia i dane czujników z pliku z telefonu,
  *                odrzuca klatki, przy których człowiek stał w miejscu.
@@ -11,11 +12,17 @@
  *                widać po lewej i po prawej. Wymaga klucza API Anthropic
  *                (ANTHROPIC_API_KEY albo `ant auth login`). Model można zmienić
  *                zmienną SKAN_MODEL. Wynik: etykiety.json — można go poprawić ręcznie.
+ * film     — zamiast „rozpakuj", gdy zdjęcia robiła osobna kamera (telefon w kieszeni
+ *            w trybie „tylko czujniki"). Bez przesunięcia wycina tylko pierwsze 20 s
+ *            do katalogu synchro/: odczytaj z nich licznik z ekranu telefonu
+ *            (przesunięcie = licznik − czas klatki w filmie) i uruchom ponownie.
+ *            Wymaga ffmpeg.
  * 3. szkic     — z trasy i etykiet składa plik .alejka.json, który wczytuje się
  *                w aplikacji przyciskiem „Wczytaj sklep z pliku".
  */
 
 import Anthropic from '@anthropic-ai/sdk';
+import { spawnSync } from 'child_process';
 import fs from 'fs';
 import path from 'path';
 import { CHAIN_BY_KEY, type ChainKey } from '../../src/data/chains';
@@ -28,6 +35,62 @@ const NA_ZAPYTANIE = 6;
 
 function czytajJson<T>(p: string): T {
   return JSON.parse(fs.readFileSync(p, 'utf8')) as T;
+}
+
+/** Stanie w miejscu daje serię prawie identycznych klatek — zostawiamy jedną. */
+function odrzucStanie(s: SkanSesja): SkanSesja['klatki'] {
+  const krokiW = (t: number) => {
+    let k = 0;
+    for (const pr of s.probki) if (pr.t <= t) k = pr.kroki;
+    return k;
+  };
+  const zostaw: SkanSesja['klatki'] = [];
+  let ost = -Infinity;
+  for (const k of s.klatki) {
+    const kr = krokiW(k.t);
+    if (kr - ost < 0.5 && zostaw.length) continue;
+    ost = kr;
+    zostaw.push(k);
+  }
+  return zostaw;
+}
+
+function film(wideo: string, plikCzujnikow: string, kat: string, przesuniecie?: string) {
+  const p = parseSesja(fs.readFileSync(plikCzujnikow, 'utf8'));
+  if (!p.ok) throw new Error(p.error);
+  const ff = (args: string[]) => {
+    const r = spawnSync('ffmpeg', ['-hide_banner', '-loglevel', 'error', ...args], { stdio: 'inherit' });
+    if (r.error) throw new Error('Nie znalazłem ffmpeg — zainstaluj go (https://ffmpeg.org) i spróbuj ponownie.');
+    if (r.status !== 0) throw new Error('ffmpeg zakończył się błędem.');
+  };
+  if (przesuniecie === undefined) {
+    const syn = path.join(kat, 'synchro');
+    fs.mkdirSync(syn, { recursive: true });
+    ff(['-y', '-t', '20', '-i', wideo, '-vf', 'fps=2,scale=960:-2', path.join(syn, 's%03d.jpg')]);
+    console.log(`Klatki synchronizacji w ${syn}: s001 = 0,0 s filmu, s002 = 0,5 s, s003 = 1,0 s…`);
+    console.log('Znajdź klatkę z licznikiem telefonu; przesunięcie = licznik − czas tej klatki. Potem:');
+    console.log(`  npm run skan -- film "${wideo}" "${plikCzujnikow}" "${kat}" <przesunięcie>`);
+    return;
+  }
+  const dt = Number(przesuniecie.replace(',', '.'));
+  if (!Number.isFinite(dt)) throw new Error(`Przesunięcie to liczba sekund, dostałem: ${przesuniecie}`);
+  const katK = path.join(kat, 'klatki');
+  fs.mkdirSync(katK, { recursive: true });
+  // Klatka n (od 1) to (n − 1) s filmu, czyli (n − 1 + dt) s na zegarze telefonu.
+  ff(['-y', '-i', wideo, '-vf', 'fps=1,scale=1280:-2', '-q:v', '4', path.join(katK, 'f%04d.jpg')]);
+  const koniec = p.sesja.probki[p.sesja.probki.length - 1]?.t ?? Infinity;
+  const wszystkie = fs
+    .readdirSync(katK)
+    .filter((f) => /^f\d{4}\.jpg$/.test(f))
+    .sort()
+    .map((plik) => ({ t: Number(plik.slice(1, 5)) - 1 + dt, plik }));
+  const wZakresie = wszystkie.filter((k) => k.t >= 0 && k.t <= koniec);
+  const s: SkanSesja = { ...p.sesja, klatki: wZakresie };
+  const zostaw = odrzucStanie(s);
+  const nazwy = new Set(zostaw.map((k) => k.plik));
+  for (const k of wszystkie) if (!nazwy.has(k.plik)) fs.unlinkSync(path.join(katK, k.plik));
+  fs.writeFileSync(path.join(kat, 'sesja.json'), JSON.stringify({ ...s, klatki: zostaw }, null, 2));
+  console.log(`Klatek z filmu: ${wszystkie.length}, w czasie nagrania czujników: ${wZakresie.length}, po odrzuceniu stania: ${zostaw.length}.`);
 }
 
 function rozpakuj(plik: string, kat: string) {
@@ -151,7 +214,8 @@ async function main() {
   if (cmd === 'rozpakuj' && a && b) return rozpakuj(a, b);
   if (cmd === 'etykietuj' && a) return etykietuj(a);
   if (cmd === 'szkic' && a && b) return szkic(a, b, c || 'lidl');
-  console.log('Użycie:\n  rozpakuj <plik.alejka-skan.json> <katalog>\n  etykietuj <katalog>\n  szkic <katalog> "<nazwa>" [sieć]');
+  if (cmd === 'film' && a && b && c) return film(a, b, c, process.argv[6]);
+  console.log('Użycie:\n  rozpakuj <plik.alejka-skan.json> <katalog>\n  etykietuj <katalog>\n  szkic <katalog> "<nazwa>" [sieć]\n  film <film.mp4> <czujniki.json> <katalog> [przesunięcie s]');
   process.exit(1);
 }
 

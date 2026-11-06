@@ -18,7 +18,7 @@ import { router } from 'expo-router';
 import { Accelerometer, Pedometer } from 'expo-sensors';
 import * as Sharing from 'expo-sharing';
 import { useEffect, useRef, useState } from 'react';
-import { AppState, Platform, StyleSheet, Text, View } from 'react-native';
+import { AppState, Modal, Platform, Pressable, StyleSheet, Text, View } from 'react-native';
 import { Body, Button, Card, FONT, H1, Input, Label, Screen } from '../components/ui';
 import { mozeMapowac } from '../lib/admin';
 import { useKonto } from '../lib/konto';
@@ -30,6 +30,8 @@ const TEMPO = { spokojne: { ms: 1000, krok: '0.7' }, szybkie: { ms: 500, krok: '
 const KEEP_AWAKE = 'alejka-skan';
 
 type Stan = 'gotowy' | 'nagrywa' | 'pakuje' | 'koniec';
+/** `aparat` — telefon robi zdjęcia sam. `czujniki` — zdjęcia robi osobna kamera, telefon w kieszeni liczy kroki i kurs. */
+type Tryb = 'aparat' | 'czujniki';
 
 export default function Skan() {
   const { sesja } = useKonto();
@@ -42,6 +44,8 @@ export default function Skan() {
   const [rozmiar, setRozmiar] = useState<string | undefined>();
   const [krok, setKrok] = useState('0.7');
   const [tempo, setTempo] = useState<keyof typeof TEMPO>('spokojne');
+  const [tryb, setTryb] = useState<Tryb>('aparat');
+  const [wygaszony, setWygaszony] = useState(false);
   const [licznik, setLicznik] = useState({ klatki: 0, kroki: 0, kurs: null as number | null, sek: 0 });
   const [info, setInfo] = useState<string | null>(null);
 
@@ -106,7 +110,7 @@ export default function Skan() {
 
   async function startuj() {
     setInfo(null);
-    if (!perm?.granted && !(await prosOKamere()).granted) {
+    if (tryb === 'aparat' && !perm?.granted && !(await prosOKamere()).granted) {
       setInfo('Bez dostępu do aparatu skan nie ruszy.');
       return;
     }
@@ -165,14 +169,19 @@ export default function Skan() {
 
     const timer = setInterval(async () => {
       const tyk = teraz();
-      if (tyk - ostTyk > 2.5) loguj(`zegar stal ${(tyk - ostTyk).toFixed(1)} s`);
+      if (tyk - ostTyk > (tryb === 'czujniki' ? 1.5 : 2.5)) loguj(`zegar stal ${(tyk - ostTyk).toFixed(1)} s`);
       ostTyk = tyk;
       const ostKroki = Math.max(
         kroki.current[kroki.current.length - 1]?.kroki ?? 0,
         krokiAkc.current[krokiAkc.current.length - 1]?.kroki ?? 0
       );
-      setLicznik({ klatki: klatki.current.length, kroki: ostKroki, kurs: ostatniKurs.current, sek: Math.round(teraz()) });
-      if (zajety.current || !kamera.current) return;
+      setLicznik({
+        klatki: klatki.current.length,
+        kroki: ostKroki,
+        kurs: ostatniKurs.current,
+        sek: tryb === 'czujniki' ? Math.floor(tyk * 10) / 10 : Math.round(tyk),
+      });
+      if (tryb === 'czujniki' || zajety.current || !kamera.current) return;
       zajety.current = true;
       try {
         const tt = teraz();
@@ -194,7 +203,7 @@ export default function Skan() {
       } finally {
         zajety.current = false;
       }
-    }, TEMPO[tempo].ms);
+    }, tryb === 'czujniki' ? 100 : TEMPO[tempo].ms);
 
     sprzataj.current = [
       () => ped?.remove(),
@@ -226,6 +235,7 @@ export default function Skan() {
             : krokiAkc.current
         ),
         klatki: klatki.current,
+        tryb,
         dziennik: dziennik.current,
         surowe: { krokomierz: kroki.current, akcelerometr: krokiAkc.current },
       };
@@ -236,11 +246,16 @@ export default function Skan() {
           encoding: FileSystem.EncodingType.Base64,
         });
       }
-      const nazwa = `skan-${s.start.slice(0, 16).replace(/[:T]/g, '-')}.alejka-skan.json`;
+      const nazwa = `${tryb === 'czujniki' ? 'czujniki' : 'skan'}-${s.start.slice(0, 16).replace(/[:T]/g, '-')}.alejka-skan.json`;
       const uri = katalog.current + nazwa;
       await FileSystem.writeAsStringAsync(uri, JSON.stringify({ ...s, obrazy }));
       const mb = ((await FileSystem.getInfoAsync(uri)) as { size?: number }).size ?? 0;
-      setInfo(`Gotowe: ${klatki.current.length} klatek, ${(mb / 1e6).toFixed(1)} MB.`);
+      setWygaszony(false);
+      setInfo(
+        tryb === 'czujniki'
+          ? `Gotowe: ${(mb / 1e6).toFixed(1)} MB. Wyślij ten plik razem z filmem z kamery.`
+          : `Gotowe: ${klatki.current.length} klatek, ${(mb / 1e6).toFixed(1)} MB.`
+      );
       setStan('koniec');
       if (await Sharing.isAvailableAsync()) {
         await Sharing.shareAsync(uri, { mimeType: 'application/json', UTI: 'public.json', dialogTitle: 'Wyślij skan' });
@@ -257,6 +272,22 @@ export default function Skan() {
     <Screen>
       <H1>Skan sklepu</H1>
       {!nagrywa && (
+        <Button
+          title={tryb === 'aparat' ? 'Zdjęcia robi: ten telefon' : 'Zdjęcia robi: osobna kamera'}
+          variant="secondary"
+          onPress={() => setTryb(tryb === 'aparat' ? 'czujniki' : 'aparat')}
+        />
+      )}
+      {!nagrywa && tryb === 'czujniki' && (
+        <Card>
+          <Body>
+            Włącz nagrywanie w kamerze, potem tutaj „Zacznij skan” i pokaż kamerze ekran z dużym
+            licznikiem przez 2–3 sekundy — po nim zgram film z krokami. Stuknij licznik, żeby wygasić
+            ekran, i schowaj telefon do kieszeni. Nie minimalizuj aplikacji.
+          </Body>
+        </Card>
+      )}
+      {!nagrywa && tryb === 'aparat' && (
         <Card>
           <Body>
             Telefon na uchwycie na klatce piersiowej albo na wózku, aparatem do przodu. Przejdź
@@ -266,6 +297,19 @@ export default function Skan() {
         </Card>
       )}
 
+      {tryb === 'czujniki' && nagrywa && (
+        <Pressable onPress={() => setWygaszony(true)} style={[st.zegar, { borderColor: t.colors.border }]}>
+          <Text style={[st.zegarTekst, { color: t.colors.foreground }]}>{licznik.sek.toFixed(1)}</Text>
+          <Text style={[st.etykieta, { color: t.colors.mutedForeground }]}>stuknij, żeby wygasić ekran</Text>
+        </Pressable>
+      )}
+      <Modal visible={wygaszony} animationType="none" statusBarTranslucent>
+        <Pressable style={st.czern} onLongPress={() => setWygaszony(false)} delayLongPress={1500}>
+          <Text style={st.czernTekst}>przytrzymaj, żeby wrócić</Text>
+        </Pressable>
+      </Modal>
+
+      {tryb === 'aparat' && (
       <View style={[st.podglad, { borderColor: t.colors.border }]}>
         <CameraView
           ref={kamera}
@@ -277,12 +321,13 @@ export default function Skan() {
           onCameraReady={przygotujKamere}
         />
       </View>
+      )}
 
       {nagrywa ? (
         <View style={st.liczniki}>
           {[
             ['czas', `${licznik.sek} s`],
-            ['klatki', String(licznik.klatki)],
+            ...(tryb === 'aparat' ? [['klatki', String(licznik.klatki)]] : []),
             ['kroki', String(licznik.kroki)],
             ['kurs', licznik.kurs === null ? '—' : `${Math.round(licznik.kurs)}°`],
           ].map(([k, v]) => (
@@ -294,7 +339,7 @@ export default function Skan() {
         </View>
       ) : (
         <View style={{ gap: 6 }}>
-          <Button
+          {tryb === 'aparat' && <Button
             title={tempo === 'spokojne' ? 'Tempo: spokojne · 1 zdjęcie/s' : 'Tempo: szybki marsz · 2 zdjęcia/s'}
             variant="secondary"
             onPress={() => {
@@ -302,12 +347,12 @@ export default function Skan() {
               if (krok === TEMPO[tempo].krok) setKrok(TEMPO[nowe].krok);
               setTempo(nowe);
             }}
-          />
+          />}
           <Label>Długość kroku (m)</Label>
           <Input value={krok} onChangeText={setKrok} keyboardType="decimal-pad" />
-          <Body muted>
+          {tryb === 'aparat' && <Body muted>
             {obiektyw ? 'Obiektyw szerokokątny włączony.' : 'Obiektyw szerokokątny niedostępny, używam zwykłego.'}
-          </Body>
+          </Body>}
         </View>
       )}
 
@@ -317,7 +362,14 @@ export default function Skan() {
       {stan === 'gotowy' || stan === 'koniec' ? (
         <Button title={stan === 'koniec' ? 'Nowy skan' : 'Zacznij skan'} onPress={startuj} />
       ) : nagrywa ? (
-        <Button title="Zakończ i wyślij" variant="danger" onPress={zakoncz} />
+        tryb === 'czujniki' ? (
+          // W kieszeni łatwo coś przypadkiem stuknąć — kończymy dopiero po przytrzymaniu.
+          <Pressable onLongPress={zakoncz} delayLongPress={1500} style={[st.konczPrzytrzymaj, { backgroundColor: t.colors.destructive ?? '#c0392b' }]}>
+            <Text style={st.konczTekst}>Przytrzymaj, żeby zakończyć</Text>
+          </Pressable>
+        ) : (
+          <Button title="Zakończ i wyślij" variant="danger" onPress={zakoncz} />
+        )
       ) : (
         <Button title="Pakuję…" disabled onPress={() => {}} />
       )}
@@ -331,4 +383,10 @@ const st = StyleSheet.create({
   licznik: { alignItems: 'center', flex: 1 },
   wartosc: { fontFamily: FONT.monoBold, fontSize: 20 },
   etykieta: { fontFamily: FONT.sans, fontSize: 12 },
+  zegar: { height: 260, borderRadius: 16, borderWidth: 1, alignItems: 'center', justifyContent: 'center' },
+  zegarTekst: { fontFamily: FONT.monoBold, fontSize: 96 },
+  czern: { flex: 1, backgroundColor: '#000', alignItems: 'center', justifyContent: 'flex-end', paddingBottom: 40 },
+  czernTekst: { color: '#222', fontFamily: FONT.sans, fontSize: 12 },
+  konczPrzytrzymaj: { borderRadius: 999, paddingVertical: 14, alignItems: 'center' },
+  konczTekst: { color: '#fff', fontFamily: FONT.sans, fontSize: 16 },
 });

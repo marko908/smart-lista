@@ -36,6 +36,8 @@ export type SkanSesja = {
   dlugoscKroku: number;
   probki: SkanProbka[];
   klatki: SkanKlatka[];
+  /** Skąd zdjęcia: z telefonu (`aparat`) czy z osobnej kamery (`czujniki` — klatki dokłada narzędzie z filmu). */
+  tryb?: 'aparat' | 'czujniki';
   /**
    * Dziennik zdarzeń do diagnozy: zmiany stanu aplikacji, spóźnione tyknięcia
    * zegara, wolne zdjęcia. Nie wpływa na trasę.
@@ -422,6 +424,7 @@ export function parseSesja(text: string): { ok: true; sesja: SkanSesja } | { ok:
       dlugoscKroku: typeof r.dlugoscKroku === 'number' && r.dlugoscKroku > 0 ? r.dlugoscKroku : 0.7,
       probki: probki.sort((a, b) => a.t - b.t),
       klatki: klatki.sort((a, b) => a.t - b.t),
+      ...(r.tryb === 'aparat' || r.tryb === 'czujniki' ? { tryb: r.tryb } : {}),
       ...(Array.isArray(r.dziennik) ? { dziennik: r.dziennik } : {}),
       ...(r.surowe && typeof r.surowe === 'object' ? { surowe: r.surowe } : {}),
     },
