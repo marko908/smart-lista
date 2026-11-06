@@ -8,11 +8,14 @@ import { potwierdz } from '../lib/potwierdz';
 import { newId, useApp } from '../lib/storage';
 import { radius, useTheme } from '../lib/theme';
 import type { ShoppingList } from '../lib/types';
+import { useKonto } from '../lib/konto';
+import { mozeMapowac } from '../lib/admin';
 
 export default function Home() {
   const t = useTheme();
   const { state, ready, update } = useApp();
   const [adding, setAdding] = useState(false);
+  const { sesja } = useKonto();
 
   /**
    * Pusta aplikacja od razu pokazuje formularz, zamiast chować go za przyciskiem.
@@ -53,6 +56,11 @@ export default function Home() {
           Lista układa się w kolejności przejścia przez sklep, nie w kolejności wpisywania.
         </Body>
       </View>
+
+      {/* Prototyp skanu: widoczny tam, gdzie wolno mapować (admin albo wersja deweloperska bez bazy). */}
+      {mozeMapowac(sesja) && (
+        <Button title="Skanuj sklep spacerem (prototyp)" variant="secondary" onPress={() => router.push('/skan')} />
+      )}
 
       {formularz ? (
         <Card>
