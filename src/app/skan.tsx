@@ -18,7 +18,7 @@ import { router } from 'expo-router';
 import { Accelerometer, Pedometer } from 'expo-sensors';
 import * as Sharing from 'expo-sharing';
 import { useEffect, useRef, useState } from 'react';
-import { Platform, StyleSheet, Text, View } from 'react-native';
+import { AppState, Platform, StyleSheet, Text, View } from 'react-native';
 import { Body, Button, Card, FONT, H1, Input, Label, Screen } from '../components/ui';
 import { mozeMapowac } from '../lib/admin';
 import { useKonto } from '../lib/konto';
@@ -57,6 +57,7 @@ export default function Skan() {
   const [bladKlatki, setBladKlatki] = useState<string | null>(null);
   const ostatniKurs = useRef<number | null>(null);
   const zajety = useRef(false);
+  const dziennik = useRef<{ t: number; co: string }[]>([]);
   const sprzataj = useRef<(() => void)[]>([]);
 
   useEffect(() => () => zatrzymajCzujniki(), []);
@@ -123,6 +124,7 @@ export default function Skan() {
     kroki.current = [];
     krokiAkc.current = [];
     sciezki.current = {};
+    dziennik.current = [];
     bledyZRzedu.current = 0;
     setBladKlatki(null);
     ostatniKurs.current = null;
@@ -150,7 +152,15 @@ export default function Skan() {
       kursy.current.push({ t: teraz(), kurs });
     });
 
+    // Diagnoza przerw: czy aplikacja schodzi w tło, czy stoi zegar, czy aparat się wiesza.
+    const loguj = (co: string) => dziennik.current.push({ t: Math.round(teraz() * 10) / 10, co });
+    const stanApki = AppState.addEventListener('change', (s) => loguj(`app:${s}`));
+    let ostTyk = teraz();
+
     const timer = setInterval(async () => {
+      const tyk = teraz();
+      if (tyk - ostTyk > 2.5) loguj(`zegar stal ${(tyk - ostTyk).toFixed(1)} s`);
+      ostTyk = tyk;
       const ostKroki = Math.max(
         kroki.current[kroki.current.length - 1]?.kroki ?? 0,
         krokiAkc.current[krokiAkc.current.length - 1]?.kroki ?? 0
@@ -161,6 +171,7 @@ export default function Skan() {
       try {
         const tt = teraz();
         const foto = await kamera.current.takePictureAsync({ quality: 0.4, shutterSound: false });
+        if (teraz() - tt > 2) loguj(`zdjecie trwalo ${(teraz() - tt).toFixed(1)} s`);
         const plik = `f${String(klatki.current.length + 1).padStart(4, '0')}.jpg`;
         sciezki.current[plik] = foto.uri;
         klatki.current.push({ t: tt, plik });
@@ -170,6 +181,7 @@ export default function Skan() {
         // znaczy, że aparat nie lubi wybranego rozmiaru albo obiektywu — wtedy
         // wracamy do ustawień domyślnych i pokazujemy błąd na ekranie.
         bledyZRzedu.current += 1;
+        loguj(`blad aparatu: ${String(e).slice(0, 120)}`);
         setBladKlatki(String(e));
         if (bledyZRzedu.current === 3) setRozmiar(undefined);
         if (bledyZRzedu.current === 6) setObiektyw(undefined);
@@ -178,7 +190,13 @@ export default function Skan() {
       }
     }, CO_ILE_MS);
 
-    sprzataj.current = [() => ped?.remove(), () => akc.remove(), () => head.remove(), () => clearInterval(timer)];
+    sprzataj.current = [
+      () => ped?.remove(),
+      () => akc.remove(),
+      () => head.remove(),
+      () => stanApki.remove(),
+      () => clearInterval(timer),
+    ];
     setStan('nagrywa');
   }
 
@@ -202,6 +220,8 @@ export default function Skan() {
             : krokiAkc.current
         ),
         klatki: klatki.current,
+        dziennik: dziennik.current,
+        surowe: { krokomierz: kroki.current, akcelerometr: krokiAkc.current },
       };
       // Jeden plik: sesja + zdjęcia w base64. Łatwiej go przesłać niż setki osobnych plików.
       const obrazy: Record<string, string> = {};

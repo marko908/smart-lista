@@ -80,6 +80,36 @@ const plik = serializeStore({
 const wczyt = parseStoreFile(plik);
 ok('szkic wczytuje się jak zwykły plik sklepu', wczyt.ok, wczyt.ok ? '' : wczyt.error);
 
+console.log('--- zgubione przejścia między alejkami ---');
+{
+  // Ten sam wąż, ale kroków w bok nie ma (przerwa w nagraniu przy zawracaniu).
+  const bezBoku: SkanSesja = {
+    ...sesja,
+    probki: (() => {
+      const out = [{ t: 0, kroki: 0, kurs: OBROT as number | null }];
+      let tt = 0;
+      let kk = 0;
+      for (const [kier, metry] of nogi) {
+        const n = Math.round(metry / 0.7);
+        for (let s = 0; s < n; s++) {
+          tt += 1;
+          if (kier !== 90) kk += 1;
+          out.push({ t: tt, kroki: kk, kurs: (OBROT + kier + 360) % 360 });
+        }
+      }
+      return out;
+    })(),
+  };
+  const bez = trasa(bezBoku);
+  ok('bez dopowiadania alejki leżą na sobie', Math.abs(bez[bez.length - 1].x) < 0.5, bez[bez.length - 1].x.toFixed(1));
+  const z = trasa(bezBoku, 3, 3);
+  const kz = z[z.length - 1];
+  ok('z rozstawem 3 m alejki rozsunięte o 2×3 m', Math.abs(kz.x - 6) < 0.5 && Math.abs(kz.y + 10) < 1.5, `${kz.x.toFixed(1)},${kz.y.toFixed(1)}`);
+  ok('dopowiadanie po osiach', z.every((p, i) => i === 0 || p.x === z[i - 1].x || p.y === z[i - 1].y));
+  const zDobrej = trasa(sesja, 3, 3);
+  ok('dobra trasa bez dopowiadania', zDobrej.length === sesja.probki.length);
+}
+
 console.log('--- krokomierz paczkami ---');
 // 10 s w górę, 10 s w prawo, 1 krok/s; krokomierz odzywa się co 5 s.
 const kursy = Array.from({ length: 21 }, (_, i) => ({ t: i, kurs: i < 10 ? 0 : 90 }));

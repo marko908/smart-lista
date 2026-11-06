@@ -36,6 +36,13 @@ export type SkanSesja = {
   dlugoscKroku: number;
   probki: SkanProbka[];
   klatki: SkanKlatka[];
+  /**
+   * Dziennik zdarzeń do diagnozy: zmiany stanu aplikacji, spóźnione tyknięcia
+   * zegara, wolne zdjęcia. Nie wpływa na trasę.
+   */
+  dziennik?: { t: number; co: string }[];
+  /** Oba strumienie kroków osobno, żeby dało się wybrać lepszy już po nagraniu. */
+  surowe?: { krokomierz: { t: number; kroki: number }[]; akcelerometr: { t: number; kroki: number }[] };
 };
 
 /** Co widać na klatce, po lewej i po prawej stronie alejki. */
@@ -83,8 +90,14 @@ function przyciagnij(kurs: number, os: number): Kierunek {
  *
  * Krótkie zmiany kierunku (mniej niż `minKrokow` kroków) traktujemy jako
  * szum kompasu albo rozglądanie się i doklejamy do poprzedniego odcinka.
+ *
+ * `alejka` (metry, 0 = wyłączone): rozstaw alejek. Gdy człowiek zawraca, a od
+ * końca poprzedniej alejki nie przesunął się w bok nawet o pół rozstawu,
+ * przejście do sąsiedniej alejki zginęło — telefon nie liczył wtedy kroków
+ * (przerwa w nagraniu albo wózek, który tłumi kroki). Wtedy dokładamy
+ * przesunięcie o jedną alejkę w tę stronę, w którą ostatnio szło się w bok.
  */
-export function trasa(sesja: SkanSesja, minKrokow = 3): PunktTrasy[] {
+export function trasa(sesja: SkanSesja, minKrokow = 3, alejka = 0): PunktTrasy[] {
   const pr = sesja.probki;
   if (!pr.length) return [];
   const os = osSklepu(pr);
@@ -112,12 +125,49 @@ export function trasa(sesja: SkanSesja, minKrokow = 3): PunktTrasy[] {
   }
 
   const L = sesja.dlugoscKroku > 0 ? sesja.dlugoscKroku : 0.7;
+  const DLUGI = 4; // metrów: od tylu bieg uznajemy za alejkę, nie za przejście w bok
   const out: PunktTrasy[] = [{ t: pr[0].t, x: 0, y: 0, kier: wyg[0] }];
-  for (let q = 1; q < pr.length; q++) {
-    const dk = Math.max(0, pr[q].kroki - pr[q - 1].kroki);
+  let glowny: Kierunek | null = null; // kierunek ostatniej alejki
+  let koniecAlejki = { x: 0, y: 0 };
+  let bok: Kierunek | null = null; // w którą stronę ostatnio szło się między alejkami
+  let q = 1;
+  while (q < pr.length) {
+    let j = q;
+    while (j + 1 < pr.length && wyg[j + 1] === wyg[q]) j++;
     const k = wyg[q];
-    const p = out[q - 1];
-    out.push({ t: pr[q].t, x: p.x + DX[k] * dk * L, y: p.y + DY[k] * dk * L, kier: k });
+    const metry = (pr[j].kroki - pr[q - 1].kroki) * L;
+
+    if (alejka > 0 && glowny !== null && k === (glowny + 2) % 4 && metry >= DLUGI) {
+      const p = out[out.length - 1];
+      const pion = glowny % 2 === 0;
+      const wBok = pion ? p.x - koniecAlejki.x : p.y - koniecAlejki.y;
+      if (Math.abs(wBok) < alejka / 2) {
+        const b: Kierunek = bok ?? (((glowny + 1) % 4) as Kierunek);
+        out.push({
+          t: p.t,
+          x: pion ? koniecAlejki.x + DX[b] * alejka : p.x,
+          y: pion ? p.y : koniecAlejki.y + DY[b] * alejka,
+          kier: b,
+        });
+        bok = b;
+      }
+    }
+
+    for (let r = q; r <= j; r++) {
+      const dk = Math.max(0, pr[r].kroki - pr[r - 1].kroki);
+      const p = out[out.length - 1];
+      out.push({ t: pr[r].t, x: p.x + DX[k] * dk * L, y: p.y + DY[k] * dk * L, kier: k });
+    }
+
+    if (metry >= DLUGI) {
+      if (glowny !== null && glowny % 2 !== k % 2) bok = glowny;
+      glowny = k;
+      const p = out[out.length - 1];
+      koniecAlejki = { x: p.x, y: p.y };
+    } else if (glowny !== null && glowny % 2 !== k % 2 && metry >= 1) {
+      bok = k;
+    }
+    q = j + 1;
   }
   return out;
 }
@@ -202,12 +252,20 @@ function najczestsze(listy: SectionKey[][], ile: number): SectionKey[] {
 export function szkicPlanu(
   sesja: SkanSesja,
   etykiety: Record<string, Etykieta>,
-  opcje: { odstep?: number; margines?: number } = {}
+  opcje: { odstep?: number; margines?: number; alejka?: number } = {}
 ): { map: StoreMap; walkOrder: SectionKey[]; ostrzezenia: string[] } {
   const odstep = opcje.odstep ?? 1.5;
   const margines = opcje.margines ?? 2;
   const ostrzezenia: string[] = [];
-  const tr = trasa(sesja);
+  const tr = trasa(sesja, 3, opcje.alejka ?? 5);
+  const dopowiedziane = tr.length - sesja.probki.length;
+  if (dopowiedziane > 0) {
+    ostrzezenia.push(`Przejść między alejkami dopowiedzianych: ${dopowiedziane} (telefon nie zarejestrował kroków przy zawracaniu).`);
+  }
+  const przerwy = sesja.probki.slice(1).map((p, n) => p.t - sesja.probki[n].t).filter((d) => d > 5);
+  if (przerwy.length) {
+    ostrzezenia.push(`Przerwy w nagraniu: ${przerwy.length}, razem ${Math.round(przerwy.reduce((a, b) => a + b, 0))} s — aplikacja nie zbierała wtedy ani zdjęć, ani czujników.`);
+  }
 
   const walkOrder: SectionKey[] = [];
   const dodajDoKolejnosci = (s: SectionKey) => {
@@ -364,6 +422,8 @@ export function parseSesja(text: string): { ok: true; sesja: SkanSesja } | { ok:
       dlugoscKroku: typeof r.dlugoscKroku === 'number' && r.dlugoscKroku > 0 ? r.dlugoscKroku : 0.7,
       probki: probki.sort((a, b) => a.t - b.t),
       klatki: klatki.sort((a, b) => a.t - b.t),
+      ...(Array.isArray(r.dziennik) ? { dziennik: r.dziennik } : {}),
+      ...(r.surowe && typeof r.surowe === 'object' ? { surowe: r.surowe } : {}),
     },
   };
 }

@@ -55,6 +55,15 @@ function rozpakuj(plik: string, kat: string) {
   }
   fs.writeFileSync(path.join(kat, 'sesja.json'), JSON.stringify({ ...s, klatki: zostaw }, null, 2));
   console.log(`Klatek: ${s.klatki.length}, po odrzuceniu stania: ${zostaw.length}. Kroków: ${Math.round(s.probki[s.probki.length - 1]?.kroki ?? 0)}.`);
+  if (s.surowe) {
+    const ost = (a: { kroki: number }[]) => Math.round(a[a.length - 1]?.kroki ?? 0);
+    console.log(`Kroki osobno: krokomierz ${ost(s.surowe.krokomierz)}, akcelerometr ${ost(s.surowe.akcelerometr)}.`);
+  }
+  if (s.dziennik?.length) {
+    console.log('Dziennik:');
+    s.dziennik.slice(0, 40).forEach((d) => console.log(`  ${d.t.toFixed(1)} s  ${d.co}`));
+    if (s.dziennik.length > 40) console.log(`  … i ${s.dziennik.length - 40} więcej (sesja.json)`);
+  }
 }
 
 const KATALOG = SECTIONS.map((s) => `${s.key} — ${s.name}${s.hint ? ` (${s.hint})` : ''}`).join('\n');
@@ -124,7 +133,9 @@ function szkic(kat: string, nazwa: string, siec: string) {
   const s = czytajJson<SkanSesja>(path.join(kat, 'sesja.json'));
   const et = czytajJson<Record<string, Etykieta>>(path.join(kat, 'etykiety.json'));
   if (!(siec in CHAIN_BY_KEY)) throw new Error(`Nieznana sieć: ${siec}. Dostępne: ${Object.keys(CHAIN_BY_KEY).join(', ')}`);
-  const { map, walkOrder, ostrzezenia } = szkicPlanu(s, et);
+  // Rozstaw alejek w metrach (SKAN_ALEJKA); używany, gdy przejście między alejkami zginęło.
+  const alejka = Number(process.env.SKAN_ALEJKA ?? 5);
+  const { map, walkOrder, ostrzezenia } = szkicPlanu(s, et, { alejka });
   const teraz = new Date().toISOString();
   const tekst = serializeStore({
     id: 'skan', name: nazwa, chain: siec as ChainKey, createdAt: teraz, mappedAt: teraz, walkOrder, map,

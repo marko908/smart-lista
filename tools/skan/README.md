@@ -32,3 +32,11 @@ Wynik `*.alejka.json` wczytujesz w aplikacji przyciskiem **Wczytaj sklep z pliku
 Kroki × długość kroku w kierunku z kompasu. Kurs przyciągamy do czterech kierunków głównych sklepu
 (alejki są równoległe i prostopadłe), a krótkie skręty traktujemy jako szum. Kształt sklepu jest
 przybliżony; kolejność alejek i rozmieszczenie kategorii są pewniejsze. Szczegóły: `src/lib/skan.ts`.
+
+Gdy człowiek zawraca na końcu alejki, a telefon nie zarejestrował przejścia w bok (przerwa w nagraniu,
+wózek tłumiący kroki), szkic dokłada przesunięcie o jedną alejkę w tę stronę, w którą ostatnio szło się
+w bok. Rozstaw alejek ustawiasz zmienną `SKAN_ALEJKA` (metry, domyślnie 5). Każde takie dopowiedzenie
+i każda przerwa w nagraniu trafia do ostrzeżeń.
+
+Plik z telefonu ma też `dziennik` (zejście aplikacji w tło, stojący zegar, wolne zdjęcia) i oba strumienie
+kroków osobno (`surowe`). `rozpakuj` wypisuje jedno i drugie — tak sprawdzamy, skąd biorą się przerwy.
