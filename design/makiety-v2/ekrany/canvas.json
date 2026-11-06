@@ -314,7 +314,7 @@
     "s05": {
       "fill": "blue",
       "page": "app",
-      "text": "Mapa sklepu: gdzie prawdopodobnie jesteś (z ostatnio odhaczonego produktu) i gdzie leży szukany produkt.",
+      "text": "Mapa sklepu na prawdziwym planie Lidla przy Zorskiej (plik mapy z repo). Otwierasz ją przyciskiem mapy w nagłówku Z1 albo przez „Nie mogę znaleźć”. U góry przełączasz: „Cała trasa” (numerowane przystanki od najbliższego i kasa na końcu) albo konkretny produkt z listy (podświetlona lodówka lub regał i trasa alejkami). Niebieska kropka to miejsce przy ostatnio odhaczonym produkcie. „Jestem gdzie indziej” pozwala stuknąć swoje miejsce na planie, a trasa przelicza się od nowa.\n\nStany: Z2.produkt, Z2.trasa, Z2.wskaż.",
       "w": 390,
       "x": 1880,
       "y": 900

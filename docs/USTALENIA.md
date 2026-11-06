@@ -26,7 +26,7 @@ Kody odpowiadają tytułom plansz na płótnie. Stan zapisujemy po kropce, np. `
 | N5 | Nowa lista: dwa sklepy | `N5.lista`, `N5.dymek`, `N5.ilość` |
 | N6 | Nowa lista: gotowe | `N6.lista`, `N6.odsłonięte`, `N6.cofnij` |
 | Z1 | Zakupy w sklepie | `Z1.sklep`, `Z1.trwa`, `Z1.cała`, `Z1.zmiana`, `Z1.przejście` |
-| Z2 | Zakupy: gdzie jest produkt | |
+| Z2 | Mapa sklepu | `Z2.produkt`, `Z2.trasa`, `Z2.wskaż` |
 | Z3 | Zakupy: koniec | `Z3.podsumowanie`, `Z3.przypomnij` |
 | PA0 | Skaner paragonu | `PA0.celowanie`, `PA0.skan`, `PA0.gotowe` |
 | PA1 | Paragon odczytany | |
@@ -119,7 +119,18 @@ Kody odpowiadają tytułom plansz na płótnie. Stan zapisujemy po kropce, np. `
 - Lista na jeden sklep pomija te pytania.
 - „Gdzie jestem” wyliczamy z ostatnio odhaczonego produktu (bez GPS i beaconów). Marszrutę uczymy się pasywnie z kolejności odhaczania.
 
-## 6a. Koniec zakupów (Z3)
+## 6.1 Mapa sklepu (Z2)
+
+- **Wejścia:** okrągły przycisk mapy w nagłówku trybu zakupów (Z1, zawsze w tym samym miejscu) oraz „Nie mogę znaleźć” przy aktualnym dziale (otwiera mapę od razu na tym produkcie).
+- **Plan** rysujemy z pliku mapy sklepu (format `alejka.store`, siatka np. 28×40). Kolory typów klocków: regał, lodówka, zamrażarka, stoisko (warzywa), lada (piekarnia), kasy i wejście. Kilka podpisów stref (Warzywa i owoce, Piekarnia, Nabiał, Mrożonki, Napoje, Chemia, Kasy, Wejście). Działy już odhaczone są lekko przygaszone na zielono.
+- **Przełącznik u góry:** „Cała trasa” albo pojedynczy produkt z listy (tylko te, których jeszcze nie ma w koszyku).
+  - Produkt: klocek z tym działem pulsuje na akcent, pinezka, trasa alejkami od miejsca użytkownika, „ok. 43 m stąd, ok. 50 s pieszo”.
+  - Cała trasa: przystanki numerowane od najbliższego (zachłannie, po odległości alejkami), na końcu kasa, łączna długość trasy.
+- **Trasa** to najkrótsza droga po wolnych kratkach siatki (BFS, ruch w 4 kierunkach). Klocki są przeszkodami, wejście jest przejściem. Rysujemy ją jako przerywaną linię z białą obwódką.
+- **Gdzie jestem:** domyślnie przy ostatnio odhaczonym produkcie (opis: „jesteś przy mleku (ostatnio odhaczone)”). „Jestem gdzie indziej” włącza tryb wskazania: stuknięcie planu przyciąga kropkę do najbliższej wolnej kratki i przelicza trasę. Opis zmienia się wtedy na „miejsce wskazane ręcznie”.
+- Odległość: 1 kratka ≈ 1 m, czas ≈ 1,2 s/m (zaokrąglony do 10 s).
+
+## 6.2 Koniec zakupów (Z3)
 
 - Po ostatnim sklepie (Z1 → „Dalej”). Duży animowany ptaszek, „Wszystko w koszyku”, nazwa listy, liczba sklepów i czas.
 - Podsumowanie: produkty (9/9), szacunek z listy, czas w sklepach.
@@ -127,7 +138,7 @@ Kody odpowiadają tytułom plansz na płótnie. Stan zapisujemy po kropce, np. `
 - „Przypomnij wieczorem” (przełącznik, domyślnie włączony). **Propozycja do potwierdzenia:** powiadomienie o 20:00 tego dnia, jeśli zostały niezeskanowane paragony.
 - „Zakończ” przenosi listę do „Zrobione”, skąd można jej użyć ponownie.
 
-## 6b. Skaner paragonu (PA0)
+## 6.3 Skaner paragonu (PA0)
 
 - Pełnoekranowy aparat z ramką (rogi pulsują). Nagłówek mówi, z którego sklepu ma być paragon („Paragon z Biedronki · 2 z 3 sklepów tej listy”), bo skaner wie, jakie sklepy były na liście.
 - Spust zdjęcia, „Z galerii”, lampa. Podpowiedź: długi paragon = przesuwaj telefon w dół (skan ciągły).
@@ -135,7 +146,7 @@ Kody odpowiadają tytułom plansz na płótnie. Stan zapisujemy po kropce, np. `
 - Dolne panele (celowanie / gotowe) leżą w tym samym miejscu i przenikają się, więc nic nie skacze.
 - Prywatność: zdjęcie zostaje na telefonie (OCR na urządzeniu), wysyłamy tylko odczytany tekst, numer karty usuwamy przed wysłaniem.
 
-## 6c. Zakładka Paragony (PA2)
+## 6.4 Zakładka Paragony (PA2)
 
 - Karta postępu do Premium („2 z 4 paragonów w 30 dni”, 4 segmenty, „Jeszcze 2, a Premium masz za darmo do {data}”).
 - Wydatki w miesiącu: przełącznik miesięcy (nie zmienia układu), suma, liczba paragonów, słupki per sklep.

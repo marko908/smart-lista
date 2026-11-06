@@ -1,0 +1,211 @@
+<!doctype html>
+<html lang="pl">
+<head>
+<meta charset="utf-8">
+<title>Gdzie jest produkt</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,700&amp;display=swap" rel="stylesheet">
+<style>
+/* Kolory w jednym miejscu: zmiana motywu = zmiana tych wartości */
+:root{--akcent:#1d5f8a;--akcent-ciemny:#164a6b;--akcent-jasny:#e3eff7;--tusz:#121c24;--wyciszony:#5d6b75;--linia:#edf1f4;--chip:#f2f5f7;--ramka:#c8d5de;--odhaczony:#98a4ad}
+body{margin:0}
+a{color:var(--akcent);text-decoration:none}
+.pig{transition:background-color .15s ease,color .15s ease,transform .12s ease,border-color .15s ease}.pig:active{transform:scale(.96)}
+@keyframes marsz{from{stroke-dashoffset:22}to{stroke-dashoffset:0}}
+.trasa{stroke-dasharray:2 9;animation:marsz .9s linear infinite}
+@keyframes puls{0%{transform:scale(.6);opacity:.55}100%{transform:scale(2.2);opacity:0}}
+.puls{animation:puls 1.6s ease-out infinite}
+@keyframes skok{0%,100%{transform:translateY(0)}50%{transform:translateY(-3px)}}
+.pin{animation:skok 1.6s ease-in-out infinite}
+@keyframes blysk{0%,100%{opacity:1}50%{opacity:.55}}
+.cel{animation:blysk 1.4s ease-in-out infinite}
+.kropka{transition:left .45s cubic-bezier(.2,.8,.2,1),top .45s cubic-bezier(.2,.8,.2,1)}
+@keyframes wjazd{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+.w{animation:wjazd .3s cubic-bezier(.2,.8,.2,1) both}
+</style>
+</helmet>
+<div style="width: 390px; height: 844px; box-sizing: border-box; background: #ffffff; color: var(--tusz); font-family: 'DM Sans', sans-serif; display: flex; flex-direction: column; overflow: hidden">
+
+  <div style="padding: 22px 22px 10px; display: flex; gap: 10px; align-items: center">
+    <a href="A-2-Zakupy.dc.html" aria-label="Wróć do zakupów" style="width: 44px; height: 44px; border-radius: 50%; background: var(--chip); display: flex; align-items: center; justify-content: center; flex-shrink: 0">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--tusz)" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><path d="m15 6-6 6 6 6"></path></svg>
+    </a>
+    <div style="flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 1px">
+      <span style="font-size: 18px; font-weight: 700; letter-spacing: -0.02em">Mapa sklepu</span>
+      <span style="font-size: 12px; color: var(--wyciszony)">Lidl · Zorska 12 · mapa od społeczności</span>
+    </div>
+  </div>
+
+  <div style="display: flex; gap: 6px; overflow-x: auto; padding: 0 22px 10px; flex-shrink: 0">
+    <sc-for list="{{chipy}}" as="c" hint-placeholder-count="3">
+      <button class="pig" onClick="{{c.wybierz}}" aria-pressed="{{c.on}}" style="{{c.styl}}">{{c.n}}</button>
+    </sc-for>
+  </div>
+
+  <div style="padding: 0 12px; flex-shrink: 0">
+    <div onClick="{{stuknij}}" role="img" aria-label="{{opisMapy}}" style="{{mapaStyl}}">
+      <div style="position: absolute; left: 8px; top: 7px; width: __PW__px; height: __PH__px">
+        <sc-for list="{{bloki}}" as="b" hint-placeholder-count="40">
+          <div style="{{b.styl}}"></div>
+        </sc-for>
+        <sc-for list="{{etykiety}}" as="e" hint-placeholder-count="8">
+          <span style="{{e.styl}}">{{e.n}}</span>
+        </sc-for>
+        <svg width="400" height="500" style="position: absolute; left: 0; top: 0; overflow: visible; pointer-events: none" aria-hidden="true">
+          <path d="{{trasaD}}" fill="none" stroke="#ffffff" stroke-width="7" stroke-linecap="round" stroke-linejoin="round" opacity=".9"></path>
+          <path class="trasa" d="{{trasaD}}" fill="none" stroke="var(--akcent)" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"></path>
+        </svg>
+        <sc-for list="{{piny}}" as="p" hint-placeholder-count="2">
+          <span class="pin" style="{{p.styl}}">{{p.n}}</span>
+        </sc-for>
+        <div class="kropka" style="{{kropkaStyl}}">
+          <span class="puls" style="position: absolute; left: -10px; top: -10px; width: 20px; height: 20px; border-radius: 50%; background: var(--akcent)"></span>
+          <span style="position: absolute; left: -8px; top: -8px; width: 16px; height: 16px; border-radius: 50%; background: var(--akcent); border: 3px solid #ffffff; box-shadow: 0 1px 4px rgba(0,0,0,.3); box-sizing: border-box"></span>
+        </div>
+      </div>
+      <div style="{{wskazStyl}}">Stuknij miejsce, w którym stoisz</div>
+    </div>
+  </div>
+
+  <div style="flex: 1; min-height: 0; padding: 12px 22px 20px; display: flex; flex-direction: column; justify-content: space-between; gap: 10px">
+    <div style="display: flex; flex-direction: column; gap: 3px; height: 74px; overflow: hidden">
+      <span style="font-size: 13px; font-weight: 700; color: var(--akcent)">{{nadtytul}}</span>
+      <span style="font-size: 22px; font-weight: 700; letter-spacing: -0.03em; white-space: nowrap; overflow: hidden; text-overflow: ellipsis">{{tytul}}</span>
+      <span style="font-size: 13px; color: var(--wyciszony); white-space: nowrap; overflow: hidden; text-overflow: ellipsis">{{podtytul}}</span>
+    </div>
+    <div style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px">
+      <button class="pig" onClick="{{gdzieIndziej}}" style="{{gdzieStyl}}">{{gdzieTxt}}</button>
+      <a href="A-2-Zakupy.dc.html" class="pig" style="height: 52px; border-radius: 999px; background: var(--akcent); color: #ffffff; display: flex; align-items: center; justify-content: center; font-size: 15px; font-weight: 700">{{glownyTxt}}</a>
+    </div>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":390,"height":844}}'>
+class Component extends DCLogic {
+  constructor(props) {
+    super(props);
+    this.B = __BLOKI__;
+    this.GW = __GW__; this.GH = __GH__;
+    // zajętość siatki: każdy klocek poza wejściem jest przeszkodą
+    this.zaj = {};
+    this.B.forEach((b) => { if (b.t === 'wejscie') return; for (let x = b.x; x < b.x + b.w; x++) for (let y = b.y; y < b.y + b.h; y++) this.zaj[x + ',' + y] = true; });
+    this.state = { tryb: 'cel', cel: 'ser', ja: [7, 27], wskaz: false, recznie: false };
+  }
+  // najkrótsza droga alejkami (BFS po wolnych kratkach)
+  bfs(start) {
+    const W = Math.round(this.GW), H = Math.round(this.GH), dist = {}, prev = {}, q = [start];
+    dist[start[0] + ',' + start[1]] = 0;
+    while (q.length) {
+      const [x, y] = q.shift();
+      for (const [dx, dy] of [[1, 0], [-1, 0], [0, 1], [0, -1]]) {
+        const nx = x + dx, ny = y + dy, k = nx + ',' + ny;
+        if (nx < 0 || ny < 0 || nx >= W || ny >= H || this.zaj[k] || k in dist) continue;
+        dist[k] = dist[x + ',' + y] + 1; prev[k] = x + ',' + y; q.push([nx, ny]);
+      }
+    }
+    return { dist, prev };
+  }
+  wolnaObok(sekcja, dist) {
+    let best = null;
+    this.B.filter((b) => b.s.indexOf(sekcja) >= 0).forEach((b) => {
+      for (let x = b.x - 1; x <= b.x + b.w; x++) for (let y = b.y - 1; y <= b.y + b.h; y++) {
+        const k = x + ',' + y;
+        if (k in dist && (!best || dist[k] < best.d)) best = { x, y, d: dist[k] };
+      }
+    });
+    return best;
+  }
+  sciezka(prev, k, start) {
+    const pts = [];
+    while (k) { const [x, y] = k.split(',').map(Number); pts.unshift([x, y]); if (k === start) break; k = prev[k]; }
+    return pts;
+  }
+  renderVals() {
+    const st = this.state, C = 12.5;
+    const PRODUKTY = [
+      { id: 'ser', n: 'Ser żółty', pelna: 'Ser żółty gouda, 150 g', sekcja: 'sery-zolte', gdzie: 'Sery żółte · lodówki przy tylnej ścianie' },
+      { id: 'kawa', n: 'Kawa', pelna: 'Kawa ziarnista, 1 kg', sekcja: 'kawa', gdzie: 'Kawa · regał przy kasach' }
+    ];
+    const ZROBIONE = [{ n: 'Mleko', sekcja: 'mleko' }, { n: 'Chleb', sekcja: 'pieczywo-pakowane' }, { n: 'Ziemniaki', sekcja: 'warzywa' }];
+    const startK = st.ja[0] + ',' + st.ja[1];
+    const px = (p) => [(p[0] + 0.5) * C, (p[1] + 0.5) * C];
+    const prosta = (pts) => pts.filter((p, i) => i === 0 || i === pts.length - 1 || !((pts[i - 1][0] === p[0] && pts[i + 1][0] === p[0]) || (pts[i - 1][1] === p[1] && pts[i + 1][1] === p[1])));
+    const doD = (pts) => prosta(pts).map((p, i) => (i ? 'L' : 'M') + px(p)[0].toFixed(1) + ' ' + px(p)[1].toFixed(1)).join(' ');
+    let pts = [], piny = [], metry = 0, celSekcje = [], kolejnosc = [];
+    if (st.tryb === 'cel') {
+      const pr = PRODUKTY.find((p) => p.id === st.cel);
+      const { dist, prev } = this.bfs(st.ja);
+      const cel = this.wolnaObok(pr.sekcja, dist);
+      if (cel) { pts = this.sciezka(prev, cel.x + ',' + cel.y, startK); metry = cel.d; }
+      celSekcje = [pr.sekcja];
+      const b = this.B.filter((b) => b.s.indexOf(pr.sekcja) >= 0).sort((a, b2) => (Math.abs(a.x - (cel ? cel.x : 0)) + Math.abs(a.y - (cel ? cel.y : 0))) - (Math.abs(b2.x - (cel ? cel.x : 0)) + Math.abs(b2.y - (cel ? cel.y : 0))))[0];
+      if (b) piny.push({ x: (b.x + b.w / 2) * C, y: Math.max(12, b.y * C + (b.h * C) / 2), n: '' });
+    } else {
+      // cała trasa: kolejne produkty od najbliższego, na końcu kasa
+      let pos = st.ja, posK = startK, zostale = PRODUKTY.slice(), nr = 1;
+      while (zostale.length) {
+        const { dist, prev } = this.bfs(pos);
+        let best = null;
+        zostale.forEach((p) => { const c = this.wolnaObok(p.sekcja, dist); if (c && (!best || c.d < best.c.d)) best = { p, c }; });
+        if (!best) break;
+        const odc = this.sciezka(prev, best.c.x + ',' + best.c.y, posK);
+        pts = pts.concat(pts.length ? odc.slice(1) : odc); metry += best.c.d;
+        piny.push({ x: px([best.c.x, best.c.y])[0], y: px([best.c.x, best.c.y])[1], n: String(nr++) });
+        celSekcje.push(best.p.sekcja); kolejnosc.push(best.p.n);
+        pos = [best.c.x, best.c.y]; posK = best.c.x + ',' + best.c.y;
+        zostale = zostale.filter((p) => p !== best.p);
+      }
+      const { dist, prev } = this.bfs(pos);
+      const kasa = [[14, 34], [18, 34], [10, 34]].find((k) => (k[0] + ',' + k[1]) in dist);
+      if (kasa) { const odc = this.sciezka(prev, kasa[0] + ',' + kasa[1], posK); pts = pts.concat(odc.slice(1)); metry += dist[kasa[0] + ',' + kasa[1]]; }
+    }
+    const kolor = { 'regal-scienny': '#dde4e9', lodowka: '#d3e4ef', zamrazarka: '#c7dbea', stoisko: '#d7e9d3', lada: '#ecdfc9', kosz: '#e6e1d6', klocek: '#cfd7dc', sciana: '#bcc6cd', kasy: '#3b4a54', wejscie: 'transparent' };
+    const zrobS = ZROBIONE.map((z) => z.sekcja);
+    const bloki = this.B.map((b) => {
+      const cel = b.s.some((s) => celSekcje.indexOf(s) >= 0);
+      const zr = !cel && b.s.some((s) => zrobS.indexOf(s) >= 0);
+      return { styl: 'position: absolute; left: ' + (b.x * C + 0.75) + 'px; top: ' + (b.y * C + 0.75) + 'px; width: ' + (b.w * C - 1.5) + 'px; height: ' + (b.h * C - 1.5) + 'px; border-radius: 3px; box-sizing: border-box; transition: background-color .3s ease; ' +
+        (cel ? 'background: var(--akcent); box-shadow: 0 0 0 2px rgba(29,95,138,.25); animation: blysk 1.4s ease-in-out infinite' : b.t === 'wejscie' ? 'border: 1.5px dashed var(--wyciszony)' : 'background: ' + (zr ? '#e9f0e6' : kolor[b.t] || '#dde4e9')) };
+    });
+    const ET = [['Warzywa i owoce', 8, 14.5], ['Piekarnia', 1.4, 23], ['Mięso i drób', 8.8, 5.5], ['Nabiał', 20.6, 1.9], ['Mrożonki', 24.5, 14.5], ['Napoje', 19.5, 26], ['Alkohole', 24.9, 25.5], ['Chemia', 14.6, 30.5], ['Kosmetyki', 14.5, 23.2], ['Kasy', 17.5, 37.5], ['Wejście', 2.5, 38.4]];
+    const etykiety = ET.map(([n, x, y]) => ({ n, styl: 'position: absolute; left: ' + (x * C) + 'px; top: ' + (y * C) + 'px; transform: translate(-50%, -50%); padding: 1px 5px; border-radius: 6px; font-size: 9.5px; font-weight: 700; white-space: nowrap; pointer-events: none; ' + (n === 'Kasy' ? 'color: #ffffff' : 'color: #4a5862; background: rgba(255,255,255,.8)') }));
+    const pinyFix = piny.map((p) => ({ n: p.n, styl: 'position: absolute; left: ' + (p.x - 12) + 'px; top: ' + (p.y - 12) + 'px; width: 24px; height: 24px; border-radius: 50%; background: var(--tusz); border: 2.5px solid #ffffff; box-sizing: border-box; box-shadow: 0 2px 6px rgba(0,0,0,.3); display: flex; align-items: center; justify-content: center; color: #ffffff; font-size: 11px; font-weight: 700; z-index: 3' }));
+    const chipStyl = (on) => 'height: 36px; padding: 0 14px; border-radius: 999px; font-family: inherit; font-size: 14px; font-weight: 700; cursor: pointer; white-space: nowrap; flex-shrink: 0; ' + (on ? 'border: 0; background: var(--tusz); color: #ffffff' : 'border: 1.5px solid var(--ramka); background: #ffffff; color: var(--tusz)');
+    const chipy = [{ n: 'Cała trasa', on: st.tryb === 'trasa', wybierz: () => this.setState({ tryb: 'trasa', wskaz: false }) }].concat(PRODUKTY.map((p) => ({ n: p.n, on: st.tryb === 'cel' && st.cel === p.id, wybierz: () => this.setState({ tryb: 'cel', cel: p.id, wskaz: false }) })))
+      .map((c) => ({ n: c.n, on: c.on ? 'true' : 'false', wybierz: c.wybierz, styl: chipStyl(c.on) }));
+    const pr = PRODUKTY.find((p) => p.id === st.cel);
+    const [jx, jy] = px(st.ja);
+    const sek = (m) => Math.max(10, Math.round(m * 1.2 / 10) * 10);
+    return {
+      chipy, bloki, etykiety, piny: pinyFix, trasaD: pts.length > 1 ? doD(pts) : 'M0 0',
+      kropkaStyl: 'position: absolute; left: ' + jx + 'px; top: ' + jy + 'px; width: 0; height: 0; z-index: 4',
+      mapaStyl: 'position: relative; width: 366px; height: 514px; border-radius: 24px; background: #f4f6f8; overflow: hidden; cursor: ' + (st.wskaz ? 'crosshair' : 'default') + '; box-shadow: ' + (st.wskaz ? 'inset 0 0 0 2px var(--akcent)' : 'inset 0 0 0 1px var(--linia)') + '; transition: box-shadow .2s ease',
+      wskazStyl: 'position: absolute; left: 12px; right: 12px; bottom: 12px; padding: 12px; border-radius: 14px; background: var(--tusz); color: #ffffff; font-size: 14px; font-weight: 700; text-align: center; transition: opacity .25s ease, transform .3s cubic-bezier(.2,.8,.2,1); pointer-events: none; ' + (st.wskaz ? 'opacity: 1; transform: none' : 'opacity: 0; transform: translateY(8px)'),
+      opisMapy: 'Plan sklepu Lidl Zorska z trasą do produktu',
+      nadtytul: st.tryb === 'cel' ? pr.gdzie : 'Twoja trasa · ' + PRODUKTY.length + ' produkty, potem kasa',
+      tytul: st.tryb === 'cel' ? pr.pelna : kolejnosc.map((n, i) => (i + 1) + '. ' + n).join('   ') + '   → kasa',
+      podtytul: (st.tryb === 'cel' ? 'ok. ' + metry + ' m stąd, ok. ' + sek(metry) + ' s pieszo' : 'ok. ' + metry + ' m razem z drogą do kasy') + ' · ' + (st.recznie ? 'miejsce wskazane ręcznie' : 'jesteś przy mleku (ostatnio odhaczone)'),
+      gdzieTxt: st.wskaz ? 'Anuluj' : 'Jestem gdzie indziej',
+      gdzieStyl: 'height: 52px; border-radius: 999px; font-family: inherit; font-size: 15px; font-weight: 700; cursor: pointer; ' + (st.wskaz ? 'border: 1.5px solid var(--akcent); background: var(--akcent-jasny); color: var(--akcent-ciemny)' : 'border: 1.5px solid var(--ramka); background: #ffffff; color: var(--tusz)'),
+      glownyTxt: st.tryb === 'cel' ? 'Mam to' : 'Wróć do listy',
+      gdzieIndziej: () => this.setState({ wskaz: !st.wskaz }),
+      stuknij: (e) => {
+        if (!this.state.wskaz) return;
+        const r = e.currentTarget.getBoundingClientRect(), sk = r.width / 366;
+        let cx = Math.floor(((e.clientX - r.left) / sk - 8) / C), cy = Math.floor(((e.clientY - r.top) / sk - 7) / C);
+        // przyciągnij do najbliższej wolnej kratki
+        let best = null;
+        for (let x = 0; x < 28; x++) for (let y = 0; y < 40; y++) { if (this.zaj[x + ',' + y]) continue; const dd = Math.abs(x - cx) + Math.abs(y - cy); if (!best || dd < best.d) best = { x, y, d: dd }; }
+        if (best) this.setState({ ja: [best.x, best.y], wskaz: false, recznie: true });
+      }
+    };
+  }
+}
+</script>
+</body>
+</html>
