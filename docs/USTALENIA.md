@@ -184,6 +184,7 @@ Kody odpowiadają tytułom plansz na płótnie. Stan zapisujemy po kropce, np. `
 Te pomysły wchodzą dopiero po dopracowaniu aplikacji i sprawdzeniu, że promocje w ogóle działają.
 
 - **„Taniej w innym sklepie”** (pomysł Marko, 2026-11-06). Jeśli produkt z listy jest tańszy w innym sklepie, który użytkownik ma w ulubionych, pokazujemy informację, np. „Taniej w Kauflandzie: 4,99 zł (o 1,50 zł mniej)”. Forma UX jest otwarta: na przykład ikonka z wykrzyknikiem przy produkcie, która po stuknięciu otwiera dymek lub arkusz. Musi spełniać zasadę „nic nie przeskakuje”. Źródło cen: paragony i gazetki.
+- **Licznik oszczędności z promocji** (pomysł Marko, 2026-11-06). Podliczamy, ile użytkownik zaoszczędził dzięki promocjom: różnica między ceną regularną a promocyjną dla produktów kupionych w promocji (potwierdzone paragonem). Pokazywane np. na ekranie paragonów lub w podsumowaniu zakupów („W tym miesiącu zaoszczędziłeś 23 zł”).
 
 ## Otwarte pytania
 
