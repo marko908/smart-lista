@@ -1,0 +1,511 @@
+<!doctype html>
+<html lang="pl">
+<head>
+<meta charset="utf-8">
+<title>__TITLE__</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,700&amp;display=swap" rel="stylesheet">
+<style>
+/* Kolory w jednym miejscu: zmiana motywu = zmiana tych wartości */
+:root{--akcent:#1d5f8a;--akcent-ciemny:#164a6b;--akcent-jasny:#e3eff7;--tusz:#121c24;--wyciszony:#5d6b75;--linia:#edf1f4;--chip:#f2f5f7;--ramka:#c8d5de;--odhaczony:#98a4ad}
+body{margin:0}
+a{color:var(--akcent);text-decoration:none}a:hover{color:var(--akcent-ciemny)}
+.ukryte{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}
+.pig{transition:background-color .15s ease,color .15s ease,transform .12s ease,border-color .15s ease}.pig:active{transform:scale(.95)}
+.pin{transition:transform .2s cubic-bezier(.2,.8,.2,1),background-color .15s ease}
+@keyframes wjazd{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+.w{animation:wjazd .32s cubic-bezier(.2,.8,.2,1) both}
+@keyframes puls{0%{box-shadow:0 0 0 0 rgba(29,95,138,.35)}100%{box-shadow:0 0 0 14px rgba(29,95,138,0)}}
+.ty{animation:puls 1.8s ease-out infinite}
+@keyframes arkusz{from{transform:translateY(100%)}to{transform:none}}
+.arkusz{animation:arkusz .32s cubic-bezier(.2,.8,.2,1) both}
+@keyframes tlo{from{opacity:0}to{opacity:1}}
+.tlo{animation:tlo .25s ease both}
+.cta{transition:transform .15s ease}.cta:active{transform:scale(.98)}
+</style>
+</helmet>
+<div style="position: relative; width: 390px; height: 844px; box-sizing: border-box; background: #ffffff; color: var(--tusz); font-family: 'DM Sans', sans-serif; display: flex; flex-direction: column; overflow: hidden">
+
+  <sc-if value="{{krokStart}}" hint-placeholder-val="{{false}}">
+    <div class="w" style="flex: 1; min-height: 0; display: flex; flex-direction: column">
+      <div style="padding: 28px 22px 10px; display: flex; flex-direction: column; gap: 14px">
+        <span style="font-size: 13px; color: var(--wyciszony)">czwartek, 5 listopada</span>
+        <h1 style="margin: 0; font-size: 40px; font-weight: 700; letter-spacing: -0.035em; line-height: 1">Twoje listy</h1>
+      </div>
+      <div style="flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 14px; padding: 0 40px; text-align: center">
+        <span style="width: 88px; height: 88px; border-radius: 28px; background: var(--akcent-jasny); display: flex; align-items: center; justify-content: center">
+          <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="var(--akcent)" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 6h11M9 12h11M9 18h11M4 6h.01M4 12h.01M4 18h.01"></path></svg>
+        </span>
+        <span style="font-size: 20px; font-weight: 700">Nie masz jeszcze list</span>
+        <span style="font-size: 15px; line-height: 1.45; color: var(--wyciszony)">Wybierz sklep, wpisz, co kupić, a my ułożymy to w kolejności, w jakiej miniesz produkty.</span>
+      </div>
+      <div style="padding: 8px 22px 14px">
+        <button class="pig" onClick="{{nowaLista}}" style="width: 100%; height: 58px; border-radius: 999px; border: 0; background: var(--akcent); color: #ffffff; font-family: inherit; font-size: 17px; font-weight: 700; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 10px; box-shadow: 0 8px 20px rgba(29,95,138,.25)">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="2.6" stroke-linecap="round" aria-hidden="true"><path d="M12 5v14M5 12h14"></path></svg>Nowa lista</button>
+      </div>
+    </div>
+  </sc-if>
+
+  <sc-if value="{{krokWybor}}" hint-placeholder-val="{{false}}">
+    <div class="w" style="flex: 1; min-height: 0; display: flex; flex-direction: column">
+      <div style="padding: 22px 22px 10px; display: flex; flex-direction: column; gap: 12px">
+        <div style="display: flex; align-items: center; gap: 12px">
+          <button onClick="{{wstecz}}" aria-label="Wróć" style="width: 44px; height: 44px; border-radius: 50%; border: 0; background: var(--chip); display: flex; align-items: center; justify-content: center; cursor: pointer; flex-shrink: 0"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--tusz)" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m15 6-6 6 6 6"></path></svg></button>
+          <span style="font-size: 24px; font-weight: 700; letter-spacing: -0.02em">{{wyborTytul}}</span>
+        </div>
+        <div style="display: flex; align-items: center; gap: 8px; height: 48px; padding: 0 6px 0 14px; border-radius: 14px; border: 1.5px solid var(--ramka)">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--wyciszony)" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="7"></circle><path d="m20 20-3.5-3.5"></path></svg>
+          <label for="gdzie" class="ukryte">Adres lub miejscowość</label>
+          <input id="gdzie" value="{{adres}}" onChange="{{piszAdres}}" style="flex: 1; min-width: 0; border: 0; outline: none; background: transparent; font-family: inherit; font-size: 15px; color: var(--tusz)">
+          <button class="pig" onClick="{{mojaLok}}" aria-label="Użyj mojej lokalizacji" style="width: 38px; height: 38px; border-radius: 10px; border: 0; background: var(--akcent-jasny); color: var(--akcent); display: flex; align-items: center; justify-content: center; cursor: pointer"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="4"></circle><path d="M12 2v3M12 19v3M2 12h3M19 12h3"></path></svg></button>
+        </div>
+        <div style="display: flex; gap: 6px; overflow-x: auto; margin: 0 -22px; padding: 0 22px 2px">
+          <sc-for list="{{sieci}}" as="s" hint-placeholder-count="6">
+            <button class="pig" onClick="{{s.wybierz}}" style="{{s.styl}}">{{s.n}}</button>
+          </sc-for>
+        </div>
+      </div>
+      <sc-if value="{{maUlubione}}" hint-placeholder-val="{{false}}">
+        <div style="padding: 0 22px 12px; display: flex; flex-direction: column; gap: 8px">
+          <span style="font-size: 13px; font-weight: 700; color: var(--wyciszony)">Najczęściej wybierasz</span>
+          <div style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px">
+            <sc-for list="{{ulubione}}" as="u" hint-placeholder-count="2">
+              <button class="pig" onClick="{{u.wybierz}}" style="display: flex; align-items: center; gap: 10px; min-height: 60px; padding: 8px 10px; border-radius: 16px; border: 1.5px solid var(--akcent); background: var(--akcent-jasny); font-family: inherit; text-align: left; cursor: pointer">
+                <span style="width: 34px; height: 34px; border-radius: 10px; background: var(--akcent); color: #ffffff; display: flex; align-items: center; justify-content: center; font-size: 14px; font-weight: 700; flex-shrink: 0">{{u.litera}}</span>
+                <span style="flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 1px">
+                  <span style="font-size: 14px; font-weight: 700; color: var(--tusz); white-space: nowrap; overflow: hidden; text-overflow: ellipsis">{{u.nazwa}}</span>
+                  <span style="font-size: 12px; color: var(--akcent-ciemny)">{{u.opis}}</span>
+                </span>
+              </button>
+            </sc-for>
+          </div>
+        </div>
+      </sc-if>
+      <div style="position: relative; height: 200px; flex-shrink: 0; background: #e9eef1; overflow: hidden">
+        <svg width="390" height="200" viewBox="0 0 390 215" preserveAspectRatio="xMidYMid slice" aria-hidden="true" style="position: absolute; inset: 0">
+          <rect x="18" y="20" width="120" height="70" rx="6" fill="#dfe6ea"></rect><rect x="160" y="14" width="96" height="80" rx="6" fill="#dfe6ea"></rect><rect x="278" y="22" width="100" height="66" rx="6" fill="#dfe6ea"></rect>
+          <rect x="14" y="128" width="110" height="80" rx="6" fill="#dfe6ea"></rect><rect x="150" y="132" width="70" height="76" rx="6" fill="#d5e4d4"></rect><rect x="246" y="126" width="128" height="86" rx="6" fill="#dfe6ea"></rect>
+          <path d="M0 108 H390" stroke="#ffffff" stroke-width="16"></path><path d="M142 0 V230" stroke="#ffffff" stroke-width="12"></path><path d="M266 0 L232 230" stroke="#ffffff" stroke-width="12"></path><path d="M0 40 C80 50 120 30 142 36" stroke="#ffffff" stroke-width="7" fill="none"></path>
+          <text x="300" y="104" font-family="DM Sans, sans-serif" font-size="10" fill="#8a979f">Zorska</text><text x="148" y="200" font-family="DM Sans, sans-serif" font-size="10" fill="#8a979f" transform="rotate(-90 148 200)">Wodzisławska</text>
+        </svg>
+        <span class="ty" style="position: absolute; left: 186px; top: 88px; width: 16px; height: 16px; border-radius: 50%; background: var(--akcent); border: 3px solid #ffffff; box-sizing: border-box"></span>
+        <sc-for list="{{piny}}" as="p" hint-placeholder-count="6">
+          <button class="pin" onClick="{{p.zaznacz}}" aria-label="{{p.etykieta}}" style="{{p.styl}}">{{p.litera}}</button>
+        </sc-for>
+        <div aria-hidden="{{kartaUkryta}}" style="{{kartaStyl}}">
+          <div role="img" aria-label="{{karta.fotoOpis}}" style="position: relative; width: 148px; flex-shrink: 0; border-radius: 16px; overflow: hidden; background: linear-gradient(180deg, #cfdde6 0%, #e4ecf0 60%, #b9c2c7 60%, #aab3b8 100%)">
+            <div style="position: absolute; left: 12px; right: 12px; top: 30px; bottom: 22px; background: #eef0ee; border-radius: 2px 2px 0 0"></div>
+            <div style="position: absolute; left: 12px; right: 12px; top: 30px; height: 26px; background: #3b4a54; display: flex; align-items: center; justify-content: center; color: #ffffff; font-size: 12px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase">{{karta.siec}}</div>
+            <div style="position: absolute; left: 20px; top: 66px; width: 26px; height: 34px; background: linear-gradient(135deg, #a9c3d2, #d6e4ec)"></div>
+            <div style="position: absolute; right: 20px; top: 66px; width: 26px; height: 34px; background: linear-gradient(135deg, #a9c3d2, #d6e4ec)"></div>
+            <div style="position: absolute; left: 50%; transform: translateX(-50%); top: 64px; width: 52px; bottom: 22px; background: linear-gradient(90deg, #8fb0c3 48%, #6f8fa2 48%, #6f8fa2 52%, #8fb0c3 52%); border: 3px solid #5b6a73; border-bottom: 0; box-sizing: border-box"></div>
+            <span style="position: absolute; left: 8px; bottom: 7px; padding: 2px 8px; border-radius: 999px; background: rgba(18,28,36,.62); color: #ffffff; font-size: 11px; font-weight: 500">Wejście do sklepu</span>
+          </div>
+          <div style="flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 6px">
+            <span style="font-size: 20px; font-weight: 700; letter-spacing: -0.02em">{{karta.siec}}</span>
+            <span style="font-size: 13px; color: var(--wyciszony); line-height: 1.3">{{karta.adres}}<br>{{karta.pieszo}}</span>
+            <div style="display: flex; flex-wrap: wrap; gap: 4px">
+              <span style="{{karta.godzStyl}}">{{karta.godz}}</span>
+              <sc-if value="{{karta.mapa}}" hint-placeholder-val="{{false}}"><span style="height: 24px; padding: 0 8px; border-radius: 999px; background: var(--akcent-jasny); color: var(--akcent-ciemny); font-size: 11px; font-weight: 700; display: inline-flex; align-items: center">Mapa alejek</span></sc-if>
+              <sc-if value="{{karta.bywasz}}" hint-placeholder-val="{{false}}"><span style="height: 24px; padding: 0 8px; border-radius: 999px; background: var(--chip); color: var(--tusz); font-size: 11px; font-weight: 500; display: inline-flex; align-items: center">{{karta.bywaszTxt}}</span></sc-if>
+            </div>
+            <div style="flex: 1"></div>
+            <button class="pig" onClick="{{pokazMape}}" style="align-self: flex-start; height: 34px; padding: 0 12px; border-radius: 999px; border: 1.5px solid var(--ramka); background: #ffffff; font-family: inherit; font-size: 13px; font-weight: 700; color: var(--tusz); cursor: pointer; display: inline-flex; align-items: center; gap: 6px"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 4 3 6v14l6-2 6 2 6-2V4l-6 2-6-2zM9 4v14M15 6v14"></path></svg>Pokaż mapę</button>
+          </div>
+        </div>
+      </div>
+      <div style="flex: 1; min-height: 0; overflow-y: auto; padding: 6px 22px 8px; display: flex; flex-direction: column">
+        <span style="padding: 8px 0 4px; font-size: 13px; font-weight: 700; color: var(--wyciszony)">{{ileSklepow}}</span>
+        <sc-for list="{{sklepyLista}}" as="k" hint-placeholder-count="5">
+          <button onClick="{{k.zaznacz}}" aria-pressed="{{k.on}}" style="{{k.styl}}">
+            <span style="{{k.literaStyl}}">{{k.litera}}</span>
+            <span style="flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 2px">
+              <span style="font-size: 16px; font-weight: 700">{{k.siec}}</span>
+              <span style="font-size: 13px; color: var(--wyciszony)">{{k.adres}}</span>
+              <sc-if value="{{k.mapa}}" hint-placeholder-val="{{false}}"><span style="font-size: 12px; font-weight: 700; color: var(--akcent)">Mamy mapę sklepu</span></sc-if>
+            </span>
+            <span style="font-size: 14px; font-weight: 500; color: var(--wyciszony)">{{k.odl}}</span>
+          </button>
+        </sc-for>
+      </div>
+      <div style="position: relative; padding: 10px 22px 16px; border-top: 1px solid var(--linia); background: #ffffff">
+        <button class="pig" onClick="{{zatwierdzSklep}}" disabled="{{brakZaznaczenia}}" style="{{wybierzStyl}}">{{wybierzTxt}}</button>
+      </div>
+    </div>
+  </sc-if>
+
+  <sc-if value="{{krokLista}}" hint-placeholder-val="{{true}}">
+    <div class="w" style="flex: 1; min-height: 0; display: flex; flex-direction: column">
+      <div style="padding: 22px 22px 10px; display: flex; flex-direction: column; gap: 12px">
+        <div style="display: flex; align-items: center; gap: 12px">
+          <button onClick="{{doStartu}}" aria-label="Zamknij" style="width: 44px; height: 44px; border-radius: 50%; border: 0; background: var(--chip); display: flex; align-items: center; justify-content: center; cursor: pointer; flex-shrink: 0"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--tusz)" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18"></path></svg></button>
+          <label for="nazwa" class="ukryte">Nazwa listy</label>
+          <input id="nazwa" value="{{nazwa}}" onChange="{{piszNazwe}}" style="flex: 1; min-width: 0; border: 0; outline: none; padding: 0; background: transparent; font-family: inherit; font-size: 30px; font-weight: 700; letter-spacing: -0.03em; color: var(--tusz)">
+        </div>
+        <div style="display: flex; flex-direction: column; gap: 6px">
+          <div style="display: flex; align-items: center; gap: 10px; min-height: 56px; padding: 0 6px 0 16px; border-radius: 18px; border: 2px solid var(--akcent); box-shadow: 0 0 0 4px var(--akcent-jasny); box-sizing: border-box">
+            <label for="dodaj" class="ukryte">Dodaj produkt</label>
+            <input id="dodaj" value="{{wpis}}" onChange="{{pisz}}" onKeyDown="{{klawisz}}" placeholder="{{placeholder}}" autocomplete="off" style="flex: 1; min-width: 0; border: 0; outline: none; background: transparent; font-family: inherit; font-size: 17px; color: var(--tusz)">
+            <button class="pig" onClick="{{dodajWpis}}" aria-label="Dodaj do listy" style="{{plusStyl}}"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" aria-hidden="true"><path d="M12 5v14M5 12h14"></path></svg></button>
+          </div>
+          <span aria-live="polite" style="height: 18px; padding-left: 6px; font-size: 13px; line-height: 18px; color: var(--akcent-ciemny); white-space: nowrap; overflow: hidden; text-overflow: ellipsis">{{podglad}}</span>
+        </div>
+      </div>
+      <div style="flex: 1; min-height: 0; overflow-y: auto; padding: 0 22px 12px; display: flex; flex-direction: column">
+        <sc-for list="{{czesci}}" as="c" hint-placeholder-count="1">
+          <div style="{{c.blokStyl}}">
+          <button onClick="{{c.aktywuj}}" aria-pressed="{{c.aktywna}}" style="{{c.styl}}">
+            <span style="width: 30px; height: 30px; border-radius: 10px; background: var(--akcent-jasny); color: var(--akcent-ciemny); display: flex; align-items: center; justify-content: center; font-size: 13px; font-weight: 700; flex-shrink: 0">{{c.litera}}</span>
+            <span style="flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 1px">
+              <span style="font-size: 15px; font-weight: 700">{{c.nazwa}}</span>
+              <span style="font-size: 12px; color: var(--wyciszony)">{{c.opis}}</span>
+            </span>
+            <sc-if value="{{c.wiele}}" hint-placeholder-val="{{false}}"><span style="{{c.znacznikStyl}}">{{c.znacznik}}</span></sc-if>
+          </button>
+          <sc-for list="{{c.pozycje}}" as="p" hint-placeholder-count="3">
+            <div style="display: flex; align-items: center; gap: 12px; min-height: 50px; border-bottom: 1px solid var(--linia); padding-left: 4px">
+              <span style="width: 22px; height: 22px; border-radius: 50%; border: 2px solid var(--ramka); box-sizing: border-box; flex-shrink: 0"></span>
+              <button onClick="{{p.otworz}}" style="flex: 1; min-width: 0; min-height: 50px; display: flex; align-items: center; gap: 8px; padding: 0; border: 0; background: transparent; font-family: inherit; text-align: left; cursor: pointer">
+                <span style="flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 1px">
+                  <span style="font-size: 16px; font-weight: 500; color: var(--tusz)">{{p.nazwa}}</span>
+                  <span style="font-size: 12px; color: var(--wyciszony)">{{p.sekcja}}</span>
+                </span>
+                <span style="display: inline-flex; align-items: center; gap: 4px; height: 32px; padding: 0 10px; border-radius: 999px; background: var(--akcent-jasny); color: var(--akcent-ciemny); font-size: 13px; font-weight: 700; white-space: nowrap">{{p.ilosc}}<svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"></path></svg></span>
+              </button>
+              <button onClick="{{p.usun}}" aria-label="{{p.usunEtykieta}}" style="width: 36px; height: 36px; border: 0; background: transparent; color: var(--odhaczony); cursor: pointer; display: flex; align-items: center; justify-content: center"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18"></path></svg></button>
+            </div>
+          </sc-for>
+          <sc-if value="{{c.pusta}}" hint-placeholder-val="{{false}}"><span style="padding: 10px 4px 14px; font-size: 14px; color: var(--wyciszony)">Wpisz pierwszy produkt dla tego sklepu.</span></sc-if>
+          </div>
+        </sc-for>
+      </div>
+      <div style="position: relative; padding: 10px 22px 16px; border-top: 1px solid var(--linia); display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; background: #ffffff">
+        <sc-if value="{{maToast}}" hint-placeholder-val="{{false}}">
+          <div class="w" role="status" style="position: absolute; left: 14px; right: 14px; bottom: calc(100% + 8px); z-index: 3; display: flex; align-items: center; gap: 10px; min-height: 52px; padding: 6px 6px 6px 16px; border-radius: 16px; background: var(--tusz); color: #ffffff; box-shadow: 0 8px 24px rgba(18,28,36,.22)">
+            <span style="flex: 1; min-width: 0; font-size: 14px; line-height: 1.3">{{toastTxt}}</span>
+            <button class="pig" onClick="{{toastAkcja}}" style="height: 40px; padding: 0 14px; border-radius: 12px; border: 0; background: rgba(255,255,255,.14); color: #ffffff; font-family: inherit; font-size: 14px; font-weight: 700; cursor: pointer; white-space: nowrap">{{toastAkcjaTxt}}</button>
+          </div>
+        </sc-if>
+        <button class="pig" onClick="{{dodajSklep}}" style="height: 56px; border-radius: 999px; border: 1.5px solid var(--ramka); background: #ffffff; font-family: inherit; font-size: 15px; font-weight: 700; color: var(--tusz); cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 6px"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.8" stroke-linecap="round" aria-hidden="true"><path d="M12 5v14M5 12h14"></path></svg>Kolejny sklep</button>
+        <button class="pig" onClick="{{zakoncz}}" disabled="{{nieMoznaZakonczyc}}" style="{{zakonczStyl}}">Zakończ</button>
+      </div>
+    </div>
+  </sc-if>
+
+  <sc-if value="{{krokGotowe}}" hint-placeholder-val="{{false}}">
+    <div class="w" style="flex: 1; min-height: 0; display: flex; flex-direction: column">
+      <div style="padding: 28px 22px 10px; display: flex; flex-direction: column; gap: 14px">
+        <span style="font-size: 13px; color: var(--wyciszony)">czwartek, 5 listopada</span>
+        <h1 style="margin: 0; font-size: 40px; font-weight: 700; letter-spacing: -0.035em; line-height: 1">Twoje listy</h1>
+      </div>
+      <div style="flex: 1; min-height: 0; padding: 6px 22px; display: flex; flex-direction: column; gap: 0">
+        <div style="margin-bottom: 12px; display: flex; align-items: center; gap: 10px; padding: 12px 14px; border-radius: 16px; background: var(--akcent-jasny); color: var(--akcent-ciemny); font-size: 14px; font-weight: 700">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m5 12 5 5 9-10"></path></svg>Lista gotowa. Ułożyliśmy ją według sklepu.
+        </div>
+        <sc-for list="{{karty}}" as="k" hint-placeholder-count="3">
+          <div style="{{k.stylWiersza}}">
+            <button class="pig" onClick="{{k.akcjaL}}" tabindex="{{k.tabL}}" aria-label="{{k.etykietaL}}" style="{{k.stylL}}">
+              <span style="{{k.ikonaStylL}}"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="18" cy="5" r="3"></circle><circle cx="6" cy="12" r="3"></circle><circle cx="18" cy="19" r="3"></circle><path d="m8.6 13.5 6.8 4M15.4 6.5l-6.8 4"></path></svg>Udostępnij</span>
+            </button>
+            <button class="pig" onClick="{{k.akcjaP}}" tabindex="{{k.tabP}}" aria-label="{{k.etykietaP}}" style="{{k.stylP}}">
+              <span style="{{k.ikonaStylP}}"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 7h16M10 11v6M14 11v6M6 7l1 13h10l1-13M9 7V4h6v3"></path></svg>Usuń</span>
+            </button>
+            <div onPointerDown="{{k.dol}}" onPointerMove="{{k.ruch}}" onPointerUp="{{k.gora}}" onPointerCancel="{{k.gora}}" style="{{k.stylKarty}}">
+              <sc-if value="{{k.duza}}" hint-placeholder-val="{{true}}">
+                <div style="display: flex; flex-direction: column; gap: 14px; padding: 18px; border-radius: 22px; background: var(--akcent); color: #ffffff">
+                  <span style="font-size: 12px; font-weight: 700; letter-spacing: .04em; text-transform: uppercase; color: #cfe2ef">{{k.sklepy}}</span>
+                  <span style="font-size: 24px; font-weight: 700; letter-spacing: -0.02em">{{k.nazwa}}</span>
+                  <span style="font-size: 14px; color: #d6e6f2">{{k.opis}}</span>
+                  <div style="display: flex; gap: 8px">
+                    <a href="A-2-Zakupy.dc.html" draggable="false" style="flex: 1; height: 44px; border-radius: 999px; background: #ffffff; color: var(--akcent-ciemny); display: flex; align-items: center; justify-content: center; font-size: 15px; font-weight: 700">Zacznij zakupy</a>
+                    <button onClick="{{edytuj}}" style="height: 44px; padding: 0 16px; border-radius: 999px; border: 1.5px solid rgba(255,255,255,.4); background: transparent; color: #ffffff; font-family: inherit; font-size: 15px; font-weight: 700; cursor: pointer">Edytuj</button>
+                  </div>
+                </div>
+              </sc-if>
+              <sc-if value="{{k.mala}}" hint-placeholder-val="{{false}}">
+                <div style="display: flex; align-items: center; gap: 12px; min-height: 76px; padding: 12px 16px; border-radius: 22px; background: #ffffff; box-shadow: inset 0 0 0 1.5px var(--linia)">
+                  <span style="width: 40px; height: 40px; border-radius: 12px; background: var(--akcent-jasny); color: var(--akcent-ciemny); display: flex; align-items: center; justify-content: center; font-size: 16px; font-weight: 700; flex-shrink: 0">{{k.litera}}</span>
+                  <span style="flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 2px">
+                    <span style="font-size: 17px; font-weight: 700; color: var(--tusz)">{{k.nazwa}}</span>
+                    <span style="font-size: 13px; color: var(--wyciszony)">{{k.sklepy}} · {{k.opis}}</span>
+                  </span>
+                </div>
+              </sc-if>
+            </div>
+          </div>
+        </sc-for>
+        <span style="padding: 2px 4px; font-size: 12px; color: var(--wyciszony)">Przesuń listę w bok: w prawo udostępnisz, w lewo usuniesz.</span>
+        <div style="flex: 1"></div>
+      </div>
+      <div style="position: relative; padding: 8px 22px 14px">
+        <sc-if value="{{maToast2}}" hint-placeholder-val="{{false}}">
+          <div class="w" role="status" style="position: absolute; left: 14px; right: 14px; bottom: calc(100% + 4px); z-index: 3; display: flex; align-items: center; gap: 10px; min-height: 52px; padding: 6px 6px 6px 16px; border-radius: 16px; background: var(--tusz); color: #ffffff; box-shadow: 0 8px 24px rgba(18,28,36,.22)">
+            <span style="flex: 1; min-width: 0; font-size: 14px; line-height: 1.3">{{toast2Txt}}</span>
+            <sc-if value="{{toast2Cofnij}}" hint-placeholder-val="{{false}}"><button class="pig" onClick="{{cofnij}}" style="height: 40px; padding: 0 14px; border-radius: 12px; border: 0; background: rgba(255,255,255,.14); color: #ffffff; font-family: inherit; font-size: 14px; font-weight: 700; cursor: pointer">Cofnij</button></sc-if>
+          </div>
+        </sc-if>
+        <button class="pig" onClick="{{nowaLista}}" style="width: 100%; height: 58px; border-radius: 999px; border: 1.5px solid var(--ramka); background: #ffffff; color: var(--tusz); font-family: inherit; font-size: 17px; font-weight: 700; cursor: pointer">Nowa lista</button>
+      </div>
+    </div>
+  </sc-if>
+
+  <sc-if value="{{maArkusz}}" hint-placeholder-val="{{false}}">
+    <div style="position: absolute; inset: 0; display: flex; flex-direction: column; justify-content: flex-end">
+      <button class="tlo" onClick="{{zamknij}}" aria-label="Zamknij" style="position: absolute; inset: 0; border: 0; padding: 0; background: rgba(18,28,36,.38); backdrop-filter: blur(3px); -webkit-backdrop-filter: blur(3px); cursor: pointer"></button>
+      <div class="arkusz" style="position: relative; background: #ffffff; border-radius: 28px 28px 0 0; padding: 10px 22px 24px; display: flex; flex-direction: column; gap: 18px">
+        <span style="align-self: center; width: 40px; height: 5px; border-radius: 999px; background: var(--ramka)"></span>
+        <div style="display: flex; flex-direction: column; gap: 2px">
+          <span style="font-size: 24px; font-weight: 700; letter-spacing: -0.02em">{{ark.nazwa}}</span>
+          <span style="font-size: 14px; color: var(--wyciszony)">{{ark.sekcja}}</span>
+        </div>
+        <div style="display: flex; align-items: center; justify-content: space-between; gap: 12px">
+          <button class="pig" onClick="{{ark.mniej}}" aria-label="Mniej" style="width: 56px; height: 56px; border-radius: 50%; border: 0; background: var(--chip); color: var(--tusz); font-family: inherit; font-size: 26px; cursor: pointer">−</button>
+          <span style="flex: 1; min-width: 0; height: 44px; line-height: 44px; text-align: center; font-size: 36px; font-weight: 700; letter-spacing: -0.03em; white-space: nowrap">{{ark.ilosc}}</span>
+          <button class="pig" onClick="{{ark.wiecej}}" aria-label="Więcej" style="width: 56px; height: 56px; border-radius: 50%; border: 0; background: var(--akcent); color: #ffffff; font-family: inherit; font-size: 26px; cursor: pointer">+</button>
+        </div>
+        <div style="display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 8px; height: 40px">
+          <sc-for list="{{ark.szybkie}}" as="s" hint-placeholder-count="4">
+            <button class="pig" onClick="{{s.ustaw}}" style="{{s.styl}}">{{s.n}}</button>
+          </sc-for>
+        </div>
+        <sc-if value="{{ark.wieleSklepow}}" hint-placeholder-val="{{false}}">
+          <div style="display: flex; align-items: center; gap: 10px">
+            <span style="font-size: 13px; font-weight: 700; color: var(--wyciszony)">Kupuję w</span>
+            <div style="{{ark.sklepyStyl}}">
+              <sc-for list="{{ark.sklepy}}" as="k" hint-placeholder-count="2">
+                <button class="pig" onClick="{{k.wybierz}}" style="{{k.styl}}">{{k.n}}</button>
+              </sc-for>
+            </div>
+          </div>
+        </sc-if>
+        <div style="display: flex; flex-direction: column; gap: 6px">
+          <span style="font-size: 13px; font-weight: 700; color: var(--wyciszony)">Jednostka</span>
+          <div style="display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 4px; padding: 4px; border-radius: 14px; background: var(--chip)">
+            <sc-for list="{{ark.typy}}" as="t" hint-placeholder-count="3">
+              <button class="pig" onClick="{{t.wybierz}}" style="{{t.styl}}">{{t.n}}</button>
+            </sc-for>
+          </div>
+          <span style="{{ark.jednStyl}}">{{ark.jednTxt}}</span>
+        </div>
+        <div style="display: flex; align-items: center; gap: 12px">
+          <button onClick="{{ark.usun}}" style="height: 52px; padding: 0 8px; border: 0; background: transparent; font-family: inherit; font-size: 15px; font-weight: 700; color: #a3352b; cursor: pointer">Usuń</button>
+          <span style="flex: 1; text-align: right; font-size: 14px; color: var(--wyciszony)">{{ark.cena}}</span>
+          <button class="cta" onClick="{{zamknij}}" style="height: 52px; padding: 0 26px; border-radius: 999px; border: 0; background: var(--akcent); color: #ffffff; font-family: inherit; font-size: 16px; font-weight: 700; cursor: pointer">Gotowe</button>
+        </div>
+      </div>
+    </div>
+  </sc-if>
+
+  <sc-if value="{{pokazNav}}" hint-placeholder-val="{{false}}">
+    <nav aria-label="Główna nawigacja" style="height: 62px; flex-shrink: 0; display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); border-top: 1px solid var(--linia)">
+      <a href="E00-a-Start.dc.html" style="display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 3px; font-size: 11px; font-weight: 700; color: var(--akcent)"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M9 6h11M9 12h11M9 18h11M4 6h.01M4 12h.01M4 18h.01"></path></svg>Listy</a>
+      <a href="A-4-Promocje.dc.html" style="display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 3px; font-size: 11px; color: var(--wyciszony)"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20.6 13.4 13.4 20.6a2 2 0 0 1-2.8 0L3 13V3h10l7.6 7.6a2 2 0 0 1 0 2.8z"></path></svg>Promocje</a>
+      <a href="A-8-Paragony.dc.html" style="display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 3px; font-size: 11px; color: var(--wyciszony)"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 3h12v18l-3-2-3 2-3-2-3 2z"></path></svg>Paragony</a>
+      <a href="E00-a-Start.dc.html" style="display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 3px; font-size: 11px; color: var(--wyciszony)"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="8" r="4"></circle><path d="M4 21c1.5-4 4.5-6 8-6s6.5 2 8 6"></path></svg>Konto</a>
+    </nav>
+  </sc-if>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":390,"height":844}}'>
+class Component extends DCLogic {
+  constructor(props) {
+    super(props);
+    const cfg = __CFG__;
+    this.nr = 100;
+    const items = (cfg.items || []).map((t, i) => Object.assign({ id: 'p' + i, sklep: t[1] }, this.rozpoznaj(t[0])));
+    this.state = { krok: cfg.krok, sklepy: cfg.sklepy || [], aktywny: cfg.aktywny || (cfg.sklepy || [])[0] || null, items: items, wpis: '', nazwa: cfg.nazwa || 'Zakupy na sobotę', siec: 'Wszystkie', zazn: cfg.zazn || null, mapaWidok: false, adres: 'ul. Zorska, Rybnik', skad: cfg.skad || 'start', historia: cfg.historia || {}, otw: cfg.otw || null, ost: null, jedn: cfg.jedn || {}, zapam: null, drag: null, odsl: null, usuwane: [], usuniete: [], toast2: null };
+    this.inne = [{ id: 'l2', nazwa: 'Na tydzień', sklepy: 'Lidl', litera: 'L', opis: '12 produktów, 5 kupione' }, { id: 'l3', nazwa: 'Impreza w sobotę', sklepy: 'Biedronka', litera: 'B', opis: '7 produktów' }];
+  }
+  bazaSklepow() {
+    // adresy przykładowe; x, y = pozycja pinezki na mapie
+    return [
+      { id: 'zabka', godz: [6, 23], siec: 'Żabka', adres: 'ul. Zorska 3', odl: 150, x: 214, y: 84 },
+      { id: 'lidl', godz: [6, 22], siec: 'Lidl', adres: 'ul. Zorska 12', odl: 350, x: 300, y: 62, mapa: true },
+      { id: 'bied', godz: [6, 23], siec: 'Biedronka', adres: 'ul. Wodzisławska 20', odl: 600, x: 112, y: 160 },
+      { id: 'netto', godz: [7, 22], siec: 'Netto', adres: 'ul. Raciborska 45', odl: 1100, x: 40, y: 54 },
+      { id: 'kaufland', godz: [7, 22], siec: 'Kaufland', adres: 'ul. Żorska 80', odl: 1800, x: 330, y: 176 },
+      { id: 'aldi', godz: [7, 21], siec: 'Aldi', adres: 'ul. Gliwicka 30', odl: 2400, x: 196, y: 186 }
+    ];
+  }
+__SILNIK__
+  zl(x) { return x.toFixed(2).replace(".", ",") + " zł"; }
+  renderVals() {
+    const st = this.state;
+    const baza = this.bazaSklepow();
+    const sk = (id) => baza.find((x) => x.id === id);
+    const pelna = (id) => { const s = sk(id); return s ? s.siec + ' · ' + s.adres.replace('ul. ', '') : ''; };
+    const odlTxt = (m) => m < 1000 ? m + ' m' : String(Math.round(m / 100) / 10).replace('.', ',') + ' km';
+    const odm = (n) => n + ' ' + (n === 1 ? 'produkt' : (n % 10 >= 2 && n % 10 <= 4 && (n % 100 < 12 || n % 100 > 14)) ? 'produkty' : 'produktów');
+    // wybór sklepu
+    const dostepne = baza.filter((x) => st.sklepy.indexOf(x.id) < 0 && (st.siec === 'Wszystkie' || x.siec === st.siec)).sort((a, b) => a.odl - b.odl);
+    const sieci = ['Wszystkie', 'Lidl', 'Biedronka', 'Kaufland', 'Żabka', 'Netto', 'Aldi'].map((n) => ({ n: n, wybierz: () => this.setState({ siec: n, zazn: null }),
+      styl: 'height: 36px; padding: 0 14px; border-radius: 999px; font-family: inherit; font-size: 14px; font-weight: 500; cursor: pointer; white-space: nowrap; flex-shrink: 0; ' + (st.siec === n ? 'border: 0; background: var(--tusz); color: #ffffff' : 'border: 1.5px solid var(--ramka); background: #ffffff; color: var(--tusz)') }));
+    const piny = dostepne.map((x) => { const on = st.zazn === x.id; return { litera: x.siec.charAt(0), etykieta: x.siec + ', ' + x.adres, zaznacz: () => this.setState({ zazn: x.id, mapaWidok: false }),
+      styl: 'position: absolute; left: ' + (x.x - (on ? 20 : 16)) + 'px; top: ' + (Math.round(x.y * 0.9) - (on ? 20 : 16)) + 'px; width: ' + (on ? 40 : 32) + 'px; height: ' + (on ? 40 : 32) + 'px; border-radius: 50%; border: 2px solid #ffffff; box-shadow: 0 2px 6px rgba(18,28,36,.25); font-family: inherit; font-size: ' + (on ? 16 : 13) + 'px; font-weight: 700; cursor: pointer; padding: 0; display: flex; align-items: center; justify-content: center; ' + (on ? 'background: var(--akcent); color: #ffffff; z-index: 2' : 'background: #ffffff; color: var(--akcent-ciemny)') }; });
+    const teraz = 18; // przykładowa godzina: 18:00
+    const info = (x) => { const otwarte = teraz >= x.godz[0] && teraz < x.godz[1]; const ile = st.historia[x.id] || 0;
+      return { siec: x.siec, adres: x.adres.replace('ul. ', ''), mapa: !!x.mapa, fotoOpis: 'Zdjęcie wejścia do sklepu ' + x.siec + ', ' + x.adres,
+        godz: otwarte ? 'Otwarte do ' + x.godz[1] + ':00' : 'Zamknięte, od ' + x.godz[0] + ':00',
+        godzStyl: 'height: 24px; padding: 0 8px; border-radius: 999px; font-size: 11px; font-weight: 700; display: inline-flex; align-items: center; ' + (otwarte ? 'background: #e3f3e8; color: #1f6b3a' : 'background: #fbe9e7; color: #9a2d1f'),
+        pieszo: Math.max(2, Math.round(x.odl / 80)) + ' min pieszo', bywasz: ile > 0, bywaszTxt: 'Wybierasz często' }; };
+    const sklepyLista = dostepne.map((x) => { const on = st.zazn === x.id;
+      return { on: on, litera: x.siec.charAt(0), siec: x.siec, adres: x.adres, odl: odlTxt(x.odl), mapa: !!x.mapa,
+        zaznacz: () => this.setState({ zazn: on ? null : x.id, mapaWidok: false }),
+        literaStyl: 'width: 40px; height: 40px; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 16px; font-weight: 700; flex-shrink: 0; transition: background-color .15s ease, color .15s ease; ' + (on ? 'background: var(--akcent); color: #ffffff' : 'background: var(--akcent-jasny); color: var(--akcent-ciemny)'),
+        styl: 'display: flex; align-items: center; gap: 12px; min-height: 66px; padding: 0 12px; margin: 0 -12px; border: 0; border-radius: 16px; font-family: inherit; text-align: left; cursor: pointer; color: var(--tusz); transition: background-color .15s ease; ' + (on ? 'background: var(--akcent-jasny)' : 'background: transparent') }; });
+    const z = sk(st.zazn);
+    const razy = (n) => n + (n % 10 >= 2 && n % 10 <= 4 && (n % 100 < 12 || n % 100 > 14) ? ' razy' : ' razy');
+    const ulubione = Object.keys(st.historia).filter((id) => st.sklepy.indexOf(id) < 0).sort((a, b) => st.historia[b] - st.historia[a]).slice(0, 2).map((id) => ({
+      litera: sk(id).siec.charAt(0), nazwa: sk(id).siec + ' · ' + sk(id).adres.replace('ul. ', ''), opis: 'wybrany ' + razy(st.historia[id]),
+      wybierz: () => this.setState({ krok: 'lista', sklepy: st.sklepy.concat(id), aktywny: id, zazn: null, siec: 'Wszystkie' })
+    }));
+    // lista
+    const dz = this.dzialy();
+    const wiele = st.sklepy.length > 1;
+    const czesci = st.sklepy.map((id) => {
+      const ps = st.items.filter((x) => x.sklep === id).sort((a, b) => dz.indexOf(a.sekcja) - dz.indexOf(b.sekcja));
+      const akt = st.aktywny === id;
+      return { nazwa: pelna(id), litera: sk(id).siec.charAt(0), opis: ps.length ? odm(ps.length) + (sk(id).mapa ? ' · ułożone według mapy sklepu' : ' · ułożone według typowego układu') : 'pusto', aktywna: akt && st.sklepy.length > 1, pusta: ps.length === 0,
+        aktywuj: () => this.setState({ aktywny: id, ost: null }),
+        wiele: wiele, znacznik: akt ? 'tu dodajesz' : 'dodawaj tutaj',
+        znacznikStyl: 'flex-shrink: 0; height: 26px; padding: 0 10px; border-radius: 999px; display: inline-flex; align-items: center; font-size: 12px; font-weight: 700; ' + (akt ? 'background: var(--akcent); color: #ffffff' : 'border: 1.5px solid var(--ramka); color: var(--wyciszony)'),
+        blokStyl: 'display: flex; flex-direction: column; margin: 0 -12px 8px; padding: 0 12px 6px; border-radius: 18px; transition: background-color .2s ease, box-shadow .2s ease; ' + (wiele && akt ? 'background: var(--akcent-jasny); box-shadow: inset 0 0 0 2px var(--akcent)' : 'background: transparent; box-shadow: inset 0 0 0 2px transparent'),
+        styl: 'display: flex; align-items: center; gap: 10px; min-height: 52px; padding: 10px 0 6px; border: 0; background: transparent; font-family: inherit; text-align: left; cursor: pointer; width: 100%; color: var(--tusz)',
+        pozycje: ps.map((p) => ({ nazwa: p.nazwa, ilosc: this.fmt(p.typ, p.ile), sekcja: p.sekcja, usunEtykieta: 'Usuń: ' + p.nazwa, usun: () => this.setState({ items: st.items.filter((x) => x.id !== p.id) }), otworz: () => this.setState({ otw: p.id, ost: null }) })) };
+    });
+    const dodajTekst = (tekst) => {
+      // jednostka wybrana kiedyś przez użytkownika dla tego produktu wygrywa z domyślną (chyba że wpisał jednostkę wprost)
+      const zPref = (x) => { const t = st.jedn[x.klucz]; if (!t || x.jawna || t === x.typ) return x; const n = x.liczba; return Object.assign({}, x, { typ: t, ile: n === null ? 1 : t === 'kg' ? (n >= 50 ? n / 1000 : n) : Math.max(1, Math.round(n)) }); };
+      const nowe = tekst.split(/[,;\n]/).map((x) => this.rozpoznaj(x)).filter(Boolean).map(zPref).map((x) => Object.assign({ id: 'n' + (this.nr++), sklep: st.aktywny }, x));
+      this.setState({ items: st.items.concat(nowe), wpis: '', ost: nowe.length && wiele ? { ids: nowe.map((x) => x.id), sklep: st.aktywny } : null });
+    };
+    const zmienPoz = (id, zm) => this.setState({ items: st.items.map((x) => x.id === id ? Object.assign({}, x, zm) : x) });
+    let ark = null;
+    const a = st.items.find((x) => x.id === st.otw);
+    if (a) {
+      const krok = a.typ === 'kg' ? (a.ile < 1 ? 0.1 : 0.5) : 1;
+      const min = a.typ === 'kg' ? 0.1 : 1;
+      const zaokr = (v) => Math.round(v * 10) / 10;
+      const pigStyl = (on) => 'height: 40px; padding: 0 4px; white-space: nowrap; border-radius: 999px; font-family: inherit; font-size: 14px; font-weight: 700; cursor: pointer; ' + (on ? 'border: 1.5px solid var(--akcent); background: var(--akcent-jasny); color: var(--akcent-ciemny)' : 'border: 1.5px solid var(--ramka); background: #ffffff; color: var(--tusz)');
+      const wartosci = a.typ === 'kg' ? [0.25, 0.5, 1, 2] : a.typ === 'but' ? [1, 2, 6, 12] : [1, 2, 4, 6]; // zawsze 4: panel nie zmienia wysokości
+      const domysl = { szt: 1, kg: 1, but: 1 };
+      ark = {
+        nazwa: a.nazwa, sekcja: a.sekcja, ilosc: this.fmt(a.typ, a.ile),
+        cena: a.cj ? 'ok. ' + this.zl(a.cj * a.ile) : '',
+        mniej: () => zmienPoz(a.id, { ile: Math.max(min, zaokr(a.ile - (a.typ === 'kg' && a.ile <= 1 ? 0.1 : krok))) }),
+        wiecej: () => zmienPoz(a.id, { ile: zaokr(a.ile + krok) }),
+        szybkie: wartosci.map((v) => ({ n: this.fmt(a.typ, v).replace(' butelki', '').replace(' butelek', '').replace(' butelka', ''), styl: pigStyl(Math.abs(a.ile - v) < 0.001), ustaw: () => zmienPoz(a.id, { ile: v }) })),
+        typy: [['szt', 'Sztuki'], ['kg', 'Na wagę'], ['but', 'Butelki']].map(([id, n]) => ({ n: n, styl: 'height: 38px; border-radius: 10px; border: 0; font-family: inherit; font-size: 13px; font-weight: 700; cursor: pointer; ' + (a.typ === id ? 'background: #ffffff; color: var(--tusz); box-shadow: 0 1px 3px rgba(18,28,36,.12)' : 'background: transparent; color: var(--wyciszony)'), wybierz: () => { if (a.typ === id) return; const kl = a.klucz || a.nazwa.toLowerCase(); this.setState({ items: st.items.map((x) => x.id === a.id ? Object.assign({}, x, { typ: id, ile: domysl[id] }) : x), jedn: Object.assign({}, st.jedn, { [kl]: id }), zapam: a.id }); } })),
+        jednTxt: st.zapam === a.id ? 'Zapamiętane: ' + a.nazwa.toLowerCase() + ' zawsze ' + ({ szt: 'w sztukach', kg: 'na wagę', but: 'w butelkach' })[a.typ] : 'Zmiana jednostki zostanie zapamiętana dla tego produktu',
+        jednStyl: 'height: 16px; font-size: 12px; line-height: 16px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; color: ' + (st.zapam === a.id ? 'var(--akcent)' : 'var(--wyciszony)') + '; font-weight: ' + (st.zapam === a.id ? '700' : '400'),
+        usun: () => this.setState({ items: st.items.filter((x) => x.id !== a.id), otw: null }),
+        wieleSklepow: wiele,
+        sklepyStyl: 'flex: 1; display: grid; grid-template-columns: repeat(' + st.sklepy.length + ', minmax(0, 1fr)); gap: 4px; padding: 4px; border-radius: 14px; background: var(--chip)',
+        sklepy: st.sklepy.map((id) => ({ n: sk(id).siec, styl: 'height: 38px; border-radius: 10px; border: 0; font-family: inherit; font-size: 13px; font-weight: 700; cursor: pointer; ' + (a.sklep === id ? 'background: #ffffff; color: var(--tusz); box-shadow: 0 1px 3px rgba(18,28,36,.12)' : 'background: transparent; color: var(--wyciszony)'), wybierz: () => zmienPoz(a.id, { sklep: id }) }))
+      };
+    }
+    const ostP = st.ost ? st.items.filter((x) => st.ost.ids.indexOf(x.id) >= 0 && x.sklep === st.ost.sklep) : [];
+    const inny = st.ost ? st.sklepy.filter((id) => id !== st.ost.sklep) : [];
+    const toast = ostP.length > 0 && inny.length > 0 && st.krok === 'lista' && !st.otw;
+    const przenies = () => {
+      if (inny.length === 1) { const ids = ostP.map((x) => x.id); this.setState({ items: st.items.map((x) => ids.indexOf(x.id) >= 0 ? Object.assign({}, x, { sklep: inny[0] }) : x), ost: { ids: ids, sklep: inny[0] }, aktywny: st.aktywny }); }
+      else this.setState({ otw: ostP[0].id, ost: null });
+    };
+    // F: karty list z przesuwaniem (1. ruch odsłania przycisk, 2. ruch albo klik wykonuje)
+    const ODK = 104, PROG = 56;
+    const sklepyTxtF = st.sklepy.map((id) => sk(id).siec).join(' + ');
+    const opisF = odm(st.items.length) + ' · ' + st.items.slice(0, 4).map((x) => x.nazwa.toLowerCase()).join(', ') + (st.items.length > 4 ? '…' : '');
+    const wszystkie = [{ id: 'nowa', duza: true, nazwa: st.nazwa, sklepy: sklepyTxtF, opis: opisF }].concat(this.inne.map((x) => Object.assign({ duza: false }, x))).filter((x) => st.usuniete.indexOf(x.id) < 0);
+    const wykonaj = (id, strona) => {
+      const l = wszystkie.find((x) => x.id === id);
+      if (strona === 'P') {
+        this.setState({ usuwane: this.state.usuwane.concat(id), odsl: null, drag: null, toast2: { txt: 'Usunięto listę „' + l.nazwa + '”', cofnij: id } });
+        setTimeout(() => { if (this.state.usuwane.indexOf(id) >= 0) this.setState({ usuniete: this.state.usuniete.concat(id), usuwane: this.state.usuwane.filter((x) => x !== id) }); }, 360);
+      } else this.setState({ odsl: null, drag: null, toast2: { txt: 'Link do listy „' + l.nazwa + '” skopiowany. Wyślij go domownikom.', cofnij: null } });
+    };
+    const karty = wszystkie.map((l) => {
+      const znika = st.usuwane.indexOf(l.id) >= 0;
+      const baza = st.odsl && st.odsl.id === l.id ? (st.odsl.strona === 'L' ? ODK : -ODK) : 0;
+      const ciagnie = !!st.drag && st.drag.id === l.id;
+      const off = znika ? -420 : Math.max(-170, Math.min(170, baza + (ciagnie ? st.drag.dx : 0)));
+      const pokazL = znika ? 0 : Math.max(0, off), pokazP = znika ? 0 : Math.max(0, -off);
+      const ease = 'cubic-bezier(.2,.8,.2,1)';
+      const ikona = (w) => 'display: flex; flex-direction: column; align-items: center; gap: 4px; font-size: 12px; font-weight: 700; white-space: nowrap; transform: scale(' + (0.6 + 0.4 * Math.min(1, w / ODK)) + '); opacity: ' + Math.min(1, w / (ODK * 0.7)) + '; transition: ' + (ciagnie ? 'none' : 'transform .32s ' + ease + ', opacity .2s ease');
+      const przycisk = (w, lewa, kolor) => 'position: absolute; top: 0; bottom: 0; ' + (lewa ? 'left: 0' : 'right: 0') + '; width: ' + Math.max(0, w - 8) + 'px; overflow: hidden; border: 0; border-radius: 20px; padding: 0; display: flex; align-items: center; justify-content: center; font-family: inherit; cursor: pointer; color: #ffffff; background: ' + kolor + '; opacity: ' + (w > 4 ? 1 : 0) + '; transition: ' + (ciagnie ? 'none' : 'width .32s ' + ease + ', opacity .2s ease');
+      return Object.assign({}, l, {
+        mala: !l.duza,
+        stylWiersza: 'position: relative; border-radius: 22px; overflow: hidden; transition: max-height .36s ' + ease + ', margin-bottom .36s ' + ease + ', opacity .3s ease; ' + (znika ? 'max-height: 0; margin-bottom: 0; opacity: 0' : 'max-height: 260px; margin-bottom: 12px; opacity: 1'),
+        stylKarty: 'position: relative; z-index: 1; touch-action: pan-y; user-select: none; -webkit-user-select: none; cursor: grab; transform: translateX(' + off + 'px); transition: ' + (ciagnie ? 'none' : 'transform .32s ' + ease),
+        stylL: przycisk(pokazL, true, 'var(--akcent)'), stylP: przycisk(pokazP, false, '#b3362b'),
+        ikonaStylL: ikona(pokazL), ikonaStylP: ikona(pokazP),
+        tabL: pokazL > 4 ? '0' : '-1', tabP: pokazP > 4 ? '0' : '-1',
+        etykietaL: 'Udostępnij listę ' + l.nazwa, etykietaP: 'Usuń listę ' + l.nazwa,
+        akcjaL: () => wykonaj(l.id, 'L'), akcjaP: () => wykonaj(l.id, 'P'),
+        dol: (e) => { if (e.target && e.target.closest && e.target.closest('a,button')) return; if (e.currentTarget && e.currentTarget.setPointerCapture) e.currentTarget.setPointerCapture(e.pointerId); this.setState({ drag: { id: l.id, x0: e.clientX, dx: 0 }, toast2: null, odsl: this.state.odsl && this.state.odsl.id !== l.id ? null : this.state.odsl }); },
+        ruch: (e) => { const d = this.state.drag; if (d && d.id === l.id) this.setState({ drag: Object.assign({}, d, { dx: e.clientX - d.x0 }) }); },
+        gora: () => {
+          const d = this.state.drag; if (!d || d.id !== l.id) return;
+          const o = this.state.odsl && this.state.odsl.id === l.id ? this.state.odsl.strona : null;
+          const tot = (o === 'L' ? ODK : o === 'P' ? -ODK : 0) + d.dx;
+          if (Math.abs(d.dx) < 6) { this.setState({ drag: null, odsl: o ? null : this.state.odsl }); return; }
+          if (o === 'L' && d.dx > PROG) return wykonaj(l.id, 'L');
+          if (o === 'P' && d.dx < -PROG) return wykonaj(l.id, 'P');
+          if ((o === 'L' && d.dx < -20) || (o === 'P' && d.dx > 20)) { this.setState({ drag: null, odsl: null }); return; }
+          this.setState({ drag: null, odsl: tot > PROG ? { id: l.id, strona: 'L' } : tot < -PROG ? { id: l.id, strona: 'P' } : null });
+        }
+      });
+    });
+    const pg = this.rozpoznaj(st.wpis.split(/[,;\n]/).pop());
+    const moznaZak = st.items.length > 0;
+    const pierwszy = st.sklepy.length === 0;
+    const sklepyTxt = st.sklepy.map((id) => sk(id).siec).join(' + ');
+    return {
+      krokStart: st.krok === 'start', krokWybor: st.krok === 'wybor', krokLista: st.krok === 'lista', krokGotowe: st.krok === 'gotowe',
+      pokazNav: st.krok === 'start' || st.krok === 'gotowe',
+      nowaLista: () => this.setState({ krok: 'wybor', sklepy: [], items: [], aktywny: null, zazn: null, siec: 'Wszystkie', nazwa: 'Zakupy na sobotę', skad: 'start' }),
+      wyborTytul: pierwszy ? 'Gdzie robisz zakupy?' : 'Dodaj kolejny sklep',
+      adres: st.adres, piszAdres: (e) => this.setState({ adres: e.target.value }), mojaLok: () => this.setState({ adres: 'Twoja lokalizacja · ul. Zorska' }),
+      ulubione, maUlubione: ulubione.length > 0,
+      sieci, piny, sklepyLista, ileSklepow: dostepne.length ? 'Najbliżej: ' + dostepne.length + ' sklepów w okolicy' : 'Brak sklepów tej sieci w okolicy',
+      brakZaznaczenia: !z, karta: z ? info(z) : { godz: '', godzStyl: '' },
+      kartaUkryta: !z || st.mapaWidok ? 'true' : 'false',
+      kartaStyl: 'position: absolute; inset: 0; z-index: 3; display: flex; gap: 14px; padding: 12px 22px; background: #ffffff; transition: opacity .28s ease, transform .32s cubic-bezier(.2,.8,.2,1); ' + (z && !st.mapaWidok ? 'opacity: 1; transform: none; pointer-events: auto' : 'opacity: 0; transform: translateY(8px); pointer-events: none'),
+      pokazMape: () => this.setState({ mapaWidok: true }),
+      wybierzTxt: z ? 'Wybierz ' + z.siec + ' · ' + z.adres.replace('ul. ', '') : 'Zaznacz sklep na mapie lub liście',
+      wybierzStyl: 'width: 100%; height: 56px; border-radius: 999px; border: 0; font-family: inherit; font-size: 16px; font-weight: 700; cursor: pointer; ' + (z ? 'background: var(--akcent); color: #ffffff' : 'background: var(--chip); color: var(--wyciszony)'),
+      zatwierdzSklep: () => { if (!z) return; this.setState({ krok: 'lista', sklepy: st.sklepy.concat(z.id), aktywny: z.id, zazn: null, siec: 'Wszystkie' }); },
+      wstecz: () => this.setState({ krok: pierwszy ? 'start' : 'lista', zazn: null }),
+      nazwa: st.nazwa, piszNazwe: (e) => this.setState({ nazwa: e.target.value }),
+      wpis: st.wpis, pisz: (e) => this.setState({ wpis: e.target.value }),
+      klawisz: (e) => { if (e.key === 'Enter') { e.preventDefault(); dodajTekst(this.state.wpis); } },
+      dodajWpis: () => dodajTekst(st.wpis),
+      placeholder: st.aktywny ? 'Dodaj do: ' + sk(st.aktywny).siec : 'Dodaj produkt',
+      plusStyl: 'width: 44px; height: 44px; flex-shrink: 0; border-radius: 14px; border: 0; display: flex; align-items: center; justify-content: center; cursor: pointer; ' + (st.wpis.trim() ? 'background: var(--akcent); color: #ffffff' : 'background: var(--chip); color: var(--wyciszony)'),
+      podglad: pg ? '↵ ' + pg.nazwa + ' · ' + this.fmt(pg.typ, pg.ile) + ' · ' + pg.sekcja : '',
+      czesci,
+      dodajSklep: () => this.setState({ krok: 'wybor', zazn: null, siec: 'Wszystkie' }),
+      nieMoznaZakonczyc: !moznaZak,
+      zakonczStyl: 'height: 56px; border-radius: 999px; border: 0; font-family: inherit; font-size: 16px; font-weight: 700; cursor: pointer; ' + (moznaZak ? 'background: var(--akcent); color: #ffffff' : 'background: var(--chip); color: var(--wyciszony)'),
+      zakoncz: () => { if (moznaZak) this.setState({ krok: 'gotowe' }); },
+      doStartu: () => this.setState({ krok: moznaZak ? 'gotowe' : 'start' }),
+      gotoweSklepy: sklepyTxt,
+      gotoweOpis: odm(st.items.length) + ' · ' + st.items.slice(0, 4).map((x) => x.nazwa.toLowerCase()).join(', ') + (st.items.length > 4 ? '…' : ''),
+      edytuj: () => this.setState({ krok: 'lista' }),
+      karty, maToast2: !!st.toast2 && st.krok === 'gotowe', toast2Txt: st.toast2 ? st.toast2.txt : '', toast2Cofnij: !!(st.toast2 && st.toast2.cofnij),
+      cofnij: () => { const id = st.toast2 && st.toast2.cofnij; this.setState({ usuniete: st.usuniete.filter((x) => x !== id), usuwane: this.state.usuwane.filter((x) => x !== id), toast2: null }); },
+      maToast: toast,
+      toastTxt: toast ? (ostP.length === 1 ? ostP[0].nazwa : ostP.length + ' produkty') + ' · dodane do: ' + sk(st.ost.sklep).siec : '',
+      toastAkcjaTxt: inny.length === 1 ? 'Przenieś do ' + sk(inny[0]).siec : 'Zmień sklep',
+      toastAkcja: przenies,
+      maArkusz: !!ark && st.krok === 'lista', ark: ark || { szybkie: [], typy: [], sklepy: [] }, zamknij: () => this.setState({ otw: null, zapam: null })
+    };
+  }
+}
+</script>
+</body>
+</html>

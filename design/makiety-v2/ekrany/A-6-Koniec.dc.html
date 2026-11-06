@@ -1,0 +1,128 @@
+<!doctype html>
+<html lang="pl">
+<head>
+<meta charset="utf-8">
+<title>Koniec zakupów</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,700&amp;display=swap" rel="stylesheet">
+<style>
+/* Kolory w jednym miejscu: zmiana motywu = zmiana tych wartości */
+:root{--akcent:#1d5f8a;--akcent-ciemny:#164a6b;--akcent-jasny:#e3eff7;--tusz:#121c24;--wyciszony:#5d6b75;--linia:#edf1f4;--chip:#f2f5f7;--ramka:#c8d5de;--odhaczony:#98a4ad}
+body{margin:0}
+a{color:var(--akcent);text-decoration:none}a:hover{color:var(--akcent-ciemny)}
+@keyframes wjazd{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+.w{animation:wjazd .45s cubic-bezier(.2,.8,.2,1) both}
+@keyframes kolo{0%{transform:scale(.4);opacity:0}60%{transform:scale(1.08);opacity:1}100%{transform:scale(1)}}
+.kolo{animation:kolo .6s cubic-bezier(.2,.8,.2,1) both}
+@keyframes rysuj{from{stroke-dashoffset:30}to{stroke-dashoffset:0}}
+.ptak{stroke-dasharray:30;animation:rysuj .4s ease .35s both}
+.pig{transition:background-color .15s ease,color .15s ease,transform .12s ease,border-color .15s ease}.pig:active{transform:scale(.96)}
+</style>
+</helmet>
+<div style="width: 390px; height: 844px; box-sizing: border-box; background: #ffffff; color: var(--tusz); font-family: 'DM Sans', sans-serif; display: flex; flex-direction: column; overflow: hidden">
+
+  <div style="padding: 40px 22px 18px; display: flex; flex-direction: column; align-items: center; gap: 14px; text-align: center">
+    <span class="kolo" style="width: 76px; height: 76px; border-radius: 50%; background: var(--akcent); display: flex; align-items: center; justify-content: center">
+      <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path class="ptak" d="m5 12 5 5 9-10"></path></svg>
+    </span>
+    <div class="w" style="animation-delay: .15s; display: flex; flex-direction: column; gap: 4px">
+      <h1 style="margin: 0; font-size: 32px; font-weight: 700; letter-spacing: -0.03em; line-height: 1.05">Wszystko w koszyku</h1>
+      <span style="font-size: 15px; color: var(--wyciszony)">Zakupy na sobotę · 3 sklepy · 47 min</span>
+    </div>
+  </div>
+
+  <div style="flex: 1; min-height: 0; overflow-y: auto; padding: 0 22px 12px; display: flex; flex-direction: column; gap: 12px">
+    <div class="w" style="animation-delay: .22s; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px">
+      <div style="border-radius: 16px; background: var(--akcent-jasny); padding: 12px; display: flex; flex-direction: column; gap: 2px">
+        <span style="font-size: 22px; font-weight: 700; color: var(--akcent-ciemny)">9/9</span>
+        <span style="font-size: 12px; color: var(--akcent-ciemny)">produktów</span>
+      </div>
+      <div style="border-radius: 16px; background: var(--chip); padding: 12px; display: flex; flex-direction: column; gap: 2px">
+        <span style="font-size: 22px; font-weight: 700">ok. 103 zł</span>
+        <span style="font-size: 12px; color: var(--wyciszony)">szacunek z listy</span>
+      </div>
+      <div style="border-radius: 16px; background: var(--chip); padding: 12px; display: flex; flex-direction: column; gap: 2px">
+        <span style="font-size: 22px; font-weight: 700">47 min</span>
+        <span style="font-size: 12px; color: var(--wyciszony)">w sklepach</span>
+      </div>
+    </div>
+
+    <div class="w" style="animation-delay: .3s; border-radius: 22px; background: var(--chip); padding: 16px; display: flex; flex-direction: column; gap: 12px">
+      <div style="display: flex; flex-direction: column; gap: 4px">
+        <span style="font-size: 17px; font-weight: 700">Zeskanuj paragony</span>
+        <span style="font-size: 14px; line-height: 1.4; color: var(--wyciszony)">{{premiumTxt}}</span>
+        <span style="display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 4px; margin-top: 6px">
+          <sc-for list="{{segmenty}}" as="s" hint-placeholder-count="4"><span style="{{s.styl}}"></span></sc-for>
+        </span>
+      </div>
+      <div style="display: flex; flex-direction: column; gap: 6px">
+        <sc-for list="{{sklepy}}" as="k" hint-placeholder-count="3">
+          <div style="display: flex; align-items: center; gap: 12px; min-height: 58px; padding: 0 8px 0 12px; border-radius: 16px; background: #ffffff">
+            <span style="{{k.literaStyl}}">{{k.litera}}</span>
+            <span style="flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 1px">
+              <span style="font-size: 15px; font-weight: 700">{{k.nazwa}}</span>
+              <span style="font-size: 12px; color: var(--wyciszony)">{{k.opis}}</span>
+            </span>
+            <sc-if value="{{k.doSkanu}}" hint-placeholder-val="{{true}}">
+              <a href="A-7-Skaner.dc.html" class="pig" style="height: 40px; width: 104px; border-radius: 999px; background: var(--akcent); color: #ffffff; display: flex; align-items: center; justify-content: center; gap: 6px; font-size: 14px; font-weight: 700"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 8V5a1 1 0 0 1 1-1h3M16 4h3a1 1 0 0 1 1 1v3M20 16v3a1 1 0 0 1-1 1h-3M8 20H5a1 1 0 0 1-1-1v-3"></path></svg>Skanuj</a>
+            </sc-if>
+            <sc-if value="{{k.zrobiony}}" hint-placeholder-val="{{false}}">
+              <span style="height: 40px; width: 104px; border-radius: 999px; background: var(--akcent-jasny); color: var(--akcent-ciemny); display: flex; align-items: center; justify-content: center; gap: 6px; font-size: 14px; font-weight: 700"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m5 12 5 5 9-10"></path></svg>Jest</span>
+            </sc-if>
+          </div>
+        </sc-for>
+      </div>
+    </div>
+
+    <button class="pig w" onClick="{{przelaczPrzypomnij}}" aria-pressed="{{przypomnij}}" style="{{przypomnijStyl}}">
+      <span style="{{przelacznikStyl}}"><span style="{{galkaStyl}}"></span></span>
+      <span style="flex: 1; display: flex; flex-direction: column; gap: 1px; text-align: left">
+        <span style="font-size: 15px; font-weight: 700; color: var(--tusz)">Przypomnij wieczorem</span>
+        <span style="font-size: 12px; color: var(--wyciszony)">o 20:00, jeśli paragony zostaną w kieszeni</span>
+      </span>
+    </button>
+  </div>
+
+  <div style="padding: 10px 22px 22px; display: flex; flex-direction: column; gap: 4px">
+    <a href="E00-a-Start.dc.html" class="pig" style="height: 58px; border-radius: 999px; border: 1.5px solid var(--ramka); color: var(--tusz); display: flex; align-items: center; justify-content: center; font-size: 17px; font-weight: 700">Zakończ</a>
+    <span style="text-align: center; font-size: 12px; color: var(--wyciszony); padding-top: 4px">Lista trafi do „Zrobione”. Możesz jej użyć ponownie.</span>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":390,"height":844}}'>
+class Component extends DCLogic {
+  constructor(props) {
+    super(props);
+    this.state = { przypomnij: true };
+  }
+  renderVals() {
+    const st = this.state;
+    // stan przykładowy: Lidl już zeskanowany, w ostatnich 30 dniach 2 paragony (z tym 3 z 4)
+    const sklepy = [
+      { nazwa: 'Lidl · Zorska', opis: 'Zeskanowany · 83,40 zł', zrobiony: true },
+      { nazwa: 'Biedronka · Wodzisławska', opis: '2 produkty · ok. 21 zł', zrobiony: false },
+      { nazwa: 'Kaufland · Rybnik', opis: '1 produkt · ok. 15 zł', zrobiony: false }
+    ];
+    const zeskanowane = 3;
+    const brakuje = Math.max(0, 4 - zeskanowane);
+    return {
+      premiumTxt: brakuje ? 'Masz ' + zeskanowane + ' z 4 paragonów w 30 dni. Jeszcze ' + brakuje + ', a Premium masz za darmo.' : 'Premium odblokowane na 30 dni.',
+      segmenty: [0, 1, 2, 3].map((i) => ({ styl: 'height: 6px; border-radius: 999px; background: ' + (i < zeskanowane ? 'var(--akcent)' : 'var(--ramka)') })),
+      sklepy: sklepy.map((k) => ({ nazwa: k.nazwa, opis: k.opis, litera: k.nazwa.charAt(0), zrobiony: k.zrobiony, doSkanu: !k.zrobiony,
+        literaStyl: 'width: 36px; height: 36px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 15px; font-weight: 700; flex-shrink: 0; ' + (k.zrobiony ? 'background: var(--akcent); color: #ffffff' : 'background: var(--akcent-jasny); color: var(--akcent-ciemny)') })),
+      przypomnij: st.przypomnij ? 'true' : 'false',
+      przelaczPrzypomnij: () => this.setState({ przypomnij: !st.przypomnij }),
+      przypomnijStyl: 'animation-delay: .38s; display: flex; align-items: center; gap: 14px; min-height: 64px; padding: 0 16px; border-radius: 20px; border: 1.5px solid var(--linia); background: #ffffff; font-family: inherit; cursor: pointer',
+      przelacznikStyl: 'width: 46px; height: 28px; border-radius: 999px; flex-shrink: 0; position: relative; transition: background-color .2s ease; background: ' + (st.przypomnij ? 'var(--akcent)' : 'var(--ramka)'),
+      galkaStyl: 'position: absolute; top: 3px; left: 3px; width: 22px; height: 22px; border-radius: 50%; background: #ffffff; box-shadow: 0 1px 3px rgba(18,28,36,.25); transition: transform .25s cubic-bezier(.2,.8,.2,1); transform: translateX(' + (st.przypomnij ? 18 : 0) + 'px)'
+    };
+  }
+}
+</script>
+</body>
+</html>

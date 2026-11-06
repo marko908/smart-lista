@@ -5,6 +5,7 @@ Ten plik zbiera decyzje Marko z przeglądu makiet. Każda nowa decyzja trafia tu
 - Makiety (jedno klikalne płótno): https://claude.ai/artifact/Tig6gU98Eu39qRyhiMtZXj
 - Przegląd ekran po ekranie: https://claude.ai/artifact/EX9MnZi7sRr8UGWbyNRMUP
 - Plan v2: https://claude.ai/artifact/NB22NzNfidwAKHJmQ7h6nL
+- Źródła makiet z logiką (do podglądu zachowania przy budowie): `design/makiety-v2/`
 
 ## Kody ekranów i stanów
 
@@ -26,9 +27,10 @@ Kody odpowiadają tytułom plansz na płótnie. Stan zapisujemy po kropce, np. `
 | N6 | Nowa lista: gotowe | `N6.lista`, `N6.odsłonięte`, `N6.cofnij` |
 | Z1 | Zakupy w sklepie | `Z1.sklep`, `Z1.trwa`, `Z1.cała`, `Z1.zmiana`, `Z1.przejście` |
 | Z2 | Zakupy: gdzie jest produkt | |
-| Z3 | Zakupy: koniec (do zrobienia) | |
-| PA0 | Skaner paragonu (do zrobienia) | |
+| Z3 | Zakupy: koniec | `Z3.podsumowanie`, `Z3.przypomnij` |
+| PA0 | Skaner paragonu | `PA0.celowanie`, `PA0.skan`, `PA0.gotowe` |
 | PA1 | Paragon odczytany | |
+| PA2 | Paragony (zakładka) | `PA2.miesiąc`, `PA2.poprzedni` |
 | PR1 | Promocje | `PR1.idealne`, `PR1.inne`, `PR1.pytanie` |
 
 ---
@@ -117,6 +119,29 @@ Kody odpowiadają tytułom plansz na płótnie. Stan zapisujemy po kropce, np. `
 - Lista na jeden sklep pomija te pytania.
 - „Gdzie jestem” wyliczamy z ostatnio odhaczonego produktu (bez GPS i beaconów). Marszrutę uczymy się pasywnie z kolejności odhaczania.
 
+## 6a. Koniec zakupów (Z3)
+
+- Po ostatnim sklepie (Z1 → „Dalej”). Duży animowany ptaszek, „Wszystko w koszyku”, nazwa listy, liczba sklepów i czas.
+- Podsumowanie: produkty (9/9), szacunek z listy, czas w sklepach.
+- **Paragony per sklep:** każdy sklep z listy to osobny paragon. Wiersz sklepu ma „Skanuj” (otwiera PA0 dla tego sklepu) albo „Jest” po zeskanowaniu. Nad nimi pasek „x z 4” paragonów w 30 dni do Premium.
+- „Przypomnij wieczorem” (przełącznik, domyślnie włączony). **Propozycja do potwierdzenia:** powiadomienie o 20:00 tego dnia, jeśli zostały niezeskanowane paragony.
+- „Zakończ” przenosi listę do „Zrobione”, skąd można jej użyć ponownie.
+
+## 6b. Skaner paragonu (PA0)
+
+- Pełnoekranowy aparat z ramką (rogi pulsują). Nagłówek mówi, z którego sklepu ma być paragon („Paragon z Biedronki · 2 z 3 sklepów tej listy”), bo skaner wie, jakie sklepy były na liście.
+- Spust zdjęcia, „Z galerii”, lampa. Podpowiedź: długi paragon = przesuwaj telefon w dół (skan ciągły).
+- Animacja: po zdjęciu paragon się prostuje, linia skanu przesuwa się po nim, status „Czytam paragon…”, potem „Odczytano 3 pozycje · 21,98 zł · dopasowaliśmy je do Twojej listy” z przyciskami „Jeszcze raz” i „Sprawdź” (PA1).
+- Dolne panele (celowanie / gotowe) leżą w tym samym miejscu i przenikają się, więc nic nie skacze.
+- Prywatność: zdjęcie zostaje na telefonie (OCR na urządzeniu), wysyłamy tylko odczytany tekst, numer karty usuwamy przed wysłaniem.
+
+## 6c. Zakładka Paragony (PA2)
+
+- Karta postępu do Premium („2 z 4 paragonów w 30 dni”, 4 segmenty, „Jeszcze 2, a Premium masz za darmo do {data}”).
+- Wydatki w miesiącu: przełącznik miesięcy (nie zmienia układu), suma, liczba paragonów, słupki per sklep.
+- „Ostatnie” paragony: sklep, dzień, liczba pozycji, kwota. Stuknięcie otwiera PA1.
+- Stały przycisk „Zeskanuj paragon” nad nawigacją. Zakładka „Paragony” w dolnej nawigacji prowadzi tutaj.
+
 ## 7. Mądra lista
 
 - Aplikacja wykrywa rytm zakupów (dni tygodnia, produkty kupowane regularnie).
@@ -150,3 +175,4 @@ Kody odpowiadają tytułom plansz na płótnie. Stan zapisujemy po kropce, np. `
 - Wyjście z Expo Go na EAS dev build.
 - Promocje tylko z wybranych sklepów czy także z innych?
 - Podpowiedź o przesuwaniu kart: zawsze czy tylko przy pierwszych użyciach?
+- Przypomnienie o paragonach: godzina (propozycja 20:00) i czy domyślnie włączone.

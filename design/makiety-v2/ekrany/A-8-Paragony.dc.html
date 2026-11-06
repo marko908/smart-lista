@@ -1,0 +1,121 @@
+<!doctype html>
+<html lang="pl">
+<head>
+<meta charset="utf-8">
+<title>Paragony</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,700&amp;display=swap" rel="stylesheet">
+<style>
+/* Kolory w jednym miejscu: zmiana motywu = zmiana tych wartości */
+:root{--akcent:#1d5f8a;--akcent-ciemny:#164a6b;--akcent-jasny:#e3eff7;--tusz:#121c24;--wyciszony:#5d6b75;--linia:#edf1f4;--chip:#f2f5f7;--ramka:#c8d5de;--odhaczony:#98a4ad}
+body{margin:0}
+a{color:var(--akcent);text-decoration:none}
+.pig{transition:background-color .15s ease,color .15s ease,transform .12s ease}.pig:active{transform:scale(.97)}
+.slupek{transition:width .5s cubic-bezier(.2,.8,.2,1)}
+.liczba{transition:opacity .2s ease}
+</style>
+</helmet>
+<div style="width: 390px; height: 844px; box-sizing: border-box; background: #ffffff; color: var(--tusz); font-family: 'DM Sans', sans-serif; display: flex; flex-direction: column; overflow: hidden">
+
+  <div style="padding: 28px 22px 12px; display: flex; flex-direction: column; gap: 4px">
+    <h1 style="margin: 0; font-size: 40px; font-weight: 700; letter-spacing: -0.035em; line-height: 1">Paragony</h1>
+  </div>
+
+  <div style="flex: 1; min-height: 0; overflow-y: auto; padding: 4px 22px 12px; display: flex; flex-direction: column; gap: 12px">
+    <div style="border-radius: 22px; background: var(--akcent); color: #ffffff; padding: 16px 18px; display: flex; flex-direction: column; gap: 8px">
+      <div style="display: flex; align-items: center; gap: 10px">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3l2.6 5.6 6.1.7-4.5 4.2 1.2 6L12 16.6 6.6 19.5l1.2-6L3.3 9.3l6.1-.7z"></path></svg>
+        <span style="flex: 1; font-size: 16px; font-weight: 700">2 z 4 paragonów w 30 dni</span>
+      </div>
+      <span style="display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 4px">
+        <span style="height: 6px; border-radius: 999px; background: #ffffff"></span><span style="height: 6px; border-radius: 999px; background: #ffffff"></span><span style="height: 6px; border-radius: 999px; background: rgba(255,255,255,.3)"></span><span style="height: 6px; border-radius: 999px; background: rgba(255,255,255,.3)"></span>
+      </span>
+      <span style="font-size: 13px; color: #d6e6f2">Jeszcze 2, a Premium masz za darmo do 6 grudnia.</span>
+    </div>
+
+    <div style="display: flex; flex-direction: column; gap: 10px; padding: 14px 16px 16px; border-radius: 22px; background: var(--chip)">
+      <div style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 4px; padding: 4px; border-radius: 14px; background: #ffffff">
+        <button onClick="{{tenMiesiac}}" style="{{stylTen}}">Listopad</button>
+        <button onClick="{{poprzedni}}" style="{{stylPop}}">Październik</button>
+      </div>
+      <div style="display: flex; align-items: baseline; gap: 8px; height: 40px">
+        <span class="liczba" style="font-size: 32px; font-weight: 700; letter-spacing: -0.03em">{{suma}}</span>
+        <span style="font-size: 13px; color: var(--wyciszony)">{{sumaOpis}}</span>
+      </div>
+      <div style="display: flex; flex-direction: column; gap: 8px">
+        <sc-for list="{{sklepy}}" as="k" hint-placeholder-count="3">
+          <div style="display: grid; grid-template-columns: 82px 1fr 64px; align-items: center; gap: 10px; height: 22px">
+            <span style="font-size: 13px; font-weight: 500">{{k.nazwa}}</span>
+            <span style="height: 10px; border-radius: 999px; background: #ffffff; overflow: hidden"><span class="slupek" style="{{k.slupek}}"></span></span>
+            <span style="font-size: 13px; font-weight: 700; text-align: right">{{k.kwota}}</span>
+          </div>
+        </sc-for>
+      </div>
+    </div>
+
+    <span style="padding: 6px 2px 0; font-size: 13px; font-weight: 700; color: var(--wyciszony)">Ostatnie</span>
+    <div style="display: flex; flex-direction: column">
+      <sc-for list="{{paragony}}" as="p" hint-placeholder-count="5">
+        <a href="A-5-Paragon.dc.html" style="display: flex; align-items: center; gap: 12px; min-height: 62px; border-bottom: 1px solid var(--linia); color: var(--tusz)">
+          <span style="width: 40px; height: 40px; border-radius: 12px; background: var(--akcent-jasny); color: var(--akcent-ciemny); display: flex; align-items: center; justify-content: center; font-size: 15px; font-weight: 700; flex-shrink: 0">{{p.litera}}</span>
+          <span style="flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 1px">
+            <span style="font-size: 15px; font-weight: 700">{{p.sklep}}</span>
+            <span style="font-size: 12px; color: var(--wyciszony)">{{p.opis}}</span>
+          </span>
+          <span style="font-size: 15px; font-weight: 700">{{p.kwota}}</span>
+        </a>
+      </sc-for>
+    </div>
+  </div>
+
+  <div style="padding: 8px 22px 12px">
+    <a href="A-7-Skaner.dc.html" class="pig" style="height: 56px; border-radius: 999px; background: var(--akcent); color: #ffffff; display: flex; align-items: center; justify-content: center; gap: 8px; font-size: 17px; font-weight: 700"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 8V5a1 1 0 0 1 1-1h3M16 4h3a1 1 0 0 1 1 1v3M20 16v3a1 1 0 0 1-1 1h-3M8 20H5a1 1 0 0 1-1-1v-3M7 12h10"></path></svg>Zeskanuj paragon</a>
+  </div>
+
+  <nav aria-label="Główna nawigacja" style="height: 62px; flex-shrink: 0; display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); border-top: 1px solid var(--linia)">
+    <a href="E00-a-Start.dc.html" style="display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 3px; font-size: 11px; color: var(--wyciszony)"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M9 6h11M9 12h11M9 18h11M4 6h.01M4 12h.01M4 18h.01"></path></svg>Listy</a>
+    <a href="A-4-Promocje.dc.html" style="display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 3px; font-size: 11px; color: var(--wyciszony)"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20.6 13.4 13.4 20.6a2 2 0 0 1-2.8 0L3 13V3h10l7.6 7.6a2 2 0 0 1 0 2.8z"></path></svg>Promocje</a>
+    <a href="A-8-Paragony.dc.html" aria-current="page" style="display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 3px; font-size: 11px; font-weight: 700; color: var(--akcent)"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 3h12v18l-3-2-3 2-3-2-3 2z"></path></svg>Paragony</a>
+    <a href="E00-a-Start.dc.html" style="display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 3px; font-size: 11px; color: var(--wyciszony)"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="8" r="4"></circle><path d="M4 21c1.5-4 4.5-6 8-6s6.5 2 8 6"></path></svg>Konto</a>
+  </nav>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":390,"height":844}}'>
+class Component extends DCLogic {
+  constructor(props) {
+    super(props);
+    this.state = { miesiac: 'lis' };
+  }
+  renderVals() {
+    const st = this.state;
+    const dane = {
+      lis: { suma: '412 zł', opis: '6 paragonów', sklepy: [['Lidl', 268], ['Biedronka', 102], ['Kaufland', 42]] },
+      paz: { suma: '538 zł', opis: '9 paragonów', sklepy: [['Lidl', 301], ['Biedronka', 164], ['Kaufland', 73]] }
+    };
+    const d = dane[st.miesiac];
+    const max = 320;
+    const seg = (on) => 'height: 36px; border-radius: 10px; border: 0; font-family: inherit; font-size: 13px; font-weight: 700; cursor: pointer; transition: background-color .15s ease, color .15s ease; ' + (on ? 'background: var(--tusz); color: #ffffff' : 'background: transparent; color: var(--wyciszony)');
+    const paragony = [
+      ['Lidl · Zorska', 'sobota 18:24 · 8 pozycji', '83,40 zł'],
+      ['Biedronka · Wodzisławska', 'środa 17:02 · 4 pozycje', '31,15 zł'],
+      ['Lidl · Zorska', 'poniedziałek 19:40 · 11 pozycji', '96,70 zł'],
+      ['Kaufland · Rybnik', '1 listopada · 5 pozycji', '42,20 zł'],
+      ['Lidl · Zorska', '30 października · 7 pozycji', '58,90 zł']
+    ];
+    return {
+      suma: d.suma, sumaOpis: d.opis,
+      sklepy: d.sklepy.map(([n, k]) => ({ nazwa: n, kwota: k + ' zł', slupek: 'display: block; height: 100%; border-radius: 999px; background: var(--akcent); width: ' + Math.round(k / max * 100) + '%' })),
+      stylTen: seg(st.miesiac === 'lis'), stylPop: seg(st.miesiac === 'paz'),
+      tenMiesiac: () => this.setState({ miesiac: 'lis' }), poprzedni: () => this.setState({ miesiac: 'paz' }),
+      paragony: paragony.map(([s, o, k]) => ({ sklep: s, opis: o, kwota: k, litera: s.charAt(0) }))
+    };
+  }
+}
+</script>
+</body>
+</html>

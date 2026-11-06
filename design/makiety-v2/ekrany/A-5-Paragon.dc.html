@@ -1,0 +1,110 @@
+<!doctype html>
+<html lang="pl">
+<head>
+<meta charset="utf-8">
+<title>Skan paragonu</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,700&amp;family=JetBrains+Mono:wght@400&amp;display=swap" rel="stylesheet">
+<style>
+/* Kolory w jednym miejscu: zmiana motywu = zmiana tych wartości */
+:root{--akcent:#1d5f8a;--akcent-ciemny:#164a6b;--akcent-jasny:#e3eff7;--tusz:#121c24;--wyciszony:#5d6b75;--linia:#edf1f4;--chip:#f2f5f7;--ramka:#c8d5de;--odhaczony:#98a4ad}
+body{margin:0}
+a{color:var(--akcent);text-decoration:none}a:hover{color:var(--akcent-ciemny)}
+@keyframes wjazd{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+.w{animation:wjazd .4s cubic-bezier(.2,.8,.2,1) both}
+.opcja{transition:background-color .18s ease,color .18s ease}
+</style>
+</helmet>
+<div style="width: 390px; height: 844px; box-sizing: border-box; background: #ffffff; color: var(--tusz); font-family: 'DM Sans', sans-serif; display: flex; flex-direction: column; overflow: hidden">
+
+  <div style="padding: 24px 22px 14px; display: flex; flex-direction: column; gap: 14px">
+    <a href="E00-a-Start.dc.html" aria-label="Zamknij" style="width: 44px; height: 44px; border-radius: 50%; background: var(--chip); display: flex; align-items: center; justify-content: center">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--tusz)" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18"></path></svg>
+    </a>
+    <div style="display: flex; flex-direction: column; gap: 4px">
+      <h1 style="margin: 0; font-size: 34px; font-weight: 700; letter-spacing: -0.035em; line-height: 1">Paragon odczytany</h1>
+      <span style="font-size: 14px; color: var(--wyciszony)">Lidl · Zorska, Rybnik · sobota 18:24</span>
+    </div>
+  </div>
+
+  <div style="flex: 1; min-height: 0; overflow-y: auto; padding: 0 22px 12px; display: flex; flex-direction: column; gap: 12px">
+    <div class="w" style="display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px">
+      <div style="border-radius: 16px; background: var(--akcent-jasny); padding: 12px; display: flex; flex-direction: column; gap: 2px">
+        <span style="font-size: 22px; font-weight: 700; color: var(--akcent-ciemny)">8/8</span>
+        <span style="font-size: 12px; color: var(--akcent-ciemny)">odhaczone</span>
+      </div>
+      <div style="border-radius: 16px; background: var(--chip); padding: 12px; display: flex; flex-direction: column; gap: 2px">
+        <span style="font-size: 22px; font-weight: 700">83 zł</span>
+        <span style="font-size: 12px; color: var(--wyciszony)">ten paragon</span>
+      </div>
+      <div style="border-radius: 16px; background: var(--chip); padding: 12px; display: flex; flex-direction: column; gap: 2px">
+        <span style="font-size: 22px; font-weight: 700">412 zł</span>
+        <span style="font-size: 12px; color: var(--wyciszony)">w listopadzie</span>
+      </div>
+    </div>
+
+    <div class="w" style="animation-delay: .06s; display: flex; flex-direction: column">
+      <sc-for list="{{pozycje}}" as="p" hint-placeholder-count="8">
+        <div style="display: flex; align-items: center; gap: 12px; min-height: 48px; border-bottom: 1px solid var(--linia)">
+          <span style="width: 22px; height: 22px; border-radius: 50%; background: var(--akcent); display: flex; align-items: center; justify-content: center; flex-shrink: 0"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="3.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m5 12 5 5 9-10"></path></svg></span>
+          <span style="flex: 1; display: flex; flex-direction: column; gap: 1px; min-width: 0">
+            <span style="font-size: 15px; font-weight: 500">{{p.nazwa}}</span>
+            <span style="font-family: 'JetBrains Mono', monospace; font-size: 10.5px; color: var(--wyciszony)">{{p.surowe}}</span>
+          </span>
+          <span style="font-size: 15px; font-weight: 500">{{p.cena}}</span>
+        </div>
+      </sc-for>
+    </div>
+
+    <div class="w" style="animation-delay: .12s; border-radius: 20px; background: var(--chip); padding: 14px 16px; display: flex; flex-direction: column; gap: 10px">
+      <span style="font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--wyciszony)">MIX SAL.RUK. · 4,49 zł</span>
+      <span style="font-size: 15px; font-weight: 700">Co to było? Zapamiętamy dla wszystkich.</span>
+      <div style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px">
+        <button class="opcja" onClick="{{wybierzA}}" style="{{stylA}}">Rukola</button>
+        <button class="opcja" onClick="{{wybierzB}}" style="{{stylB}}">Mix sałat</button>
+      </div>
+    </div>
+
+    <div class="w" style="animation-delay: .18s; display: flex; align-items: center; gap: 12px; padding: 14px 16px; border-radius: 20px; background: var(--akcent); color: #ffffff">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3l2.6 5.6 6.1.7-4.5 4.2 1.2 6L12 16.6 6.6 19.5l1.2-6L3.3 9.3l6.1-.7z"></path></svg>
+      <span style="flex: 1; display: flex; flex-direction: column; gap: 2px">
+        <span style="font-size: 15px; font-weight: 700">Premium odblokowane do 4 grudnia</span>
+        <span style="font-size: 13px; color: #d6e6f2">4 z 4 paragonów w tym miesiącu. 9 cen trafiło do wspólnej bazy.</span>
+        <span style="display: flex; gap: 4px; margin-top: 6px"><span style="flex: 1; height: 5px; border-radius: 999px; background: #ffffff"></span><span style="flex: 1; height: 5px; border-radius: 999px; background: #ffffff"></span><span style="flex: 1; height: 5px; border-radius: 999px; background: #ffffff"></span><span style="flex: 1; height: 5px; border-radius: 999px; background: #ffffff"></span></span>
+      </span>
+    </div>
+
+    <p style="margin: 0 2px; font-size: 12px; line-height: 1.45; color: var(--wyciszony)">Zdjęcie zostało na telefonie. Numer karty usunęliśmy przed wysłaniem, a ceny trafiają do bazy bez Twojego konta.</p>
+  </div>
+
+  <div style="padding: 10px 22px 22px">
+    <a href="E00-a-Start.dc.html" style="height: 58px; border-radius: 999px; background: var(--akcent); color: #ffffff; display: flex; align-items: center; justify-content: center; font-size: 17px; font-weight: 700">Gotowe</a>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":390,"height":844}}'>
+class Component extends DCLogic {
+  constructor(props) {
+    super(props);
+    this.state = { wybor: null };
+  }
+  renderVals() {
+    const pozycje = [
+      ['Pomidory, 1 kg', 'POMIDOR GALAZ. 1,000 kg', '6,99'], ['Chleb żytni', 'CHLEB ZYT.KROJ.', '5,49'],
+      ['Mleko 2% × 2', 'MLEKO 2% 1L 2 × 3,79', '7,58'], ['Ser żółty gouda, 150 g', 'SER GOUDA PLAST.150G', '2,99'],
+      ['Jogurt naturalny', 'JOG.NAT.400G', '2,49'], ['Makaron penne', 'MAK.PENNE 500G', '3,99'],
+      ['Kawa ziarnista, 1 kg', 'KAWA ZIAR.1KG', '39,99'], ['Płyn do naczyń', 'PLYN NACZ.1L', '8,99']
+    ].map(([nazwa, surowe, cena]) => ({ nazwa, surowe, cena: cena + ' zł' }));
+    const w = this.state.wybor;
+    const styl = (on) => 'min-height: 46px; border-radius: 999px; font-family: inherit; font-size: 14px; font-weight: 700; cursor: pointer; border: 0; ' + (on ? 'background: var(--akcent); color: #ffffff' : 'background: #ffffff; color: var(--tusz)');
+    return { pozycje, stylA: styl(w === 'a'), stylB: styl(w === 'b'), wybierzA: () => this.setState({ wybor: 'a' }), wybierzB: () => this.setState({ wybor: 'b' }) };
+  }
+}
+</script>
+</body>
+</html>

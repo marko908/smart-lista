@@ -1,0 +1,418 @@
+{
+  "v": 3,
+  "attachments": {},
+  "boards": {
+    "A-2-Zakupy.dc.html": {
+      "h": 844,
+      "is_interactive": true,
+      "page": "app",
+      "title": "Z1 · Zakupy w sklepie",
+      "w": 390,
+      "x": 1410,
+      "y": 0
+    },
+    "A-3-Mapa.dc.html": {
+      "h": 844,
+      "is_interactive": true,
+      "page": "app",
+      "title": "Z2 · Zakupy: gdzie jest produkt",
+      "w": 390,
+      "x": 1880,
+      "y": 0
+    },
+    "A-4-Promocje.dc.html": {
+      "h": 844,
+      "is_interactive": true,
+      "page": "app",
+      "title": "PR1 · Promocje",
+      "w": 390,
+      "x": 1410,
+      "y": 1400
+    },
+    "A-5-Paragon.dc.html": {
+      "h": 844,
+      "is_interactive": true,
+      "page": "app",
+      "title": "PA1 · Paragon odczytany",
+      "w": 390,
+      "x": 3290,
+      "y": 0
+    },
+    "E00-a-Start.dc.html": {
+      "h": 844,
+      "is_interactive": true,
+      "page": "app",
+      "title": "S1 · Start: Twoje listy",
+      "w": 390,
+      "x": 0,
+      "y": 0
+    },
+    "E00-b-Pierwszy.dc.html": {
+      "h": 844,
+      "is_interactive": true,
+      "page": "app",
+      "title": "S0 · Start: pierwsze uruchomienie",
+      "w": 390,
+      "x": 0,
+      "y": 1400
+    },
+    "E01-a-Typowy.dc.html": {
+      "h": 844,
+      "is_interactive": true,
+      "page": "app",
+      "title": "L1 · Lista",
+      "w": 390,
+      "x": 470,
+      "y": 0
+    },
+    "E01-b-Pusta.dc.html": {
+      "h": 844,
+      "is_interactive": true,
+      "page": "app",
+      "title": "L2 · Lista: nowa, pusta",
+      "w": 390,
+      "x": 470,
+      "y": 1400
+    },
+    "E01-c-MVP.dc.html": {
+      "h": 844,
+      "is_interactive": true,
+      "page": "app",
+      "title": "L3 · Lista: MVP bez cen",
+      "w": 390,
+      "x": 940,
+      "y": 1400
+    },
+    "E02-Edycja.dc.html": {
+      "h": 844,
+      "is_interactive": true,
+      "page": "app",
+      "title": "L4 · Lista: panel ilości",
+      "w": 390,
+      "x": 940,
+      "y": 0
+    },
+    "F1-Pusto.dc.html": {
+      "h": 844,
+      "is_interactive": true,
+      "page": "app",
+      "title": "N1 · Nowa lista: pusto",
+      "w": 390,
+      "x": 0,
+      "y": 2800
+    },
+    "F2-Wybor-sklepu.dc.html": {
+      "h": 844,
+      "is_interactive": true,
+      "page": "app",
+      "title": "N2 · Nowa lista: wybór sklepu",
+      "w": 390,
+      "x": 470,
+      "y": 2800
+    },
+    "F3-Lista.dc.html": {
+      "h": 844,
+      "is_interactive": true,
+      "page": "app",
+      "title": "N3 · Nowa lista: lista dla sklepu",
+      "w": 390,
+      "x": 940,
+      "y": 2800
+    },
+    "F4-Kolejny-sklep.dc.html": {
+      "h": 844,
+      "is_interactive": true,
+      "page": "app",
+      "title": "N4 · Nowa lista: kolejny sklep",
+      "w": 390,
+      "x": 1410,
+      "y": 2800
+    },
+    "F5-Lista-dwa.dc.html": {
+      "h": 844,
+      "is_interactive": true,
+      "page": "app",
+      "title": "N5 · Nowa lista: dwa sklepy",
+      "w": 390,
+      "x": 1880,
+      "y": 2800
+    },
+    "F6-Gotowe.dc.html": {
+      "h": 844,
+      "is_interactive": true,
+      "page": "app",
+      "title": "N6 · Nowa lista: gotowe",
+      "w": 390,
+      "x": 2350,
+      "y": 2800
+    },
+    "A-6-Koniec.dc.html": {
+      "h": 844,
+      "is_interactive": true,
+      "page": "app",
+      "title": "Z3 · Zakupy: koniec",
+      "w": 390,
+      "x": 2350,
+      "y": 0
+    },
+    "A-7-Skaner.dc.html": {
+      "h": 844,
+      "is_interactive": true,
+      "page": "app",
+      "title": "PA0 · Skaner paragonu",
+      "w": 390,
+      "x": 2820,
+      "y": 0
+    },
+    "A-8-Paragony.dc.html": {
+      "h": 844,
+      "is_interactive": true,
+      "page": "app",
+      "title": "PA2 · Paragony (zakładka)",
+      "w": 390,
+      "x": 3760,
+      "y": 0
+    }
+  },
+  "createdOnFiles": {
+    "at": "2026-11-04T15:20:00Z",
+    "v": 1
+  },
+  "designSystems": [],
+  "launch": {
+    "view": "canvas"
+  },
+  "noteOrder": [
+    "t1",
+    "s00",
+    "s01",
+    "s02",
+    "s04",
+    "s05",
+    "s10",
+    "s11",
+    "s08",
+    "s12",
+    "t2",
+    "s00b",
+    "s01b",
+    "s01c",
+    "s09",
+    "t3",
+    "f1",
+    "f2",
+    "f3",
+    "f4",
+    "f5",
+    "f6"
+  ],
+  "notes": {
+    "f1": {
+      "fill": "blue",
+      "page": "app",
+      "text": "Pusty start. Jedyna akcja: „Nowa lista”. Każdy ekran tego rzędu działa sam od swojego kroku, kliknij Play i przejdź całość.",
+      "w": 390,
+      "x": 0,
+      "y": 3700
+    },
+    "f2": {
+      "fill": "blue",
+      "page": "app",
+      "text": "Jak w InPost: adres albo „moja lokalizacja”, filtr sieci, mapa z pinezkami i lista od najbliższego. Na górze „Najczęściej wybierasz”: dwa sklepy, które TEN użytkownik wybiera najczęściej. Stuknięcie sklepu (pinezka albo wiersz) zamienia mapę na kartę sklepu w tym samym miejscu: zdjęcie wejścia, adres, minuty pieszo, godziny, mapa alejek. „Pokaż mapę” wraca do pinezek. Nic się nie przesuwa i nic nie zasłania listy.\n\nStany: N2.wybór (mapa), N2.karta (karta sklepu w miejscu mapy).",
+      "w": 390,
+      "x": 470,
+      "y": 3700
+    },
+    "f3": {
+      "fill": "blue",
+      "page": "app",
+      "text": "Lista dla wybranego sklepu: Enter dodaje, ilość zgadujemy. Stuknij chip ilości (np. „2 kg ▾”), żeby otworzyć panel: − / +, szybkie wartości, jednostka Sztuki / Na wagę / Butelki. Zmiana jednostki jest zapamiętywana dla produktu (spróbuj: dodaj „mąka”, zmień na wagę, usuń i dodaj ponownie). Na dole zawsze „Kolejny sklep” i „Zakończ”.\n\nStany: N3.lista, N3.ilość (panel ilości).",
+      "w": 390,
+      "x": 940,
+      "y": 3700
+    },
+    "f4": {
+      "fill": "blue",
+      "page": "app",
+      "text": "„Kolejny sklep” powtarza ten sam wybór, bez sklepów już dodanych. Wraca do tej samej listy.\n\nStany: N4 = N2 w trybie „Dodaj kolejny sklep”.",
+      "w": 390,
+      "x": 1410,
+      "y": 3700
+    },
+    "f5": {
+      "fill": "blue",
+      "page": "app",
+      "text": "Ta sama lista, dwie części. Aktywny sklep jest podświetlony („tu dodajesz”), stuknij nagłówek drugiego, żeby przełączyć. Po dodaniu produktu wyskakuje dymek „Przenieś do …”, a w panelu ilości jest „Kupuję w”. Kolejności sklepów nie ustalamy, wybiera się ją w sklepie.\n\nStany: N5.lista, N5.dymek („Przenieś do…”), N5.ilość (panel z „Kupuję w”).",
+      "w": 390,
+      "x": 1880,
+      "y": 3700
+    },
+    "f6": {
+      "fill": "blue",
+      "page": "app",
+      "text": "Zakończ prowadzi na Start z gotową listą. Karty list przesuwasz w bok: w prawo „Udostępnij”, w lewo „Usuń”. Pierwszy ruch wysuwa przycisk zza karty, drugi ruch w tę samą stronę (albo stuknięcie przycisku) wykonuje akcję. Usunięcie można cofnąć.\n\nStany: N6.lista, N6.odsłonięte (przycisk Udostępnij/Usuń wysunięty), N6.cofnij (dymek po usunięciu).",
+      "w": 390,
+      "x": 2350,
+      "y": 3700
+    },
+    "s00": {
+      "fill": "blue",
+      "page": "app",
+      "text": "Codzienny widok. Najbliższa lista jako duża karta z postępem, niżej pozostałe listy. „Nowa lista” zawsze nad kciukiem. Zaakceptowane 4.11. Onboarding później.\n\nStany: S1 (domyślny).",
+      "w": 390,
+      "x": 0,
+      "y": 900
+    },
+    "s00b": {
+      "fill": "blue",
+      "page": "app",
+      "text": "Pierwsze otwarcie: bez rejestracji i samouczka. Jedno zdanie, przykład listy ułożonej według alejek i jeden przycisk.",
+      "w": 390,
+      "x": 0,
+      "y": 2300
+    },
+    "s01": {
+      "fill": "blue",
+      "page": "app",
+      "text": "Wpisz produkt i Enter (albo plusik), od razu można pisać dalej. Ilość zgadujemy: „3 ziemniaki” = 3 kg, „ziemniaki 500” = 500 g, „woda 6” = 6 butelek, „ogórek” = 1 szt. Kółko odhacza, stuknięcie w nazwę otwiera ilość. Domyślnie lista jest na JEDEN sklep. Drugi dodajesz świadomie: przyciskiem sklepu u góry albo przy promocji z innego sklepu (stuknij Promocja przy „Filet z kurczaka”). Wtedy lista dzieli się na części, bez ustalonej kolejności.\n\nStany: L1.ilość (panel ilości), L1.promocja (oferta po stuknięciu „Promocja”), L1.sklepy (sklepy na liście), L1.umknęło (podpowiedź „Nic Ci nie umknęło?”).",
+      "w": 390,
+      "x": 470,
+      "y": 900
+    },
+    "s01b": {
+      "fill": "blue",
+      "page": "app",
+      "text": "Nowa lista bez instrukcji. Pole jest aktywne, plusik podpowiada, że Enter dodaje. Lista sama układa się według działów sklepu w trakcie wpisywania. Działa tu naprawdę: wpisz kilka rzeczy albo stuknij podpowiedzi.",
+      "w": 390,
+      "x": 470,
+      "y": 2300
+    },
+    "s01c": {
+      "fill": "blue",
+      "page": "app",
+      "text": "Tak zobaczy aplikację większość ludzi w MVP: bez cen i promocji. Lista i tak jest ułożona według typowego układu sklepu.",
+      "w": 390,
+      "x": 940,
+      "y": 2300
+    },
+    "s02": {
+      "fill": "blue",
+      "page": "app",
+      "text": "Mały arkusz z dołu, tło przyciemnione i rozmyte. Duża ilość z − i +, szybkie wartości (np. 250 g, 500 g, 1 kg, 2 kg) i przełącznik Sztuki / Na wagę / Butelki. Na dole Usuń i Gotowe. Nic więcej, szczegóły później.\n\nStany: L4 = L1.ilość otwarte na stałe.",
+      "w": 390,
+      "x": 940,
+      "y": 900
+    },
+    "s04": {
+      "fill": "blue",
+      "page": "app",
+      "text": "Zakupy w kilku sklepach: na starcie „W którym sklepie jesteś?”. Widok „Po kolei” pokazuje wszystkie działy sklepu: zrobione i kolejne jako zwinięte paski, aktualny rozwinięty. Odhaczenie: kółko się wypełnia i pyka, rysuje się ptaszek, tekst przekreśla się od lewej. Po skończeniu działu (chwila zwłoki na pomyłkę) dział płynnie zwija się do paska, a następny się rozwija. Stuknięcie paska podgląda inny dział. U góry zmiana sklepu albo „Cała lista”. Po skończeniu sklepu: „Do którego sklepu teraz?”.\n\nStany: Z1.sklep, Z1.trwa (Po kolei), Z1.podgląd (rozwinięty inny dział), Z1.cała, Z1.zmiana, Z1.przejście.",
+      "w": 390,
+      "x": 1410,
+      "y": 900
+    },
+    "s05": {
+      "fill": "blue",
+      "page": "app",
+      "text": "Mapa sklepu: gdzie prawdopodobnie jesteś (z ostatnio odhaczonego produktu) i gdzie leży szukany produkt.",
+      "w": 390,
+      "x": 1880,
+      "y": 900
+    },
+    "s08": {
+      "fill": "blue",
+      "page": "app",
+      "text": "Wynik skanu (po PA0). Tu: ceny z paragonu trafiają do wspólnej bazy. Zasada (decyzja 4.11): 4 paragony w ciągu 30 dni = Premium za darmo. Pasek pokazuje postęp.",
+      "w": 390,
+      "x": 3290,
+      "y": 900
+    },
+    "s09": {
+      "fill": "blue",
+      "page": "app",
+      "text": "Sklepy wybierasz przyciskami u góry (docelowo też w onboardingu). Najpierw „Idealne dla Ciebie” od najlepiej dopasowanych, potem „Inne promocje”. Bez „realnej zniżki” i procentów z gazetek. Dodajesz promocję z innego sklepu niż lista? Pytamy: „Do tej listy, jako 2. sklep” albo „Nowa lista na Biedronkę”.\n\nStany: PR1.idealne, PR1.inne, PR1.pytanie (promocja z innego sklepu: do tej listy czy nowa).",
+      "w": 390,
+      "x": 1410,
+      "y": 2300
+    },
+    "t1": {
+      "kind": "title1",
+      "maxW": 4150,
+      "page": "app",
+      "text": "Główna ścieżka: od listy do kasy. Kody ekranów: S start, L lista, Z zakupy, PA paragony, PR promocje, N nowa lista. Stan piszemy po kropce, np. N2.karta.",
+      "w": 240,
+      "x": 0,
+      "y": -260
+    },
+    "t2": {
+      "kind": "title1",
+      "maxW": 4150,
+      "page": "app",
+      "text": "Inne stany i zakładki",
+      "w": 240,
+      "x": 0,
+      "y": 1140
+    },
+    "t3": {
+      "kind": "title1",
+      "maxW": 4150,
+      "page": "app",
+      "text": "Tworzenie listy krok po kroku: od pustego ekranu do gotowej listy",
+      "w": 240,
+      "x": 0,
+      "y": 2540
+    },
+    "s10": {
+      "fill": "blue",
+      "page": "app",
+      "text": "Po ostatnim sklepie. Podsumowanie (produkty, szacunek z listy, czas) i lista sklepów do zeskanowania: każdy sklep ma swój paragon, „Skanuj” otwiera skaner, zeskanowany ma „Jest”. Pasek 4 paragonów do Premium. „Przypomnij wieczorem” (propozycja: 20:00, jeśli zostały niezeskanowane). Zakończ = lista do „Zrobione”.\n\nStany: Z3.podsumowanie, Z3.przypomnij (włączone/wyłączone).",
+      "w": 390,
+      "x": 2350,
+      "y": 900
+    },
+    "s11": {
+      "fill": "blue",
+      "page": "app",
+      "text": "Aparat z ramką. Skaner wie, z którego sklepu paragon (lista). Stuknij spust: paragon prostuje się, linia skanu przesuwa się po nim, potem „Odczytano 3 pozycje”. Długi paragon: przesuwanie telefonu w dół. Zdjęcie zostaje na telefonie, wysyłamy tylko tekst. Dolne panele przenikają się w tym samym miejscu.\n\nStany: PA0.celowanie, PA0.skan, PA0.gotowe.",
+      "w": 390,
+      "x": 2820,
+      "y": 900
+    },
+    "s12": {
+      "fill": "blue",
+      "page": "app",
+      "text": "Zakładka Paragony: postęp do Premium (tu 2 z 4), wydatki w miesiącu z podziałem na sklepy (przełącznik miesięcy nie zmienia układu), ostatnie paragony (stuknięcie otwiera PA1) i stały przycisk „Zeskanuj paragon”.\n\nStany: PA2.miesiąc, PA2.poprzedni.",
+      "w": 390,
+      "x": 3760,
+      "y": 900
+    }
+  },
+  "order": [
+    "E00-a-Start.dc.html",
+    "E01-a-Typowy.dc.html",
+    "E02-Edycja.dc.html",
+    "A-2-Zakupy.dc.html",
+    "A-3-Mapa.dc.html",
+    "A-6-Koniec.dc.html",
+    "A-7-Skaner.dc.html",
+    "A-5-Paragon.dc.html",
+    "A-8-Paragony.dc.html",
+    "E00-b-Pierwszy.dc.html",
+    "E01-b-Pusta.dc.html",
+    "E01-c-MVP.dc.html",
+    "A-4-Promocje.dc.html",
+    "F1-Pusto.dc.html",
+    "F2-Wybor-sklepu.dc.html",
+    "F3-Lista.dc.html",
+    "F4-Kolejny-sklep.dc.html",
+    "F5-Lista-dwa.dc.html",
+    "F6-Gotowe.dc.html"
+  ],
+  "pages": [
+    {
+      "id": "app",
+      "name": "Alejka · cała aplikacja"
+    }
+  ],
+  "title": "Alejka v2 — makiety ekranów"
+}

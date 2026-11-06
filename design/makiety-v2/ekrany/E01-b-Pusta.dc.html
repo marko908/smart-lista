@@ -1,0 +1,457 @@
+<!doctype html>
+<html lang="pl">
+<head>
+<meta charset="utf-8">
+<title>Nowa lista</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,700&amp;display=swap" rel="stylesheet">
+<style>
+/* Kolory w jednym miejscu: zmiana motywu = zmiana tych wartości */
+:root{--akcent:#1d5f8a;--akcent-ciemny:#164a6b;--akcent-jasny:#e3eff7;--tusz:#121c24;--wyciszony:#5d6b75;--linia:#edf1f4;--chip:#f2f5f7;--ramka:#c8d5de;--odhaczony:#98a4ad}
+body{margin:0}
+a{color:var(--akcent);text-decoration:none}a:hover{color:var(--akcent-ciemny)}
+.ukryte{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}
+.znak{transition:transform .22s cubic-bezier(.2,.8,.2,1),background-color .18s ease,border-color .18s ease}.znak:active{transform:scale(.85)}
+.pig{transition:background-color .15s ease,color .15s ease,transform .12s ease}.pig:active{transform:scale(.94)}
+.cta{transition:transform .15s ease}.cta:active{transform:scale(.98)}
+@keyframes wjazd{from{opacity:0;transform:translateY(-6px)}to{opacity:1;transform:none}}
+.nowy{animation:wjazd .3s cubic-bezier(.2,.8,.2,1) both}
+@keyframes arkusz{from{transform:translateY(100%)}to{transform:none}}
+.arkusz{animation:arkusz .32s cubic-bezier(.2,.8,.2,1) both}
+@keyframes tlo{from{opacity:0}to{opacity:1}}
+.tlo{animation:tlo .25s ease both}
+</style>
+</helmet>
+<div style="position: relative; width: 390px; height: 844px; box-sizing: border-box; background: #ffffff; color: var(--tusz); font-family: 'DM Sans', sans-serif; display: flex; flex-direction: column; overflow: hidden">
+
+  <div style="padding: 28px 22px 12px; display: flex; flex-direction: column; gap: 14px">
+    <div style="display: flex; align-items: center; justify-content: space-between">
+      <button class="pig" onClick="{{otworzSklepy}}" aria-label="Sklepy na tej liście" style="display: inline-flex; align-items: center; gap: 8px; height: 36px; padding: 0 12px; border-radius: 999px; border: 0; background: var(--akcent-jasny); color: var(--akcent-ciemny); font-family: inherit; font-size: 13px; font-weight: 700; cursor: pointer">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 21s7-6.2 7-12a7 7 0 1 0-14 0c0 5.8 7 12 7 12z"></path><circle cx="12" cy="9" r="2.5"></circle></svg>
+        {{sklepChip}}
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"></path></svg>
+      </button>
+      <a href="E00-a-Start.dc.html" aria-label="Wróć do list" style="width: 44px; height: 44px; border-radius: 50%; background: var(--chip); display: flex; align-items: center; justify-content: center">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--tusz)" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m15 6-6 6 6 6"></path></svg>
+      </a>
+    </div>
+    <h1 style="margin: 0; font-size: 40px; font-weight: 700; letter-spacing: -0.035em; line-height: 1">{{tytul}}</h1>
+    <sc-if value="{{maPozycje}}" hint-placeholder-val="{{true}}">
+      <div style="display: flex; gap: 8px">
+        <span style="padding: 8px 12px; border-radius: 12px; background: var(--chip); font-size: 14px"><b>{{zostalo}}</b> do kupienia</span>
+        <span style="padding: 8px 12px; border-radius: 12px; background: var(--chip); font-size: 14px">ok. <b>{{suma}} zł</b></span>
+      </div>
+    </sc-if>
+    <div style="display: flex; flex-direction: column; gap: 6px">
+      <div style="{{poleStyl}}">
+        <label for="dodaj" class="ukryte">Dodaj produkt</label>
+        <input id="dodaj" value="{{wpis}}" onChange="{{pisz}}" onKeyDown="{{klawisz}}" placeholder="Dodaj produkt" autocomplete="off" style="flex: 1; min-width: 0; border: 0; outline: none; background: transparent; font-family: inherit; font-size: 17px; color: var(--tusz)">
+        <button class="pig" onClick="{{dodajWpis}}" aria-label="Dodaj do listy" style="{{plusStyl}}">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 5v14M5 12h14"></path></svg>
+        </button>
+      </div>
+      <sc-if value="{{maPodglad}}" hint-placeholder-val="{{false}}">
+        <span style="padding-left: 6px; font-size: 13px; color: var(--akcent-ciemny)">{{podglad}}</span>
+      </sc-if>
+    </div>
+  </div>
+
+  <sc-if value="{{maPromo}}" hint-placeholder-val="{{false}}">
+    <a href="A-4-Promocje.dc.html" style="margin: 0 22px 10px; padding: 12px 14px; border-radius: 18px; background: var(--akcent-jasny); display: flex; align-items: center; gap: 12px">
+      <span style="width: 36px; height: 36px; border-radius: 12px; background: var(--akcent); display: flex; align-items: center; justify-content: center; flex-shrink: 0">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20.6 13.4 13.4 20.6a2 2 0 0 1-2.8 0L3 13V3h10l7.6 7.6a2 2 0 0 1 0 2.8z"></path><circle cx="7.5" cy="7.5" r="1.2"></circle></svg>
+      </span>
+      <span style="flex: 1; display: flex; flex-direction: column; gap: 1px">
+        <span style="font-size: 14px; font-weight: 700; color: var(--tusz)">3 promocje pasują do Twoich zakupów</span>
+        <span style="font-size: 13px; color: var(--akcent-ciemny)">ser, kawa i masło taniej w tym tygodniu</span>
+      </span>
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--akcent-ciemny)" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><path d="m9 6 6 6-6 6"></path></svg>
+    </a>
+  </sc-if>
+
+  <div style="flex: 1; min-height: 0; overflow-y: auto; padding: 0 22px 8px; display: flex; flex-direction: column">
+
+    <sc-if value="{{saPodp}}" hint-placeholder-val="{{false}}">
+      <div style="margin: 2px 0 8px; padding: 12px 14px; border-radius: 18px; border: 1.5px dashed var(--ramka); display: flex; flex-direction: column; gap: 10px">
+        <span style="font-size: 14px; font-weight: 700">Nic Ci nie umknęło?</span>
+        <div style="display: flex; flex-wrap: wrap; gap: 8px">
+          <sc-for list="{{podp}}" as="d" hint-placeholder-count="3">
+            <button class="pig" onClick="{{d.dodaj}}" style="height: 38px; padding: 0 12px; border-radius: 999px; border: 0; background: var(--akcent-jasny); color: var(--akcent-ciemny); font-family: inherit; font-size: 14px; font-weight: 700; cursor: pointer; display: inline-flex; align-items: center; gap: 6px"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" aria-hidden="true"><path d="M12 5v14M5 12h14"></path></svg>{{d.n}}</button>
+          </sc-for>
+        </div>
+      </div>
+    </sc-if>
+
+    <sc-for list="{{grupy}}" as="g" hint-placeholder-count="1">
+    <sc-if value="{{g.naglowek}}" hint-placeholder-val="{{false}}">
+      <div style="display: flex; align-items: center; gap: 10px; padding: 14px 0 6px">
+        <span style="width: 28px; height: 28px; border-radius: 9px; background: var(--akcent-jasny); color: var(--akcent-ciemny); display: flex; align-items: center; justify-content: center; font-size: 13px; font-weight: 700">{{g.numer}}</span>
+        <span style="flex: 1; font-size: 15px; font-weight: 700">{{g.nazwa}}</span>
+        <span style="font-size: 13px; color: var(--wyciszony)">{{g.opis}}</span>
+      </div>
+    </sc-if>
+    <sc-for list="{{g.pozycje}}" as="p" hint-placeholder-count="6">
+      <div class="nowy" style="display: flex; align-items: center; gap: 12px; min-height: 58px; border-bottom: 1px solid var(--linia)">
+        <button class="znak" onClick="{{p.przelacz}}" aria-label="{{p.etykieta}}" style="{{p.znak}}"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m5 12 5 5 9-10"></path></svg></button>
+        <button onClick="{{p.otworz}}" style="flex: 1; min-width: 0; min-height: 56px; display: flex; align-items: center; gap: 10px; padding: 0; border: 0; background: transparent; font-family: inherit; text-align: left; cursor: pointer">
+          <span style="flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 1px">
+            <span style="{{p.tekst}}">{{p.nazwa}}</span>
+            <span style="font-size: 12px; color: var(--wyciszony)"><b style="color: var(--akcent-ciemny); font-weight: 700">{{p.ilosc}}</b> · {{p.sekcja}}</span>
+          </span>
+          <span style="display: flex; flex-direction: column; align-items: flex-end">
+            <span style="font-size: 15px; font-weight: 500; color: var(--tusz)">{{p.cena}}</span>
+            <sc-if value="{{p.promo}}" hint-placeholder-val="{{false}}"><span style="font-size: 12px; font-weight: 700; color: var(--akcent)">{{p.promoTxt}}</span></sc-if>
+          </span>
+        </button>
+        <sc-if value="{{p.maOferte}}" hint-placeholder-val="{{false}}">
+          <button class="pig" onClick="{{p.pokazOferte}}" aria-label="{{p.ofertaEtykieta}}" style="height: 34px; padding: 0 10px; border-radius: 999px; border: 0; background: var(--akcent-jasny); color: var(--akcent-ciemny); font-family: inherit; font-size: 12px; font-weight: 700; cursor: pointer; display: inline-flex; align-items: center; gap: 5px; flex-shrink: 0"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20.6 13.4 13.4 20.6a2 2 0 0 1-2.8 0L3 13V3h10l7.6 7.6a2 2 0 0 1 0 2.8z"></path><circle cx="7.5" cy="7.5" r="1.2"></circle></svg>Promocja</button>
+        </sc-if>
+      </div>
+    </sc-for>
+    </sc-for>
+
+    <sc-if value="{{pokazCzeste}}" hint-placeholder-val="{{false}}">
+      <div style="display: flex; flex-direction: column; gap: 10px; padding-top: 16px">
+        <span style="font-size: 13px; font-weight: 700; color: var(--wyciszony)">Często kupujesz</span>
+        <div style="display: flex; flex-wrap: wrap; gap: 8px">
+          <sc-for list="{{czeste}}" as="c" hint-placeholder-count="8">
+            <button class="pig" onClick="{{c.dodaj}}" style="height: 40px; padding: 0 14px; border-radius: 999px; border: 0; background: var(--chip); font-family: inherit; font-size: 14px; font-weight: 500; color: var(--tusz); cursor: pointer; display: inline-flex; align-items: center; gap: 6px"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="var(--akcent)" stroke-width="3" stroke-linecap="round" aria-hidden="true"><path d="M12 5v14M5 12h14"></path></svg>{{c.n}}</button>
+          </sc-for>
+        </div>
+      </div>
+    </sc-if>
+
+    <sc-if value="{{pusta}}" hint-placeholder-val="{{false}}">
+      <div style="display: flex; flex-direction: column; gap: 10px; padding-top: 18px">
+        <span style="font-size: 13px; font-weight: 700; color: var(--wyciszony)">Albo zacznij od</span>
+        <button class="pig" onClick="{{powtorz}}" style="display: flex; align-items: center; gap: 12px; min-height: 56px; padding: 0 16px; border-radius: 18px; border: 1.5px solid var(--ramka); background: #ffffff; font-family: inherit; text-align: left; cursor: pointer">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--tusz)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 12a9 9 0 1 0 3-6.7L3 8"></path><path d="M3 3v5h5"></path></svg>
+          <span style="flex: 1; display: flex; flex-direction: column; gap: 1px">
+            <span style="font-size: 15px; font-weight: 700; color: var(--tusz)">Powtórz ostatnie zakupy</span>
+            <span style="font-size: 13px; color: var(--wyciszony)">6 produktów z soboty, 1 listopada</span>
+          </span>
+        </button>
+      </div>
+    </sc-if>
+  </div>
+
+  <sc-if value="{{maPozycje}}" hint-placeholder-val="{{true}}">
+    <div style="padding: 10px 22px 12px">
+      <a href="A-2-Zakupy.dc.html" class="cta" style="height: 58px; border-radius: 999px; background: var(--akcent); color: #ffffff; display: flex; align-items: center; justify-content: center; font-size: 17px; font-weight: 700">Zacznij zakupy</a>
+    </div>
+  </sc-if>
+
+  <nav aria-label="Główna nawigacja" style="height: 62px; flex-shrink: 0; display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); border-top: 1px solid var(--linia)">
+    <a href="E00-a-Start.dc.html" style="display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 3px; font-size: 11px; font-weight: 700; color: var(--akcent)"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M9 6h11M9 12h11M9 18h11M4 6h.01M4 12h.01M4 18h.01"></path></svg>Listy</a>
+    <a href="A-4-Promocje.dc.html" style="display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 3px; font-size: 11px; color: var(--wyciszony)"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20.6 13.4 13.4 20.6a2 2 0 0 1-2.8 0L3 13V3h10l7.6 7.6a2 2 0 0 1 0 2.8z"></path></svg>Promocje</a>
+    <a href="A-8-Paragony.dc.html" style="display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 3px; font-size: 11px; color: var(--wyciszony)"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 3h12v18l-3-2-3 2-3-2-3 2z"></path></svg>Paragony</a>
+    <a href="E00-a-Start.dc.html" style="display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 3px; font-size: 11px; color: var(--wyciszony)"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="8" r="4"></circle><path d="M4 21c1.5-4 4.5-6 8-6s6.5 2 8 6"></path></svg>Konto</a>
+  </nav>
+
+  <sc-if value="{{maArkusz}}" hint-placeholder-val="{{false}}">
+    <div style="position: absolute; inset: 0; display: flex; flex-direction: column; justify-content: flex-end">
+      <button class="tlo" onClick="{{zamknij}}" aria-label="Zamknij" style="position: absolute; inset: 0; border: 0; padding: 0; background: rgba(18,28,36,.38); backdrop-filter: blur(3px); -webkit-backdrop-filter: blur(3px); cursor: pointer"></button>
+      <div class="arkusz" style="position: relative; background: #ffffff; border-radius: 28px 28px 0 0; padding: 10px 22px 24px; display: flex; flex-direction: column; gap: 18px">
+        <span style="align-self: center; width: 40px; height: 5px; border-radius: 999px; background: var(--ramka)"></span>
+        <div style="display: flex; flex-direction: column; gap: 2px">
+          <span style="font-size: 24px; font-weight: 700; letter-spacing: -0.02em">{{ark.nazwa}}</span>
+          <span style="font-size: 14px; color: var(--wyciszony)">{{ark.sekcja}}</span>
+        </div>
+        <div style="display: flex; align-items: center; justify-content: space-between; gap: 12px">
+          <button class="pig" onClick="{{ark.mniej}}" aria-label="Mniej" style="width: 56px; height: 56px; border-radius: 50%; border: 0; background: var(--chip); color: var(--tusz); font-family: inherit; font-size: 26px; cursor: pointer">−</button>
+          <span style="flex: 1; min-width: 0; height: 44px; line-height: 44px; text-align: center; font-size: 36px; font-weight: 700; letter-spacing: -0.03em; white-space: nowrap">{{ark.ilosc}}</span>
+          <button class="pig" onClick="{{ark.wiecej}}" aria-label="Więcej" style="width: 56px; height: 56px; border-radius: 50%; border: 0; background: var(--akcent); color: #ffffff; font-family: inherit; font-size: 26px; cursor: pointer">+</button>
+        </div>
+        <div style="display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 8px; height: 40px">
+          <sc-for list="{{ark.szybkie}}" as="s" hint-placeholder-count="4">
+            <button class="pig" onClick="{{s.ustaw}}" style="{{s.styl}}">{{s.n}}</button>
+          </sc-for>
+        </div>
+        <sc-if value="{{ark.wieleSklepow}}" hint-placeholder-val="{{false}}">
+          <div style="display: flex; align-items: center; gap: 10px">
+            <span style="font-size: 13px; font-weight: 700; color: var(--wyciszony)">Kupuję w</span>
+            <div style="flex: 1; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 4px; padding: 4px; border-radius: 14px; background: var(--chip)">
+              <sc-for list="{{ark.sklepy}}" as="k" hint-placeholder-count="2">
+                <button class="pig" onClick="{{k.wybierz}}" style="{{k.styl}}">{{k.n}}</button>
+              </sc-for>
+            </div>
+          </div>
+        </sc-if>
+        <div style="display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 4px; padding: 4px; border-radius: 14px; background: var(--chip)">
+          <sc-for list="{{ark.typy}}" as="t" hint-placeholder-count="3">
+            <button class="pig" onClick="{{t.wybierz}}" style="{{t.styl}}">{{t.n}}</button>
+          </sc-for>
+        </div>
+        <div style="display: flex; align-items: center; gap: 12px">
+          <button onClick="{{ark.usun}}" style="height: 52px; padding: 0 8px; border: 0; background: transparent; font-family: inherit; font-size: 15px; font-weight: 700; color: #a3352b; cursor: pointer">Usuń</button>
+          <span style="flex: 1; text-align: right; font-size: 14px; color: var(--wyciszony)">{{ark.cena}}</span>
+          <button class="cta" onClick="{{zamknij}}" style="height: 52px; padding: 0 26px; border-radius: 999px; border: 0; background: var(--akcent); color: #ffffff; font-family: inherit; font-size: 16px; font-weight: 700; cursor: pointer">Gotowe</button>
+        </div>
+      </div>
+    </div>
+  </sc-if>
+
+  <sc-if value="{{maSklepy}}" hint-placeholder-val="{{false}}">
+    <div style="position: absolute; inset: 0; display: flex; flex-direction: column; justify-content: flex-end">
+      <button class="tlo" onClick="{{zamknijSklepy}}" aria-label="Zamknij" style="position: absolute; inset: 0; border: 0; padding: 0; background: rgba(18,28,36,.38); backdrop-filter: blur(3px); -webkit-backdrop-filter: blur(3px); cursor: pointer"></button>
+      <div class="arkusz" style="position: relative; background: #ffffff; border-radius: 28px 28px 0 0; padding: 10px 22px 24px; display: flex; flex-direction: column; gap: 14px">
+        <span style="align-self: center; width: 40px; height: 5px; border-radius: 999px; background: var(--ramka)"></span>
+        <span style="font-size: 24px; font-weight: 700; letter-spacing: -0.02em">Sklepy na tej liście</span>
+        <span style="font-size: 14px; line-height: 1.4; color: var(--wyciszony)">{{sk.opis}}</span>
+        <div style="display: flex; flex-direction: column; gap: 8px">
+          <sc-for list="{{sk.wiersze}}" as="w" hint-placeholder-count="1">
+            <div style="display: flex; align-items: center; gap: 12px; min-height: 58px; padding: 0 8px 0 14px; border-radius: 16px; background: var(--chip)">
+              <span style="width: 30px; height: 30px; border-radius: 10px; background: var(--akcent); color: #ffffff; display: flex; align-items: center; justify-content: center; font-size: 14px; font-weight: 700; flex-shrink: 0">{{w.numer}}</span>
+              <span style="flex: 1; display: flex; flex-direction: column; gap: 1px">
+                <span style="font-size: 16px; font-weight: 700">{{w.nazwa}}</span>
+                <span style="font-size: 13px; color: var(--wyciszony)">{{w.opis}}</span>
+              </span>
+              <sc-if value="{{w.moznaUsunac}}" hint-placeholder-val="{{false}}">
+                <button onClick="{{w.usun}}" aria-label="{{w.usunEtykieta}}" style="height: 40px; padding: 0 10px; border: 0; background: transparent; font-family: inherit; font-size: 14px; font-weight: 700; color: #a3352b; cursor: pointer">Usuń</button>
+              </sc-if>
+            </div>
+          </sc-for>
+        </div>
+        <sc-if value="{{sk.mozeDodac}}" hint-placeholder-val="{{true}}">
+          <div style="display: flex; flex-direction: column; gap: 8px">
+            <span style="font-size: 13px; font-weight: 700; color: var(--wyciszony)">Dodaj drugi sklep</span>
+            <div style="display: flex; flex-wrap: wrap; gap: 8px">
+              <sc-for list="{{sk.kandydaci}}" as="k" hint-placeholder-count="2">
+                <button class="pig" onClick="{{k.dodaj}}" style="height: 42px; padding: 0 14px; border-radius: 999px; border: 1.5px dashed var(--ramka); background: #ffffff; font-family: inherit; font-size: 14px; font-weight: 700; color: var(--akcent-ciemny); cursor: pointer; display: inline-flex; align-items: center; gap: 6px"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" aria-hidden="true"><path d="M12 5v14M5 12h14"></path></svg>{{k.n}}</button>
+              </sc-for>
+            </div>
+          </div>
+        </sc-if>
+        <button class="cta" onClick="{{zamknijSklepy}}" style="height: 54px; border-radius: 999px; border: 0; background: var(--akcent); color: #ffffff; font-family: inherit; font-size: 16px; font-weight: 700; cursor: pointer">Gotowe</button>
+      </div>
+    </div>
+  </sc-if>
+
+  <sc-if value="{{maOferte}}" hint-placeholder-val="{{false}}">
+    <div style="position: absolute; inset: 0; display: flex; flex-direction: column; justify-content: flex-end">
+      <button class="tlo" onClick="{{zamknijOferte}}" aria-label="Zamknij" style="position: absolute; inset: 0; border: 0; padding: 0; background: rgba(18,28,36,.38); backdrop-filter: blur(3px); -webkit-backdrop-filter: blur(3px); cursor: pointer"></button>
+      <div class="arkusz" style="position: relative; background: #ffffff; border-radius: 28px 28px 0 0; padding: 10px 22px 24px; display: flex; flex-direction: column; gap: 16px">
+        <span style="align-self: center; width: 40px; height: 5px; border-radius: 999px; background: var(--ramka)"></span>
+        <span style="font-size: 13px; font-weight: 700; color: var(--akcent-ciemny)">{{of.naglowek}}</span>
+        <div style="display: flex; align-items: flex-start; gap: 12px">
+          <span style="flex: 1; font-size: 24px; font-weight: 700; letter-spacing: -0.02em; line-height: 1.15">{{of.nazwa}}</span>
+          <span style="font-size: 26px; font-weight: 700; letter-spacing: -0.03em">{{of.cena}}</span>
+        </div>
+        <div style="display: flex; align-items: center; gap: 10px">
+          <span style="font-size: 13px; color: var(--wyciszony)">{{of.termin}}</span>
+        </div>
+        <span style="font-size: 15px; line-height: 1.4; color: var(--wyciszony)">{{of.pytanie}}</span>
+        <div style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px">
+          <button class="pig" onClick="{{of.nie}}" style="height: 54px; border-radius: 999px; border: 1.5px solid var(--ramka); background: #ffffff; font-family: inherit; font-size: 16px; font-weight: 700; color: var(--tusz); cursor: pointer">Nie, dzięki</button>
+          <button class="cta" onClick="{{of.tak}}" style="height: 54px; border-radius: 999px; border: 0; background: var(--akcent); font-family: inherit; font-size: 16px; font-weight: 700; color: #ffffff; cursor: pointer">{{of.takTxt}}</button>
+        </div>
+      </div>
+    </div>
+  </sc-if>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":390,"height":844}}'>
+class Component extends DCLogic {
+  constructor(props) {
+    super(props);
+    const cfg = {"sklepy": ["Lidl · Zorska"], "tytul": "Nowa lista", "czeste": ["Mleko", "Chleb", "Jajka", "Masło", "Pomidory", "Ser żółty", "Banany", "Woda"], "ostatnie": "mleko 2, chleb, 10 jajek, masło, 1 kg jabłek, woda 6", "start": []};
+    this.cfg = cfg;
+    this.nr = 100;
+    const items = cfg.start.map((t, i) => Object.assign({ sklep: cfg.sklepy[0], id: 'p' + i, done: false }, this.rozpoznaj(t[0]), t[1] || {}));
+    this.state = { items: items, wpis: '', otw: cfg.otw || null, sklepy: cfg.sklepy.slice(), skOtw: !!cfg.skOtw };
+  }
+  katalog() {
+    // [rdzeń, nazwa, typ (szt|kg|but), domyślnie, dział, cena za jednostkę]
+    return [
+      ['ziemniak', 'Ziemniaki', 'kg', 1, 'Warzywa i owoce', 2.99], ['marchew', 'Marchew', 'kg', 1, 'Warzywa i owoce', 2.49],
+      ['cebul', 'Cebula', 'kg', 1, 'Warzywa i owoce', 2.99], ['jabł', 'Jabłka', 'kg', 1, 'Warzywa i owoce', 3.99],
+      ['banan', 'Banany', 'kg', 1, 'Warzywa i owoce', 4.99], ['pomarańcz', 'Pomarańcze', 'kg', 1, 'Warzywa i owoce', 5.99], ['winogron', 'Winogrona', 'kg', 0.5, 'Warzywa i owoce', 12.99],
+      ['pieczark', 'Pieczarki', 'kg', 0.5, 'Warzywa i owoce', 9.99], ['ogór', 'Ogórek', 'szt', 1, 'Warzywa i owoce', 1.49],
+      ['pomidor', 'Pomidory', 'szt', 1, 'Warzywa i owoce', 1.29], ['papryk', 'Papryka', 'szt', 1, 'Warzywa i owoce', 2.49],
+      ['cytryn', 'Cytryny', 'szt', 1, 'Warzywa i owoce', 0.99], ['sałat', 'Sałata', 'szt', 1, 'Warzywa i owoce', 3.49],
+      ['chleb', 'Chleb', 'szt', 1, 'Piekarnia', 5.49], ['bułk', 'Bułki', 'szt', 4, 'Piekarnia', 0.69], ['bagiet', 'Bagietka', 'szt', 1, 'Piekarnia', 2.99],
+      ['szynk', 'Szynka', 'kg', 0.2, 'Wędliny i sery', 39.9], ['kiełbas', 'Kiełbasa', 'kg', 0.3, 'Wędliny i sery', 24.9],
+      ['parów', 'Parówki', 'szt', 1, 'Wędliny i sery', 6.99], ['ser', 'Ser żółty', 'szt', 1, 'Wędliny i sery', 2.99],
+      ['kurczak', 'Kurczak', 'kg', 0.5, 'Mięso', 17.99], ['filet', 'Filet z kurczaka', 'kg', 0.5, 'Mięso', 17.99],
+      ['mięs', 'Mięso mielone', 'kg', 0.5, 'Mięso', 19.99], ['mielon', 'Mięso mielone', 'kg', 0.5, 'Mięso', 19.99], ['schab', 'Schab', 'kg', 0.5, 'Mięso', 21.99],
+      ['mlek', 'Mleko', 'szt', 1, 'Nabiał', 3.79], ['jogurt', 'Jogurt', 'szt', 1, 'Nabiał', 2.49], ['masł', 'Masło', 'szt', 1, 'Nabiał', 6.29],
+      ['jaj', 'Jajka', 'szt', 10, 'Nabiał', 0.99], ['śmietan', 'Śmietana', 'szt', 1, 'Nabiał', 3.29], ['twar', 'Twaróg', 'szt', 1, 'Nabiał', 4.49],
+      ['makaron', 'Makaron', 'szt', 1, 'Sypkie i przetwory', 3.99], ['ryż', 'Ryż', 'szt', 1, 'Sypkie i przetwory', 4.49],
+      ['mąk', 'Mąka', 'szt', 1, 'Sypkie i przetwory', 3.29], ['cukier', 'Cukier', 'szt', 1, 'Sypkie i przetwory', 3.99],
+      ['fasol', 'Fasolka', 'szt', 1, 'Sypkie i przetwory', 3.49], ['kukurydz', 'Kukurydza', 'szt', 1, 'Sypkie i przetwory', 3.49],
+      ['kaw', 'Kawa', 'szt', 1, 'Sypkie i przetwory', 39.99], ['herbat', 'Herbata', 'szt', 1, 'Sypkie i przetwory', 7.99],
+      ['olej', 'Olej', 'but', 1, 'Sypkie i przetwory', 8.99],
+      ['wod', 'Woda', 'but', 1, 'Napoje', 1.99], ['col', 'Cola', 'but', 1, 'Napoje', 6.99], ['sok', 'Sok', 'but', 1, 'Napoje', 4.99],
+      ['piw', 'Piwo', 'but', 1, 'Napoje', 3.49], ['win', 'Wino', 'but', 1, 'Napoje', 24.99],
+      ['papier', 'Papier toaletowy', 'szt', 1, 'Chemia', 14.99], ['płyn', 'Płyn do naczyń', 'but', 1, 'Chemia', 8.99]
+    ];
+  }
+  promocje() {
+    // promocje w wybranym sklepie (z gazetki), dopasowane po rdzeniu nazwy
+    return [
+      { rdzen: 'ser', nazwa: 'Ser żółty gouda, 150 g', cena: 2.99, termin: 'do soboty', sklep: 'Lidl · Zorska' },
+      { rdzen: 'kaw', nazwa: 'Kawa ziarnista, 1 kg', cena: 39.99, termin: 'do niedzieli', sklep: 'Lidl · Zorska' },
+      { rdzen: 'masł', nazwa: 'Masło extra, 200 g', cena: 5.49, termin: 'do soboty', sklep: 'Lidl · Zorska' },
+      { rdzen: 'filet', nazwa: 'Filet z kurczaka, 1 kg', cena: 15.99, termin: 'czw–sob', sklep: 'Biedronka · Wodzisławska' },
+      { rdzen: 'kurczak', nazwa: 'Filet z kurczaka, 1 kg', cena: 15.99, termin: 'czw–sob', sklep: 'Biedronka · Wodzisławska' }
+    ];
+  }
+  oferta(p) {
+    if (p.promo || p.bezOferty) return null;
+    const slowa = p.nazwa.toLowerCase().split(' ');
+    return this.promocje().find((o) => slowa.some((w) => w.indexOf(o.rdzen) === 0)) || null;
+  }
+  dzialy() { return ['Warzywa i owoce', 'Piekarnia', 'Wędliny i sery', 'Mięso', 'Nabiał', 'Sypkie i przetwory', 'Napoje', 'Chemia', 'Inne']; }
+  rozpoznaj(txt) {
+    let t = (txt || '').trim();
+    if (!t) return null;
+    let rozmiar = '';
+    const r = t.match(/(\d+(?:[.,]\d+)?)\s*(ml|l|litr\w*)(?=\s|$)/i);
+    if (r) { rozmiar = r[1].replace('.', ',') + ' ' + (r[2].toLowerCase() === 'ml' ? 'ml' : 'l'); t = t.replace(r[0], ' '); }
+    const m = t.match(/(\d+(?:[.,]\d+)?)\s*(kg|kilo\w*|dag|deko|g|gram\w*|szt\.?|sztuk\w*|but\.?|butel\w*|x|×)?(?=\s|$)/i);
+    let n = null, j = '';
+    if (m) { n = parseFloat(m[1].replace(',', '.')); j = (m[2] || '').toLowerCase(); t = t.replace(m[0], ' '); }
+    let nazwa = t.replace(/\s+/g, ' ').trim();
+    if (!nazwa) return null;
+    const slowa = nazwa.toLowerCase().split(' ');
+    const kat = this.katalog();
+    let k = null;
+    for (const w of slowa) { k = kat.find((x) => w.indexOf(x[0]) === 0) || (w.length >= 3 ? kat.find((x) => x[0].indexOf(w) === 0) : null); if (k) break; }
+    let typ = k ? k[2] : 'szt', ile = k ? k[3] : 1;
+    if (j.indexOf('k') === 0) { typ = 'kg'; ile = n; }
+    else if (j === 'dag' || j.indexOf('dek') === 0) { typ = 'kg'; ile = n / 100; }
+    else if (j.indexOf('g') === 0) { typ = 'kg'; ile = n / 1000; }
+    else if (j.indexOf('sz') === 0) { typ = 'szt'; ile = n; }
+    else if (j.indexOf('b') === 0) { typ = 'but'; ile = n; }
+    else if (n !== null) { ile = (typ === 'kg') ? (n >= 50 ? n / 1000 : n) : Math.max(1, Math.round(n)); }
+    const ladna = (k && slowa.length === 1) ? k[1] : nazwa.charAt(0).toUpperCase() + nazwa.slice(1);
+    return { nazwa: ladna + (rozmiar ? ' ' + rozmiar : ''), typ: typ, ile: ile, sekcja: k ? k[4] : 'Inne', cj: k ? k[5] : 0 };
+  }
+  fmt(typ, ile) {
+    if (typ === 'kg') return ile < 1 ? Math.round(ile * 1000) + ' g' : String(Math.round(ile * 100) / 100).replace('.', ',') + ' kg';
+    if (typ === 'but') {
+      const d = ile % 10, s = ile % 100;
+      const sl = ile === 1 ? 'butelka' : (d >= 2 && d <= 4 && (s < 12 || s > 14)) ? 'butelki' : 'butelek';
+      return ile + ' ' + sl;
+    }
+    return ile + ' szt.';
+  }
+  zl(x) { return x.toFixed(2).replace('.', ',') + ' zł'; }
+  dodajTekst(tekst) {
+    const nowe = tekst.split(/[,;\n]/).map((x) => this.rozpoznaj(x)).filter(Boolean)
+      .map((x) => Object.assign({ id: 'n' + (this.nr++), done: false, sklep: this.state.sklepy[0] }, x));
+    if (nowe.length) this.setState({ items: this.state.items.concat(nowe), wpis: '' });
+    else this.setState({ wpis: '' });
+  }
+  zmienPoz(id, zmiana) {
+    this.setState({ items: this.state.items.map((x) => x.id === id ? Object.assign({}, x, zmiana) : x) });
+  }
+  renderVals() {
+    const cfg = this.cfg, s = this.state, dz = this.dzialy();
+    const items = s.items.slice().sort((a, b) => (s.sklepy.indexOf(a.sklep) - s.sklepy.indexOf(b.sklep)) || (dz.indexOf(a.sekcja) - dz.indexOf(b.sekcja)));
+    let suma = 0, zostalo = 0;
+    const pozycje = items.map((p) => {
+      const kwota = p.cj * p.ile;
+      if (!p.done) { suma += kwota; zostalo += 1; }
+      return {
+        nazwa: p.nazwa, sekcja: p.sekcja, ilosc: this.fmt(p.typ, p.ile),
+        cena: kwota ? this.zl(kwota) : '', promo: !!p.promo, promoTxt: p.promo || '',
+        etykieta: (p.done ? 'Odznacz: ' : 'Odhacz: ') + p.nazwa,
+        znak: 'width: 30px; height: 30px; border-radius: 50%; flex-shrink: 0; padding: 0; display: flex; align-items: center; justify-content: center; box-sizing: border-box; cursor: pointer; ' + (p.done ? 'background: var(--akcent); border: 2px solid var(--akcent)' : 'background: transparent; border: 2px solid var(--ramka)'),
+        tekst: 'font-size: 16px; font-weight: 500; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; ' + (p.done ? 'color: var(--odhaczony); text-decoration: line-through' : 'color: var(--tusz)'),
+        przelacz: () => this.zmienPoz(p.id, { done: !p.done }),
+        otworz: () => this.setState({ otw: p.id }),
+        maOferte: !!this.oferta(p), ofertaEtykieta: 'Zobacz promocję: ' + p.nazwa,
+        pokazOferte: () => this.setState({ ofOtw: p.id }),
+        sklep: p.sklep
+      };
+    });
+    const uzyte = s.sklepy;
+    const wiele = uzyte.length > 1;
+    const odm = (n) => n === 1 ? 'produkt' : (n % 10 >= 2 && n % 10 <= 4 && (n % 100 < 12 || n % 100 > 14)) ? 'produkty' : 'produktów';
+    const grupy = wiele ? uzyte.map((k) => { const ps = pozycje.filter((x) => x.sklep === k); return { naglowek: true, nazwa: k, numer: k.charAt(0), opis: ps.length + ' ' + odm(ps.length), pozycje: ps }; }) : [{ naglowek: false, pozycje: pozycje }];
+    const maNazwy = (n) => s.items.some((x) => x.nazwa.toLowerCase().indexOf(n.toLowerCase()) === 0);
+    const podp = (cfg.podp || []).filter((n) => !maNazwy(n)).map((n) => ({ n: n, dodaj: () => this.dodajTekst(n) }));
+    const czeste = (cfg.czeste || []).filter((n) => !maNazwy(n)).map((n) => ({ n: n, dodaj: () => this.dodajTekst(n) }));
+    const ostatniKawalek = s.wpis.split(/[,;\n]/).pop();
+    const pg = this.rozpoznaj(ostatniKawalek);
+    let ark = null;
+    const a = s.items.find((x) => x.id === s.otw);
+    if (a) {
+      const krok = a.typ === 'kg' ? (a.ile < 1 ? 0.1 : 0.5) : 1;
+      const min = a.typ === 'kg' ? 0.1 : 1;
+      const zaokr = (v) => Math.round(v * 10) / 10;
+      const pigStyl = (on) => 'height: 40px; padding: 0 4px; white-space: nowrap; border-radius: 999px; font-family: inherit; font-size: 14px; font-weight: 700; cursor: pointer; ' + (on ? 'border: 1.5px solid var(--akcent); background: var(--akcent-jasny); color: var(--akcent-ciemny)' : 'border: 1.5px solid var(--ramka); background: #ffffff; color: var(--tusz)');
+      const wartosci = a.typ === 'kg' ? [0.25, 0.5, 1, 2] : a.typ === 'but' ? [1, 2, 6, 12] : [1, 2, 4, 6]; // zawsze 4: panel nie zmienia wysokości
+      const domysl = { szt: 1, kg: 1, but: 1 };
+      ark = {
+        nazwa: a.nazwa, sekcja: a.sekcja, ilosc: this.fmt(a.typ, a.ile),
+        cena: a.cj ? 'ok. ' + this.zl(a.cj * a.ile) : '',
+        mniej: () => this.zmienPoz(a.id, { ile: Math.max(min, zaokr(a.ile - (a.typ === 'kg' && a.ile <= 1 ? 0.1 : krok))) }),
+        wiecej: () => this.zmienPoz(a.id, { ile: zaokr(a.ile + krok) }),
+        szybkie: wartosci.map((v) => ({ n: this.fmt(a.typ, v).replace(' butelki', '').replace(' butelek', '').replace(' butelka', ''), styl: pigStyl(Math.abs(a.ile - v) < 0.001), ustaw: () => this.zmienPoz(a.id, { ile: v }) })),
+        typy: [['szt', 'Sztuki'], ['kg', 'Na wagę'], ['but', 'Butelki']].map(([id, n]) => ({ n: n, styl: 'height: 38px; border-radius: 10px; border: 0; font-family: inherit; font-size: 13px; font-weight: 700; cursor: pointer; ' + (a.typ === id ? 'background: #ffffff; color: var(--tusz); box-shadow: 0 1px 3px rgba(18,28,36,.12)' : 'background: transparent; color: var(--wyciszony)'), wybierz: () => this.zmienPoz(a.id, { typ: id, ile: domysl[id] }) })),
+        usun: () => this.setState({ items: s.items.filter((x) => x.id !== a.id), otw: null }),
+        wieleSklepow: s.sklepy.length > 1,
+        sklepy: s.sklepy.map((k) => ({ n: k.split(' · ')[0], styl: 'height: 38px; border-radius: 10px; border: 0; font-family: inherit; font-size: 13px; font-weight: 700; cursor: pointer; ' + (a.sklep === k ? 'background: #ffffff; color: var(--tusz); box-shadow: 0 1px 3px rgba(18,28,36,.12)' : 'background: transparent; color: var(--wyciszony)'), wybierz: () => this.zmienPoz(a.id, { sklep: k }) }))
+      };
+    }
+    let of = null;
+    const op = s.items.find((x) => x.id === s.ofOtw);
+    const o = op ? this.oferta(op) : null;
+    if (o) {
+      const naLiscie = s.sklepy.indexOf(o.sklep) >= 0;
+      const kr = (k) => k.split(' · ')[0];
+      const dop = { Lidl: 'Lidla', Biedronka: 'Biedronkę', Kaufland: 'Kaufland' };
+      of = {
+        nazwa: o.nazwa, cena: this.zl(o.cena), termin: 'Promocja ' + o.termin, sklep: o.sklep, twoje: op.nazwa,
+        naglowek: naLiscie ? 'Promocja w Twoim sklepie · ' + o.sklep : 'Promocja w innym sklepie · ' + o.sklep,
+        pytanie: naLiscie ? 'Masz na liście „' + op.nazwa + '”. Wziąć ten?' : 'Ta lista jest na ' + kr(s.sklepy[0]) + '. Możesz dodać ' + (dop[kr(o.sklep)] || kr(o.sklep)) + ' jako drugi sklep. Lista podzieli się na dwie części, a w sklepie wybierzesz, od której zaczynasz.',
+        takTxt: naLiscie ? 'Tak, ten' : 'Dodaj ' + (dop[kr(o.sklep)] || kr(o.sklep)),
+        tak: () => { this.zmienPoz(op.id, { nazwa: o.nazwa, cj: o.cena, typ: 'szt', ile: op.typ === 'szt' ? op.ile : 1, promo: 'Promocja', sklep: o.sklep }); this.setState({ ofOtw: null, sklepy: naLiscie ? s.sklepy : s.sklepy.concat(o.sklep) }); },
+        nie: () => { this.zmienPoz(op.id, { bezOferty: true }); this.setState({ ofOtw: null }); }
+      };
+    }
+    const odmP = (n) => n + ' ' + (n === 1 ? 'produkt' : (n % 10 >= 2 && n % 10 <= 4 && (n % 100 < 12 || n % 100 > 14)) ? 'produkty' : 'produktów');
+    const wszystkieSklepy = ['Lidl · Zorska', 'Biedronka · Wodzisławska', 'Kaufland · Rybnik'];
+    const sk = {
+      wiele: s.sklepy.length > 1, mozeDodac: s.sklepy.length < 3,
+      opis: s.sklepy.length > 1 ? 'Kolejność nie ma znaczenia: zaczynasz w tym sklepie, w którym akurat jesteś. Nowe produkty trafiają do pierwszego sklepu, przeniesiesz je w szczegółach produktu.' : 'Lista jest na jeden sklep i według niego się układa. Drugi sklep dodaj tylko wtedy, gdy część rzeczy kupujesz gdzie indziej.',
+      wiersze: s.sklepy.map((k, i) => ({
+        numer: k.charAt(0), nazwa: k, opis: odmP(s.items.filter((x) => x.sklep === k).length),
+        moznaUsunac: i > 0, usunEtykieta: 'Usuń sklep: ' + k,
+        usun: () => this.setState({ sklepy: s.sklepy.filter((x) => x !== k), items: s.items.map((x) => x.sklep === k ? Object.assign({}, x, { sklep: s.sklepy[0] }) : x) })
+      })),
+      zamien: () => this.setState({ sklepy: s.sklepy.slice().reverse() }),
+      kandydaci: wszystkieSklepy.filter((k) => s.sklepy.indexOf(k) < 0).map((k) => ({ n: k, dodaj: () => this.setState({ sklepy: s.sklepy.concat(k) }) }))
+    };
+    const pusta = s.items.length === 0;
+    return {
+      tytul: cfg.tytul, pozycje: pozycje, grupy: grupy,
+      sklepChip: wiele ? uzyte.map((k) => k.split(' · ')[0]).join(' + ') : uzyte[0], maPozycje: !pusta, pusta: pusta,
+      suma: Math.round(suma), zostalo: zostalo,
+      maPromo: !!cfg.promo, podp: podp, saPodp: podp.length > 0,
+      czeste: czeste, pokazCzeste: czeste.length > 0,
+      wpis: s.wpis, maPodglad: !!pg,
+      podglad: pg ? '↵ ' + pg.nazwa + ' · ' + this.fmt(pg.typ, pg.ile) + ' · ' + pg.sekcja : '',
+      poleStyl: 'display: flex; align-items: center; gap: 10px; min-height: 56px; padding: 0 6px 0 16px; border-radius: 18px; box-sizing: border-box; ' + (pusta || s.wpis ? 'border: 2px solid var(--akcent); box-shadow: 0 0 0 4px var(--akcent-jasny)' : 'border: 1.5px solid var(--ramka)'),
+      plusStyl: 'width: 44px; height: 44px; flex-shrink: 0; border-radius: 14px; border: 0; display: flex; align-items: center; justify-content: center; cursor: pointer; ' + (s.wpis.trim() ? 'background: var(--akcent); color: #ffffff' : 'background: var(--chip); color: var(--wyciszony)'),
+      pisz: (e) => this.setState({ wpis: e.target.value }),
+      klawisz: (e) => { if (e.key === 'Enter') { e.preventDefault(); this.dodajTekst(this.state.wpis); } },
+      dodajWpis: () => this.dodajTekst(this.state.wpis),
+      powtorz: () => this.dodajTekst(cfg.ostatnie || ''),
+      maArkusz: !!ark, ark: ark || { szybkie: [], typy: [], sklepy: [] },
+      zamknij: () => this.setState({ otw: null }),
+      maSklepy: !!s.skOtw, sk: sk, otworzSklepy: () => this.setState({ skOtw: true }), zamknijSklepy: () => this.setState({ skOtw: false }),
+      maOferte: !!of, of: of || {}, zamknijOferte: () => this.setState({ ofOtw: null })
+    };
+  }
+}
+</script>
+</body>
+</html>

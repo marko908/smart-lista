@@ -1,0 +1,108 @@
+<!doctype html>
+<html lang="pl">
+<head>
+<meta charset="utf-8">
+<title>Lista zakupów</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,700&amp;display=swap" rel="stylesheet">
+<style>
+/* Kolory w jednym miejscu: zmiana motywu = zmiana tych wartości */
+:root{--akcent:#1d5f8a;--akcent-ciemny:#164a6b;--akcent-jasny:#e3eff7;--tusz:#121c24;--wyciszony:#5d6b75;--linia:#edf1f4;--chip:#f2f5f7;--ramka:#c8d5de;--odhaczony:#98a4ad}
+body{margin:0}
+a{color:var(--akcent);text-decoration:none}a:hover{color:var(--akcent-ciemny)}
+.wiersz{transition:background-color .18s ease}
+.znak{transition:transform .22s cubic-bezier(.2,.8,.2,1),background-color .18s ease,border-color .18s ease}
+.wiersz:active .znak{transform:scale(.85)}
+.cta{transition:transform .15s ease}.cta:active{transform:scale(.98)}
+.ukryte{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}
+</style>
+</helmet>
+<div style="width: 390px; height: 844px; box-sizing: border-box; background: #ffffff; color: var(--tusz); font-family: 'DM Sans', sans-serif; display: flex; flex-direction: column; overflow: hidden">
+
+  <div style="padding: 28px 22px 14px; display: flex; flex-direction: column; gap: 14px">
+    <div style="display: flex; align-items: center; justify-content: space-between">
+      <button style="display: inline-flex; align-items: center; gap: 8px; height: 34px; padding: 0 12px; border-radius: 999px; border: 1.5px dashed var(--akcent); background: #ffffff; color: var(--akcent-ciemny); font-family: inherit; font-size: 13px; font-weight: 700; cursor: pointer">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 21s7-6.2 7-12a7 7 0 1 0-14 0c0 5.8 7 12 7 12z"></path><circle cx="12" cy="9" r="2.5"></circle></svg>
+        Wybierz sklep
+      </button>
+      <button aria-label="Udostępnij listę" style="width: 44px; height: 44px; border-radius: 50%; border: 0; background: var(--chip); display: flex; align-items: center; justify-content: center; cursor: pointer">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--tusz)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="18" cy="5" r="3"></circle><circle cx="6" cy="12" r="3"></circle><circle cx="18" cy="19" r="3"></circle><path d="m8.6 13.5 6.8 4M15.4 6.5l-6.8 4"></path></svg>
+      </button>
+    </div>
+    <h1 style="margin: 0; font-size: 40px; font-weight: 700; letter-spacing: -0.035em; line-height: 1">Na sobotę</h1>
+    <div style="display: flex; gap: 8px">
+      <span style="padding: 8px 12px; border-radius: 12px; background: var(--chip); font-size: 14px"><b>{{zostalo}}</b> do kupienia</span>
+    </div>
+    <div style="display: flex; align-items: center; gap: 10px; height: 48px; padding: 0 14px; border-radius: 14px; border: 1.5px solid var(--ramka)">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--wyciszony)" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M12 5v14M5 12h14"></path></svg>
+      <label for="dodaj" class="ukryte">Dodaj produkty</label>
+      <input id="dodaj" placeholder="mleko, 2 kg ziemniaków…" style="flex: 1; border: 0; outline: none; background: transparent; font-family: inherit; font-size: 15px; color: var(--tusz)">
+    </div>
+  </div>
+
+  <div style="margin: 0 22px 12px; padding: 14px 16px; border-radius: 18px; background: var(--chip); display: flex; gap: 12px; align-items: flex-start">
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--akcent)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="flex-shrink: 0; margin-top: 1px"><circle cx="12" cy="12" r="9"></circle><path d="M12 8h.01M11 12h1v4h1"></path></svg>
+    <span style="font-size: 14px; line-height: 1.4; color: var(--tusz)">Ułożone według typowego układu sklepu. <b>Wybierz swój sklep</b>, a trasa będzie dokładna.</span>
+  </div>
+
+  <div style="flex: 1; min-height: 0; overflow-y: auto; padding: 0 22px; display: flex; flex-direction: column">
+    <sc-for list="{{pozycje}}" as="p" hint-placeholder-count="8">
+      <button class="wiersz" onClick="{{p.przelacz}}" style="display: flex; align-items: center; gap: 14px; min-height: 54px; padding: 0; border: 0; border-bottom: 1px solid var(--linia); background: transparent; text-align: left; font-family: inherit; cursor: pointer; width: 100%">
+        <span class="znak" style="{{p.znak}}"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m5 12 5 5 9-10"></path></svg></span>
+        <span style="flex: 1; display: flex; flex-direction: column; gap: 1px">
+          <span style="{{p.tekst}}">{{p.nazwa}}</span>
+          <span style="font-size: 12px; color: var(--wyciszony)">{{p.sekcja}}</span>
+        </span>
+      </button>
+    </sc-for>
+  </div>
+
+  <div style="padding: 12px 22px">
+    <a href="A-2-Zakupy.dc.html" class="cta" style="height: 58px; border-radius: 999px; background: var(--akcent); color: #ffffff; display: flex; align-items: center; justify-content: center; font-size: 17px; font-weight: 700">Zacznij zakupy</a>
+  </div>
+
+  <nav aria-label="Główna nawigacja" style="height: 62px; display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); border-top: 1px solid var(--linia)">
+    <a href="E00-a-Start.dc.html" style="display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 3px; font-size: 11px; font-weight: 700; color: var(--akcent)"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M9 6h11M9 12h11M9 18h11M4 6h.01M4 12h.01M4 18h.01"></path></svg>Listy</a>
+    <a href="A-4-Promocje.dc.html" style="display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 3px; font-size: 11px; color: var(--wyciszony)"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20.6 13.4 13.4 20.6a2 2 0 0 1-2.8 0L3 13V3h10l7.6 7.6a2 2 0 0 1 0 2.8z"></path></svg>Promocje</a>
+    <a href="A-8-Paragony.dc.html" style="display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 3px; font-size: 11px; color: var(--wyciszony)"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 3h12v18l-3-2-3 2-3-2-3 2z"></path></svg>Paragony</a>
+    <a href="E00-a-Start.dc.html" style="display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 3px; font-size: 11px; color: var(--wyciszony)"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="8" r="4"></circle><path d="M4 21c1.5-4 4.5-6 8-6s6.5 2 8 6"></path></svg>Konto</a>
+  </nav>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":390,"height":844}}'>
+class Component extends DCLogic {
+  constructor(props) {
+    super(props);
+    this.state = { o: { a: true, b: true } };
+  }
+  renderVals() {
+    const dane = [
+      ['a', 'Pomidory, 1 kg', 'Warzywa', 6.99], ['b', 'Chleb żytni', 'Piekarnia', 5.49],
+      ['c', 'Mleko 2% × 2', 'Nabiał', 7.58], ['d', 'Ser żółty gouda, 150 g', 'Nabiał', 2.99, ''],
+      ['e', 'Jogurt naturalny', 'Nabiał', 2.49], ['f', 'Makaron penne', 'Makarony', 3.99],
+      ['g', 'Kawa ziarnista, 1 kg', 'Kawa', 39.99, ''], ['h', 'Płyn do naczyń', 'Czyszczenie', 8.99]
+    ];
+    const o = this.state.o;
+    let suma = 0, zostalo = 0;
+    const pozycje = dane.map(([id, nazwa, sekcja, cena, promo]) => {
+      const done = !!o[id];
+      if (!done) { suma += cena; zostalo += 1; }
+      return {
+        nazwa, sekcja, promo: !!promo, promoTxt: promo || '',
+        cena: cena.toFixed(2).replace('.', ',') + ' zł',
+        znak: 'width: 28px; height: 28px; border-radius: 50%; flex-shrink: 0; display: flex; align-items: center; justify-content: center; box-sizing: border-box; ' + (done ? 'background: var(--akcent); border: 2px solid var(--akcent)' : 'background: transparent; border: 2px solid var(--ramka)'),
+        tekst: 'font-size: 16px; font-weight: 500; ' + (done ? 'color: var(--odhaczony); text-decoration: line-through' : 'color: var(--tusz)'),
+        przelacz: () => this.setState({ o: Object.assign({}, o, { [id]: !done }) })
+      };
+    });
+    return { pozycje, suma: Math.round(suma), zostalo };
+  }
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,5 @@
+const fs=require('fs');const s=fs.readFileSync(process.argv[2],'utf8');const i=s.indexOf('class Component');const j=s.indexOf('</script>',i);
+eval('class DCLogic{constructor(p){}setState(x){Object.assign(this.state,x)}}\n'+s.slice(i,j)+';globalThis.C=Component');
+const c=new C({});let v=c.renderVals();const sh=(t)=>{v=c.renderVals();console.log(t,'|',c.state.krok,'|',v.krokWybor?v.wyborTytul+' / '+v.sklepyLista.map(k=>k.siec+' '+k.odl).join(', ')+' / '+v.wybierzTxt:'',v.krokLista?v.czesci.map(x=>x.nazwa+': '+x.pozycje.map(p=>p.nazwa+' '+p.ilosc).join(',')).join(' || '):'',v.krokGotowe?v.gotoweSklepy+' '+v.gotoweOpis:'');};
+sh('init');v.nowaLista();sh('nowa');v.sieci[1].wybierz();sh('filtr lidl');v.sieci[0].wybierz();v=c.renderVals();v.sklepyLista[1].zaznacz();sh('zazn');v.zatwierdzSklep();sh('lista');
+c.setState({wpis:'mleko 2, 3 ziemniaki'});v=c.renderVals();v.dodajWpis();sh('dodane');v.dodajSklep();sh('kolejny');v.sklepyLista[1].zaznacz();v=c.renderVals();v.zatwierdzSklep();sh('drugi');c.setState({wpis:'woda 6'});v=c.renderVals();v.dodajWpis();sh('woda');v.zakoncz();sh('gotowe');

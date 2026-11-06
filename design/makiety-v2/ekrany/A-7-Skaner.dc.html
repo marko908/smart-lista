@@ -1,0 +1,126 @@
+<!doctype html>
+<html lang="pl">
+<head>
+<meta charset="utf-8">
+<title>Skaner paragonu</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,700&amp;family=JetBrains+Mono:wght@400&amp;display=swap" rel="stylesheet">
+<style>
+/* Kolory w jednym miejscu: zmiana motywu = zmiana tych wartości */
+:root{--akcent:#1d5f8a;--akcent-ciemny:#164a6b;--akcent-jasny:#e3eff7;--tusz:#121c24;--wyciszony:#5d6b75;--linia:#edf1f4;--chip:#f2f5f7;--ramka:#c8d5de;--odhaczony:#98a4ad}
+body{margin:0}
+a{color:var(--akcent);text-decoration:none}
+.pig{transition:background-color .15s ease,color .15s ease,transform .12s ease}.pig:active{transform:scale(.94)}
+@keyframes skan{0%{top:6%}100%{top:92%}}
+.linia-skan{animation:skan 1.1s ease-in-out infinite alternate}
+@keyframes oddech{0%,100%{opacity:.55}50%{opacity:1}}
+.rogi{animation:oddech 1.6s ease-in-out infinite}
+@keyframes kolo{0%{transform:scale(.4);opacity:0}60%{transform:scale(1.08);opacity:1}100%{transform:scale(1)}}
+.kolo{animation:kolo .5s cubic-bezier(.2,.8,.2,1) both}
+@keyframes wjazd{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+.w{animation:wjazd .4s cubic-bezier(.2,.8,.2,1) both}
+</style>
+</helmet>
+<div style="position: relative; width: 390px; height: 844px; box-sizing: border-box; background: #0e151b; color: #ffffff; font-family: 'DM Sans', sans-serif; display: flex; flex-direction: column; overflow: hidden">
+
+  <div style="position: relative; z-index: 2; padding: 22px 22px 0; display: flex; align-items: center; gap: 12px">
+    <a href="A-6-Koniec.dc.html" aria-label="Zamknij skaner" style="width: 44px; height: 44px; border-radius: 50%; background: rgba(255,255,255,.12); display: flex; align-items: center; justify-content: center; flex-shrink: 0">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18"></path></svg>
+    </a>
+    <div style="flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 1px">
+      <span style="font-size: 16px; font-weight: 700">Paragon z Biedronki</span>
+      <span style="font-size: 12px; color: rgba(255,255,255,.65)">2 z 3 sklepów tej listy</span>
+    </div>
+    <button class="pig" onClick="{{przelaczFlesz}}" aria-pressed="{{flesz}}" aria-label="Lampa" style="{{fleszStyl}}"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M13 2 4 14h7l-1 8 9-12h-7z"></path></svg></button>
+  </div>
+
+  <div style="position: relative; flex: 1; min-height: 0; display: flex; align-items: center; justify-content: center">
+    <div style="position: absolute; inset: 0; background: radial-gradient(ellipse at 50% 45%, #33414b 0%, #1a242c 60%, #0e151b 100%)"></div>
+    <div style="{{paragonStyl}}">
+      <div style="padding: 18px 16px 0; display: flex; flex-direction: column; gap: 5px; font-family: 'JetBrains Mono', monospace; font-size: 9.5px; color: #3b4148">
+        <span style="text-align: center; font-weight: 700; font-size: 11px; letter-spacing: .1em">SKLEP · WODZISŁAWSKA 20</span>
+        <span style="text-align: center">NIP 000-000-00-00</span>
+        <span style="border-top: 1px dashed #b9bfc4; margin: 4px 0"></span>
+        <span style="display: flex; justify-content: space-between"><span>POMARANCZE LUZ 1,02kg</span><span>5,09</span></span>
+        <span style="display: flex; justify-content: space-between"><span>FILET Z PIERSI KURCZ</span><span>15,99</span></span>
+        <span style="display: flex; justify-content: space-between"><span>TORBA PAPIEROWA</span><span>0,90</span></span>
+        <span style="border-top: 1px dashed #b9bfc4; margin: 4px 0"></span>
+        <span style="display: flex; justify-content: space-between; font-weight: 700; font-size: 11px"><span>SUMA PLN</span><span>21,98</span></span>
+        <span style="border-top: 1px dashed #b9bfc4; margin: 4px 0"></span>
+        <span style="text-align: center">06.11.2026 18:51</span>
+        <span style="height: 22px; margin: 6px 18px 14px; background: repeating-linear-gradient(90deg, #3b4148 0 2px, transparent 2px 4px, #3b4148 4px 5px, transparent 5px 8px)"></span>
+      </div>
+      <sc-if value="{{skanuje}}" hint-placeholder-val="{{false}}">
+        <span class="linia-skan" style="position: absolute; left: -6px; right: -6px; height: 3px; border-radius: 2px; background: var(--akcent-jasny); box-shadow: 0 0 18px 4px rgba(141,192,224,.75)"></span>
+      </sc-if>
+    </div>
+    <div class="rogi" style="{{rogiStyl}}">
+      <span style="position: absolute; left: 0; top: 0; width: 28px; height: 28px; border-left: 3px solid #ffffff; border-top: 3px solid #ffffff; border-radius: 10px 0 0 0"></span>
+      <span style="position: absolute; right: 0; top: 0; width: 28px; height: 28px; border-right: 3px solid #ffffff; border-top: 3px solid #ffffff; border-radius: 0 10px 0 0"></span>
+      <span style="position: absolute; left: 0; bottom: 0; width: 28px; height: 28px; border-left: 3px solid #ffffff; border-bottom: 3px solid #ffffff; border-radius: 0 0 0 10px"></span>
+      <span style="position: absolute; right: 0; bottom: 0; width: 28px; height: 28px; border-right: 3px solid #ffffff; border-bottom: 3px solid #ffffff; border-radius: 0 0 10px 0"></span>
+    </div>
+    <span role="status" style="{{statusStyl}}">{{status}}</span>
+  </div>
+
+  <div style="position: relative; z-index: 2; height: 196px; flex-shrink: 0; box-sizing: border-box; padding: 18px 22px 26px">
+    <div style="{{celujStyl}}">
+      <span style="text-align: center; font-size: 13px; color: rgba(255,255,255,.7)">Zdjęcie zostaje na telefonie. Wysyłamy tylko odczytany tekst.</span>
+      <div style="display: grid; grid-template-columns: 1fr 84px 1fr; align-items: center">
+        <button class="pig" onClick="{{zGalerii}}" style="justify-self: start; height: 44px; padding: 0 14px; border-radius: 999px; border: 0; background: rgba(255,255,255,.12); color: #ffffff; font-family: inherit; font-size: 14px; font-weight: 700; cursor: pointer">Z galerii</button>
+        <button class="pig" onClick="{{zrob}}" aria-label="Zrób zdjęcie paragonu" style="width: 78px; height: 78px; border-radius: 50%; border: 4px solid #ffffff; background: transparent; padding: 5px; cursor: pointer; box-sizing: border-box"><span style="display: block; width: 100%; height: 100%; border-radius: 50%; background: #ffffff"></span></button>
+        <span style="justify-self: end; font-size: 12px; color: rgba(255,255,255,.6); text-align: right; line-height: 1.3">Długi paragon?<br>Przesuwaj w dół</span>
+      </div>
+    </div>
+    <div style="{{gotoweStyl}}">
+      <div style="display: flex; align-items: center; gap: 12px">
+        <span class="kolo" style="width: 40px; height: 40px; border-radius: 50%; background: var(--akcent); display: flex; align-items: center; justify-content: center; flex-shrink: 0"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m5 12 5 5 9-10"></path></svg></span>
+        <span style="display: flex; flex-direction: column; gap: 1px">
+          <span style="font-size: 17px; font-weight: 700">Odczytano 3 pozycje · 21,98 zł</span>
+          <span style="font-size: 13px; color: rgba(255,255,255,.7)">Dopasowaliśmy je do Twojej listy</span>
+        </span>
+      </div>
+      <div style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px">
+        <button class="pig" onClick="{{ponow}}" style="height: 54px; border-radius: 999px; border: 0; background: rgba(255,255,255,.12); color: #ffffff; font-family: inherit; font-size: 15px; font-weight: 700; cursor: pointer">Jeszcze raz</button>
+        <a href="A-5-Paragon.dc.html" class="pig" style="height: 54px; border-radius: 999px; background: #ffffff; color: var(--tusz); display: flex; align-items: center; justify-content: center; font-size: 15px; font-weight: 700">Sprawdź</a>
+      </div>
+    </div>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":390,"height":844}}'>
+class Component extends DCLogic {
+  constructor(props) {
+    super(props);
+    this.state = { krok: 'celuj', flesz: false };
+  }
+  renderVals() {
+    const st = this.state;
+    const E = 'cubic-bezier(.2,.8,.2,1)';
+    const celuj = st.krok === 'celuj', skanuje = st.krok === 'skan', gotowe = st.krok === 'gotowe';
+    const zrob = () => { if (!celuj) return; this.setState({ krok: 'skan' }); clearTimeout(this.t); this.t = setTimeout(() => this.setState({ krok: 'gotowe' }), 1700); };
+    // dwa panele dolne leżą w tym samym miejscu i przenikają się, więc nic nie skacze
+    const panel = (on) => 'position: absolute; left: 22px; right: 22px; top: 18px; bottom: 26px; display: flex; flex-direction: column; justify-content: flex-end; gap: 16px; transition: opacity .3s ease, transform .35s ' + E + '; ' + (on ? 'opacity: 1; transform: none; pointer-events: auto' : 'opacity: 0; transform: translateY(10px); pointer-events: none');
+    return {
+      skanuje,
+      status: celuj ? 'Paragon w ramce, telefon prosto' : skanuje ? 'Czytam paragon…' : 'Gotowe',
+      statusStyl: 'position: absolute; top: 16px; left: 50%; transform: translateX(-50%); white-space: nowrap; padding: 8px 14px; border-radius: 999px; font-size: 13px; font-weight: 700; transition: background-color .3s ease, color .3s ease; ' + (gotowe ? 'background: var(--akcent); color: #ffffff' : 'background: rgba(14,21,27,.7); color: #ffffff'),
+      paragonStyl: 'position: relative; width: 210px; background: #fbfaf6; border-radius: 3px; box-shadow: 0 18px 40px rgba(0,0,0,.45); transform: rotate(' + (celuj ? -3 : 0) + 'deg) scale(' + (celuj ? 1 : 1.04) + '); transition: transform .5s ' + E + ', filter .4s ease; ' + (gotowe ? 'filter: brightness(1.04)' : 'filter: none'),
+      rogiStyl: 'position: absolute; width: 250px; height: 380px; pointer-events: none; transition: transform .45s ' + E + ', opacity .3s ease; ' + (celuj ? 'transform: scale(1); opacity: 1' : skanuje ? 'transform: scale(.94); opacity: 1' : 'transform: scale(.94); opacity: 0'),
+      celujStyl: panel(celuj), gotoweStyl: panel(gotowe),
+      zrob, zGalerii: zrob,
+      ponow: () => this.setState({ krok: 'celuj' }),
+      flesz: st.flesz ? 'true' : 'false',
+      przelaczFlesz: () => this.setState({ flesz: !st.flesz }),
+      fleszStyl: 'width: 44px; height: 44px; border-radius: 50%; border: 0; display: flex; align-items: center; justify-content: center; cursor: pointer; flex-shrink: 0; ' + (st.flesz ? 'background: #ffffff; color: var(--tusz)' : 'background: rgba(255,255,255,.12); color: #ffffff')
+    };
+  }
+}
+</script>
+</body>
+</html>

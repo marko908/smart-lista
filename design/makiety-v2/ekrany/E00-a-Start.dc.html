@@ -1,0 +1,110 @@
+<!doctype html>
+<html lang="pl">
+<head>
+<meta charset="utf-8">
+<title>Start</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,700&amp;display=swap" rel="stylesheet">
+<style>
+/* Kolory w jednym miejscu: zmiana motywu = zmiana tych wartości */
+:root{--akcent:#1d5f8a;--akcent-ciemny:#164a6b;--akcent-jasny:#e3eff7;--tusz:#121c24;--wyciszony:#5d6b75;--linia:#edf1f4;--chip:#f2f5f7;--ramka:#c8d5de;--odhaczony:#98a4ad}
+body{margin:0}
+a{color:inherit;text-decoration:none}
+.karta{transition:transform .15s ease,background-color .18s ease}.karta:active{transform:scale(.98)}
+.cta{transition:background-color .18s ease,transform .15s ease}.cta:hover{background:var(--akcent-ciemny)!important}.cta:active{transform:scale(.97)}
+@keyframes wjazd{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+.w{animation:wjazd .4s cubic-bezier(.2,.8,.2,1) both}
+</style>
+</helmet>
+<div style="width: 390px; height: 844px; box-sizing: border-box; background: #ffffff; color: var(--tusz); font-family: 'DM Sans', sans-serif; display: flex; flex-direction: column; overflow: hidden">
+
+  <div style="padding: 28px 22px 10px; display: flex; flex-direction: column; gap: 14px">
+    <div style="display: flex; align-items: center; justify-content: space-between">
+      <span style="display: inline-flex; align-items: center; gap: 8px; height: 34px; padding: 0 12px; border-radius: 999px; background: var(--akcent-jasny); color: var(--akcent-ciemny); font-size: 13px; font-weight: 500">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 21s7-6.2 7-12a7 7 0 1 0-14 0c0 5.8 7 12 7 12z"></path><circle cx="12" cy="9" r="2.5"></circle></svg>
+        Lidl · Zorska
+      </span>
+      <span style="font-size: 13px; color: var(--wyciszony)">środa, 4 listopada</span>
+    </div>
+    <h1 style="margin: 0; font-size: 40px; font-weight: 700; letter-spacing: -0.035em; line-height: 1">Twoje listy</h1>
+  </div>
+
+  <div style="flex: 1; min-height: 0; overflow-y: auto; padding: 6px 22px 16px; display: flex; flex-direction: column; gap: 12px">
+
+    <a href="E01-a-Typowy.dc.html" class="karta w" style="display: flex; flex-direction: column; gap: 14px; padding: 18px; border-radius: 22px; background: var(--akcent); color: #ffffff">
+      <div style="display: flex; align-items: center; justify-content: space-between">
+        <span style="font-size: 12px; font-weight: 700; letter-spacing: .04em; text-transform: uppercase; color: #cfe2ef">Na sobotę</span>
+        <span style="font-size: 13px; color: #cfe2ef">≈ 83 zł</span>
+      </div>
+      <div style="display: flex; flex-direction: column; gap: 4px">
+        <span style="font-size: 24px; font-weight: 700; letter-spacing: -0.02em">Duże zakupy</span>
+        <span style="font-size: 14px; color: #d6e6f2">Mleko, chleb, pomidory, ser żółty, kawa i 3 więcej</span>
+      </div>
+      <div style="height: 6px; border-radius: 999px; background: rgba(255,255,255,.22); overflow: hidden"><div style="width: 25%; height: 100%; background: #ffffff; border-radius: 999px"></div></div>
+      <div style="display: flex; align-items: center; justify-content: space-between">
+        <span style="font-size: 13px; color: #d6e6f2">2 z 8 w koszyku</span>
+        <span style="display: inline-flex; align-items: center; gap: 6px; height: 38px; padding: 0 14px; border-radius: 999px; background: #ffffff; color: var(--akcent-ciemny); font-size: 14px; font-weight: 700">Otwórz
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"></path></svg></span>
+      </div>
+    </a>
+
+    <sc-for list="{{listy}}" as="l" hint-placeholder-count="2">
+      <a href="E01-a-Typowy.dc.html" class="karta w" style="display: flex; align-items: center; gap: 14px; padding: 14px 16px; border-radius: 20px; background: var(--chip)">
+        <span style="width: 44px; height: 44px; border-radius: 14px; background: #ffffff; display: flex; align-items: center; justify-content: center; font-size: 15px; font-weight: 700; color: var(--akcent-ciemny); flex-shrink: 0">{{l.ile}}</span>
+        <span style="flex: 1; display: flex; flex-direction: column; gap: 2px; min-width: 0">
+          <span style="font-size: 16px; font-weight: 700">{{l.nazwa}}</span>
+          <span style="font-size: 13px; color: var(--wyciszony); white-space: nowrap; overflow: hidden; text-overflow: ellipsis">{{l.opis}}</span>
+        </span>
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--wyciszony)" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 6 6 6-6 6"></path></svg>
+      </a>
+    </sc-for>
+
+    <div class="w" style="animation-delay: .1s; display: flex; flex-direction: column; gap: 10px; margin-top: 8px">
+      <span style="font-size: 13px; font-weight: 700; color: var(--wyciszony)">Szybki start</span>
+      <div style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px">
+        <a href="E01-a-Typowy.dc.html" class="karta" style="display: flex; flex-direction: column; gap: 8px; padding: 14px; border-radius: 18px; border: 1.5px solid var(--ramka)">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--akcent)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 12a9 9 0 1 0 3-6.7L3 8"></path><path d="M3 3v5h5"></path></svg>
+          <span style="font-size: 14px; font-weight: 700">Powtórz ostatnie</span>
+          <span style="font-size: 12px; color: var(--wyciszony)">12 produktów, 1 listopada</span>
+        </a>
+        <a href="A-4-Promocje.dc.html" class="karta" style="display: flex; flex-direction: column; gap: 8px; padding: 14px; border-radius: 18px; border: 1.5px solid var(--ramka)">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--akcent)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20.6 13.4 13.4 20.6a2 2 0 0 1-2.8 0L3 13V3h10l7.6 7.6a2 2 0 0 1 0 2.8z"></path></svg>
+          <span style="font-size: 14px; font-weight: 700">3 promocje dla Ciebie</span>
+          <span style="font-size: 12px; color: var(--wyciszony)">ser, kawa, kurczak</span>
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <div style="padding: 8px 22px 14px">
+    <a href="E01-b-Pusta.dc.html" class="cta" style="height: 58px; border-radius: 999px; background: var(--akcent); color: #ffffff; display: flex; align-items: center; justify-content: center; gap: 10px; font-size: 17px; font-weight: 700; box-shadow: 0 8px 20px rgba(29,95,138,.25)">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="2.6" stroke-linecap="round" aria-hidden="true"><path d="M12 5v14M5 12h14"></path></svg>
+      Nowa lista
+    </a>
+  </div>
+
+  <nav aria-label="Główna nawigacja" style="height: 62px; display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); border-top: 1px solid var(--linia)">
+    <a href="E00-a-Start.dc.html" style="display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 3px; font-size: 11px; font-weight: 700; color: var(--akcent)"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M9 6h11M9 12h11M9 18h11M4 6h.01M4 12h.01M4 18h.01"></path></svg>Listy</a>
+    <a href="A-4-Promocje.dc.html" style="display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 3px; font-size: 11px; color: var(--wyciszony)"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20.6 13.4 13.4 20.6a2 2 0 0 1-2.8 0L3 13V3h10l7.6 7.6a2 2 0 0 1 0 2.8z"></path></svg>Promocje</a>
+    <a href="A-8-Paragony.dc.html" style="display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 3px; font-size: 11px; color: var(--wyciszony)"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 3h12v18l-3-2-3 2-3-2-3 2z"></path></svg>Paragony</a>
+    <a href="E00-a-Start.dc.html" style="display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 3px; font-size: 11px; color: var(--wyciszony)"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="8" r="4"></circle><path d="M4 21c1.5-4 4.5-6 8-6s6.5 2 8 6"></path></svg>Konto</a>
+  </nav>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":390,"height":844}}'>
+class Component extends DCLogic {
+  renderVals() {
+    return { listy: [
+      { nazwa: 'Rossmann', opis: 'Pasta do zębów, płyn do soczewek, waciki', ile: '3' },
+      { nazwa: 'Urodziny Oli', opis: 'Wspólna z Kasią · tort, świeczki, napoje, chipsy', ile: '9' }
+    ] };
+  }
+}
+</script>
+</body>
+</html>

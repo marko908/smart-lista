@@ -1,0 +1,269 @@
+<!doctype html>
+<html lang="pl">
+<head>
+<meta charset="utf-8">
+<title>Tryb zakupów</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,700&amp;display=swap" rel="stylesheet">
+<style>
+/* Kolory w jednym miejscu: zmiana motywu = zmiana tych wartości */
+:root{--akcent:#1d5f8a;--akcent-ciemny:#164a6b;--akcent-jasny:#e3eff7;--tusz:#121c24;--wyciszony:#5d6b75;--linia:#edf1f4;--chip:#f2f5f7;--ramka:#c8d5de;--odhaczony:#98a4ad}
+body{margin:0}
+a{color:var(--akcent);text-decoration:none}a:hover{color:var(--akcent-ciemny)}
+.poz{transition:background-color .18s ease,transform .15s ease}.poz:active{transform:scale(.985)}
+.pasek{transition:width .45s cubic-bezier(.2,.8,.2,1)}
+@keyframes wejscie{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+.karta{animation:wejscie .38s cubic-bezier(.2,.8,.2,1)}
+@keyframes pop{0%{transform:scale(1)}40%{transform:scale(1.25)}70%{transform:scale(.92)}100%{transform:scale(1)}}
+@keyframes blysk{from{box-shadow:0 0 0 0 rgba(29,95,138,.35)}to{box-shadow:0 0 0 12px rgba(29,95,138,0)}}
+.sek{transition:background-color .4s ease,padding .45s cubic-bezier(.2,.8,.2,1),box-shadow .4s ease}
+.zwin{transition:grid-template-rows .5s cubic-bezier(.2,.8,.2,1)}
+.tyt{transition:font-size .45s cubic-bezier(.2,.8,.2,1),letter-spacing .45s ease,color .3s ease}
+.ptk{transition:height .4s cubic-bezier(.2,.8,.2,1),opacity .3s ease}
+</style>
+</helmet>
+<div style="width: 390px; height: 844px; box-sizing: border-box; background: #ffffff; color: var(--tusz); font-family: 'DM Sans', sans-serif; display: flex; flex-direction: column; overflow: hidden">
+
+  <div style="padding: 24px 22px 0; display: flex; align-items: center; gap: 12px">
+    <a href="E01-a-Typowy.dc.html" aria-label="Zakończ zakupy" style="width: 44px; height: 44px; border-radius: 50%; background: var(--chip); display: flex; align-items: center; justify-content: center; flex-shrink: 0">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--tusz)" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18"></path></svg>
+    </a>
+    <div style="flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 6px">
+      <div style="display: flex; justify-content: space-between; align-items: center; gap: 8px; font-size: 13px">
+        <sc-if value="{{maSklep}}" hint-placeholder-val="{{true}}">
+          <button onClick="{{zmienSklep}}" style="display: inline-flex; align-items: center; gap: 4px; height: 28px; padding: 0; border: 0; background: transparent; font-family: inherit; font-size: 13px; font-weight: 700; color: var(--tusz); cursor: pointer">{{sklepTeraz}}<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"></path></svg></button>
+        </sc-if>
+        <sc-if value="{{bezSklepu}}" hint-placeholder-val="{{false}}"><span style="font-weight: 700">Zakupy · Na sobotę</span></sc-if>
+        <span style="color: var(--wyciszony); white-space: nowrap">{{postep}}</span>
+      </div>
+      <div style="height: 8px; border-radius: 4px; background: var(--chip); overflow: hidden"><div class="pasek" style="{{pasekStyl}}"></div></div>
+    </div>
+  </div>
+
+  <sc-if value="{{pokazPrzelacznik}}" hint-placeholder-val="{{true}}">
+    <div style="margin: 14px 22px 0; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 4px; padding: 4px; border-radius: 14px; background: var(--chip)">
+      <button onClick="{{poKolei}}" style="{{stylPoKolei}}">Po kolei</button>
+      <button onClick="{{calaLista}}" style="{{stylCala}}">Cała lista</button>
+    </div>
+  </sc-if>
+
+  <sc-if value="{{wybor}}" hint-placeholder-val="{{false}}">
+    <div class="karta" style="flex: 1; min-height: 0; display: flex; flex-direction: column; padding: 22px; gap: 14px">
+      <sc-if value="{{zrobionyInfo}}" hint-placeholder-val="{{false}}">
+        <div style="display: flex; align-items: center; gap: 12px; padding: 14px 16px; border-radius: 18px; background: var(--chip)">
+          <span style="width: 32px; height: 32px; border-radius: 50%; background: var(--akcent); display: flex; align-items: center; justify-content: center; flex-shrink: 0"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m5 12 5 5 9-10"></path></svg></span>
+          <span style="flex: 1; display: flex; flex-direction: column; gap: 1px">
+            <span style="font-size: 15px; font-weight: 700">{{zrobionyInfo}}</span>
+            <span style="font-size: 13px; color: var(--wyciszony)">Zapłać tutaj, zanim wyjdziesz.</span>
+          </span>
+        </div>
+      </sc-if>
+      <h1 style="margin: 4px 0 0; font-size: 32px; font-weight: 700; letter-spacing: -0.03em; line-height: 1.05">{{pytanie}}</h1>
+      <div style="display: flex; flex-direction: column; gap: 8px">
+        <sc-for list="{{opcje}}" as="op" hint-placeholder-count="3">
+          <button class="poz" onClick="{{op.wybierz}}" disabled="{{op.zrobiony}}" style="{{op.styl}}">
+            <span style="width: 40px; height: 40px; border-radius: 12px; background: var(--akcent-jasny); color: var(--akcent-ciemny); display: flex; align-items: center; justify-content: center; font-size: 16px; font-weight: 700; flex-shrink: 0">{{op.litera}}</span>
+            <span style="flex: 1; display: flex; flex-direction: column; gap: 2px">
+              <span style="font-size: 17px; font-weight: 700">{{op.nazwa}}</span>
+              <span style="font-size: 13px; color: var(--wyciszony)">{{op.opis}}</span>
+            </span>
+          </button>
+        </sc-for>
+      </div>
+      <div style="flex: 1"></div>
+      <sc-if value="{{zrobionyInfo}}" hint-placeholder-val="{{false}}">
+        <a href="A-7-Skaner.dc.html" style="height: 52px; display: flex; align-items: center; justify-content: center; font-size: 15px; font-weight: 700; color: var(--akcent)">Najpierw zeskanuj paragon</a>
+      </sc-if>
+    </div>
+  </sc-if>
+
+  <sc-if value="{{trwa}}" hint-placeholder-val="{{true}}">
+    <div style="flex: 1; min-height: 0; display: flex; flex-direction: column; padding: 16px 22px 22px; gap: 14px">
+      <div class="karta" style="flex: 1; min-height: 0; overflow-y: auto; display: flex; flex-direction: column; gap: 8px; margin: 0 -4px; padding: 0 4px 4px">
+        <sc-for list="{{dzialy}}" as="d" hint-placeholder-count="4">
+          <div class="sek" style="{{d.styl}}">
+            <button onClick="{{d.rozwin}}" aria-expanded="{{d.otwarty}}" style="width: 100%; min-height: 52px; display: flex; align-items: center; gap: 12px; padding: 0; border: 0; background: transparent; font-family: inherit; text-align: left; cursor: pointer; color: var(--tusz)">
+              <span style="{{d.ikonaStyl}}">
+                <sc-if value="{{d.zrobiony}}" hint-placeholder-val="{{false}}"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="3.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m5 12 5 5 9-10"></path></svg></sc-if>
+                <sc-if value="{{d.niezrobiony}}" hint-placeholder-val="{{true}}">{{d.nr}}</sc-if>
+              </span>
+              <span style="flex: 1; min-width: 0; display: flex; flex-direction: column">
+                <span class="ptk" style="{{d.etykietaStyl}}">Teraz · {{d.krok}}</span>
+                <span class="tyt" style="{{d.nazwaStyl}}">{{d.nazwa}}</span>
+                <span style="{{d.gdzieStyl}}">{{d.gdzie}}</span>
+              </span>
+              <span class="ptk" style="{{d.licznikStyl}}">{{d.licznik}}</span>
+            </button>
+            <div class="zwin" style="{{d.cialoStyl}}">
+              <div style="overflow: hidden; min-height: 0">
+                <div style="display: flex; flex-direction: column; gap: 8px; padding-top: 12px">
+                  <sc-for list="{{d.pozycje}}" as="p" hint-placeholder-count="2">
+                    <button class="poz" onClick="{{p.przelacz}}" aria-pressed="{{p.zrobione}}" style="{{p.styl}}">
+                      <span style="{{p.znak}}"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m5 12 5 5 9-10" style="{{p.ptaszek}}"></path></svg></span>
+                      <span style="flex: 1; min-width: 0; position: relative; display: flex; align-items: center">
+                        <span style="{{p.tekst}}">{{p.nazwa}}</span>
+                        <span style="{{p.kreska}}"></span>
+                      </span>
+                      <span style="font-size: 14px; color: var(--wyciszony)">{{p.cena}}</span>
+                    </button>
+                  </sc-for>
+                </div>
+              </div>
+            </div>
+          </div>
+        </sc-for>
+        <div style="display: flex; align-items: center; gap: 12px; min-height: 48px; padding: 0 16px; border-radius: 18px; border: 1.5px dashed var(--ramka); color: var(--wyciszony); font-size: 14px">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 6h18l-2 12H5zM8 6l1-3h6l1 3"></path></svg>
+          <span style="flex: 1">{{kasaTxt}}</span>
+        </div>
+      </div>
+      <a href="A-3-Mapa.dc.html" style="height: 56px; flex-shrink: 0; border-radius: 999px; border: 1.5px solid var(--ramka); display: flex; align-items: center; justify-content: center; gap: 10px; font-size: 16px; font-weight: 700; color: var(--tusz)">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 4 3 6v14l6-2 6 2 6-2V4l-6 2-6-2zM9 4v14M15 6v14"></path></svg>
+        Nie mogę znaleźć
+      </a>
+    </div>
+  </sc-if>
+
+  <sc-if value="{{cala}}" hint-placeholder-val="{{false}}">
+    <div style="flex: 1; min-height: 0; overflow-y: auto; padding: 8px 22px 22px; display: flex; flex-direction: column">
+      <sc-for list="{{wszystkie}}" as="p" hint-placeholder-count="8">
+        <button onClick="{{p.przelacz}}" style="display: flex; align-items: center; gap: 12px; min-height: 56px; padding: 0; border: 0; border-bottom: 1px solid var(--linia); background: transparent; font-family: inherit; text-align: left; cursor: pointer; width: 100%">
+          <span style="{{p.znak}}"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m5 12 5 5 9-10" style="{{p.ptaszek}}"></path></svg></span>
+          <span style="flex: 1; display: flex; flex-direction: column; gap: 1px">
+            <span style="position: relative; display: flex; align-items: center"><span style="{{p.tekst}}">{{p.nazwa}}</span><span style="{{p.kreska}}"></span></span>
+            <span style="font-size: 12px; color: var(--wyciszony)">{{p.gdzie}}</span>
+          </span>
+          <span style="font-size: 14px; color: var(--wyciszony)">{{p.cena}}</span>
+        </button>
+      </sc-for>
+    </div>
+  </sc-if>
+
+  <sc-if value="{{koniec}}" hint-placeholder-val="{{false}}">
+    <div class="karta" style="flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 16px; padding: 32px; text-align: center">
+      <span style="width: 84px; height: 84px; border-radius: 50%; background: var(--akcent); display: flex; align-items: center; justify-content: center">
+        <svg width="38" height="38" viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m5 12 5 5 9-10"></path></svg>
+      </span>
+      <h1 style="margin: 0; font-size: 32px; font-weight: 700; letter-spacing: -0.03em">Wszystko w koszyku</h1>
+      <p style="margin: 0; font-size: 16px; color: var(--wyciszony); max-width: 290px">Zeskanuj paragony, a policzymy wydatki. Każdy paragon liczy się do Premium.</p>
+      <a href="A-6-Koniec.dc.html" style="height: 56px; padding: 0 28px; border-radius: 999px; background: var(--akcent); color: #ffffff; display: flex; align-items: center; justify-content: center; font-size: 16px; font-weight: 700">Dalej</a>
+      <button onClick="{{odNowa}}" style="height: 44px; padding: 0 16px; border: 0; background: transparent; font-family: inherit; font-size: 14px; color: var(--wyciszony); cursor: pointer">Pokaż od początku</button>
+    </div>
+  </sc-if>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":390,"height":844}}'>
+class Component extends DCLogic {
+  constructor(props) {
+    super(props);
+    this.state = { o: {}, potw: {}, aktywny: null, zmiana: false, cala: false, podglad: null };
+  }
+  renderVals() {
+    const L = 'Lidl · Zorska', B = 'Biedronka · Wodzisławska', K = 'Kaufland · Rybnik';
+    const sklepy = [L, B, K];
+    const sekcje = [
+      { sklep: L, nazwa: 'Warzywa', gdzie: 'zaraz za wejściem, po lewej', pozycje: [{ id: 'a', nazwa: 'Ziemniaki · 2 kg', cena: '5,98' }, { id: 'b', nazwa: 'Pomidory · 4 szt.', cena: '5,16' }] },
+      { sklep: L, nazwa: 'Piekarnia', gdzie: 'lada przy górnej ścianie', pozycje: [{ id: 'c', nazwa: 'Chleb żytni', cena: '5,49' }] },
+      { sklep: L, nazwa: 'Sery i nabiał', gdzie: 'lodówki przy prawej ścianie', pozycje: [{ id: 'd', nazwa: 'Ser żółty gouda, 150 g', cena: '2,99' }, { id: 'e', nazwa: 'Mleko · 2 szt.', cena: '7,58' }] },
+      { sklep: L, nazwa: 'Kawa', gdzie: 'alejka 4', pozycje: [{ id: 'f', nazwa: 'Kawa ziarnista, 1 kg', cena: '39,99' }] },
+      { sklep: B, nazwa: 'Owoce', gdzie: 'zaraz za wejściem', pozycje: [{ id: 'g', nazwa: 'Pomarańcze · 1 kg', cena: '4,99' }] },
+      { sklep: B, nazwa: 'Mięso', gdzie: 'lodówki przy tylnej ścianie', pozycje: [{ id: 'h', nazwa: 'Filet z kurczaka · 1 kg', cena: '15,99' }] },
+      { sklep: K, nazwa: 'Chemia', gdzie: 'alejka 12', pozycje: [{ id: 'i', nazwa: 'Papier toaletowy', cena: '14,99' }] }
+    ];
+    const st = this.state, o = st.o;
+    const potw = st.potw || o;
+    const pozSklepu = (k) => sekcje.filter((x) => x.sklep === k).reduce((a, x) => a.concat(x.pozycje), []);
+    const gotowy = (k) => pozSklepu(k).every((p) => potw[p.id]);
+    const zostaly = sklepy.filter((k) => !gotowy(k));
+    const wszystkoGotowe = zostaly.length === 0;
+    const odm = (n) => n + ' ' + (n === 1 ? 'produkt' : (n % 10 >= 2 && n % 10 <= 4 && (n % 100 < 12 || n % 100 > 14)) ? 'produkty' : 'produktów');
+    const kr = (k) => k.split(' · ')[0];
+    const miejsc = { Lidl: 'Lidlu', Biedronka: 'Biedronce', Kaufland: 'Kauflandzie' };
+    const aktywnyGotowy = st.aktywny && gotowy(st.aktywny);
+    const wybor = !wszystkoGotowe && !st.cala && (!st.aktywny || st.zmiana || aktywnyGotowy);
+    const E = 'cubic-bezier(.2,.8,.2,1)';
+    // odhaczenie: kółko wypełnia się i „pyka”, ptaszek się rysuje, tekst przekreśla się od lewej
+    const znakStyl = (done, r) => 'width: ' + r + 'px; height: ' + r + 'px; border-radius: 50%; flex-shrink: 0; display: flex; align-items: center; justify-content: center; box-sizing: border-box; transition: background-color .2s ease, border-color .2s ease; ' + (done ? 'background: var(--akcent); border: 2px solid var(--akcent); animation: pop .42s ' + E + ', blysk .6s ease-out' : 'background: transparent; border: 2px solid var(--ramka)');
+    const ptaszek = (done) => 'stroke-dasharray: 22; stroke-dashoffset: ' + (done ? 0 : 22) + '; transition: stroke-dashoffset .28s ease ' + (done ? '.08s' : '0s');
+    const tekstStyl = (done, f) => 'font-size: ' + f + 'px; font-weight: 500; transition: color .3s ease; color: ' + (done ? 'var(--odhaczony)' : 'var(--tusz)');
+    const kreska = (done) => 'position: absolute; left: 0; top: 52%; height: 2px; border-radius: 1px; background: var(--odhaczony); pointer-events: none; width: ' + (done ? '100%' : '0') + '; transition: width .32s ' + E + ' ' + (done ? '.1s' : '0s');
+    const przelacz = (id, done) => () => {
+      this.setState({ o: Object.assign({}, o, { [id]: !done }) });
+      clearTimeout(this.t);
+      this.t = setTimeout(() => this.setState({ potw: this.state.o, podglad: null }), 650);
+    };
+    const opcje = sklepy.map((k) => {
+      const ps = pozSklepu(k), zost = ps.filter((p) => !potw[p.id]).length, zr = zost === 0;
+      return {
+        nazwa: k, litera: k.charAt(0), zrobiony: zr,
+        opis: zr ? 'Zrobione' : (zost === ps.length ? odm(ps.length) : 'Zostało ' + zost + ' z ' + ps.length),
+        styl: 'width: 100%; min-height: 68px; display: flex; align-items: center; gap: 14px; padding: 0 16px; border-radius: 18px; text-align: left; font-family: inherit; cursor: pointer; ' + (zr ? 'border: 1.5px solid var(--linia); background: #ffffff; opacity: .5' : (k === st.aktywny && !aktywnyGotowy ? 'border: 2px solid var(--akcent); background: #ffffff' : 'border: 1.5px solid var(--ramka); background: #ffffff')),
+        wybierz: () => this.setState({ aktywny: k, zmiana: false, cala: false, podglad: null })
+      };
+    });
+    const ak = (!st.aktywny || aktywnyGotowy) ? zostaly[0] : st.aktywny;
+    const tuSekcje = sekcje.filter((x) => x.sklep === ak);
+    const idx = tuSekcje.findIndex((x) => x.pozycje.some((p) => !potw[p.id]));
+    const s = tuSekcje[idx < 0 ? 0 : idx] || sekcje[0];
+    const nast = tuSekcje[idx + 1];
+    const tuPoz = pozSklepu(ak || L);
+    const tuZrob = tuPoz.filter((p) => o[p.id]).length;
+    const wsz = sekcje.reduce((a, x) => a.concat(x.pozycje.map((p) => Object.assign({ sklep: x.sklep, dzial: x.nazwa }, p))), []);
+    const wszZrob = wsz.filter((p) => o[p.id]).length;
+    const trwa = !wszystkoGotowe && !wybor && !st.cala;
+    const teraz = idx < 0 ? -1 : idx;
+    const otwartyIdx = st.podglad !== null && st.podglad !== undefined && st.podglad < tuSekcje.length ? st.podglad : teraz;
+    const dzialy = tuSekcje.map((d, i) => {
+      const zr = d.pozycje.every((p) => potw[p.id]);
+      const otw = i === otwartyIdx;
+      const ile = d.pozycje.filter((p) => o[p.id]).length;
+      const jestTeraz = i === teraz;
+      return {
+        nazwa: d.nazwa, nr: String(i + 1), krok: 'krok ' + (i + 1) + ' z ' + tuSekcje.length, otwarty: otw, zrobiony: zr, niezrobiony: !zr,
+        gdzie: otw ? d.gdzie : (zr ? 'Zrobione' : d.gdzie),
+        licznik: ile + ' z ' + d.pozycje.length,
+        rozwin: () => { if (i !== otwartyIdx) this.setState({ podglad: i }); else if (i !== teraz) this.setState({ podglad: null }); },
+        styl: 'border-radius: 22px; ' + (otw ? 'padding: 16px 16px 14px; background: var(--akcent-jasny); box-shadow: inset 0 0 0 0 transparent' : zr ? 'padding: 0 16px; background: #ffffff; box-shadow: inset 0 0 0 1.5px var(--linia)' : 'padding: 0 16px; background: var(--chip); box-shadow: inset 0 0 0 0 transparent'),
+        ikonaStyl: 'width: 28px; height: 28px; border-radius: 50%; flex-shrink: 0; display: flex; align-items: center; justify-content: center; font-size: 13px; font-weight: 700; box-sizing: border-box; transition: background-color .3s ease, color .3s ease; ' + (zr ? 'background: var(--akcent); color: #ffffff; animation: pop .45s ' + E : otw ? 'background: var(--akcent); color: #ffffff' : 'background: #ffffff; color: var(--wyciszony); border: 1.5px solid var(--ramka)'),
+        etykietaStyl: 'display: block; overflow: hidden; font-size: 13px; font-weight: 700; color: var(--akcent-ciemny); ' + (otw && jestTeraz ? 'height: 18px; opacity: 1' : 'height: 0; opacity: 0'),
+        nazwaStyl: 'font-weight: 700; line-height: 1.1; ' + (otw ? 'font-size: 30px; letter-spacing: -0.03em; color: var(--tusz)' : 'font-size: 16px; letter-spacing: 0; color: ' + (zr ? 'var(--odhaczony)' : 'var(--tusz)')),
+        gdzieStyl: 'font-size: 13px; margin-top: 2px; transition: color .3s ease; color: ' + (otw ? 'var(--akcent-ciemny)' : 'var(--wyciszony)'),
+        licznikStyl: 'font-size: 13px; font-weight: 700; white-space: nowrap; color: var(--wyciszony); ' + (otw ? 'opacity: 0' : 'opacity: 1'),
+        cialoStyl: 'display: grid; grid-template-rows: ' + (otw ? '1fr' : '0fr'),
+        pozycje: d.pozycje.map((p) => ({ nazwa: p.nazwa, cena: p.cena + ' zł', zrobione: !!o[p.id],
+          styl: 'width: 100%; min-height: 60px; display: flex; align-items: center; gap: 14px; padding: 0 16px; border-radius: 18px; border: 0; transition: background-color .3s ease; background: ' + (o[p.id] ? 'rgba(255,255,255,.55)' : '#ffffff') + '; text-align: left; font-family: inherit; cursor: pointer',
+          znak: znakStyl(!!o[p.id], 30), ptaszek: ptaszek(!!o[p.id]), tekst: tekstStyl(!!o[p.id], 17), kreska: kreska(!!o[p.id]), przelacz: przelacz(p.id, !!o[p.id]) }))
+      };
+    });
+    const pigSeg = (on) => 'height: 38px; border-radius: 10px; border: 0; font-family: inherit; font-size: 13px; font-weight: 700; cursor: pointer; ' + (on ? 'background: #ffffff; color: var(--tusz); box-shadow: 0 1px 3px rgba(18,28,36,.12)' : 'background: transparent; color: var(--wyciszony)');
+    const ostatniGotowy = st.aktywny && aktywnyGotowy ? kr(st.aktywny) : '';
+    return {
+      wybor, trwa, cala: !!st.cala, koniec: wszystkoGotowe && !st.cala,
+      maSklep: !!st.aktywny && !st.cala && !wybor, bezSklepu: !st.aktywny || st.cala || wybor,
+      sklepTeraz: ak || '', zmienSklep: () => this.setState({ zmiana: true }),
+      pokazPrzelacznik: !wszystkoGotowe || st.cala,
+      poKolei: () => this.setState({ cala: false }), calaLista: () => this.setState({ cala: true, zmiana: false }),
+      stylPoKolei: pigSeg(!st.cala), stylCala: pigSeg(!!st.cala),
+      zrobionyInfo: ostatniGotowy && !st.zmiana ? ostatniGotowy + ' zrobiony' : '',
+      pytanie: ostatniGotowy && !st.zmiana ? (zostaly.length > 1 ? 'Do którego sklepu teraz?' : zostaly.length ? 'Został ' + kr(zostaly[0]) + '. Idziesz?' : '') : 'W którym sklepie jesteś?',
+      opcje,
+      krok: 'krok ' + (idx + 1) + ' z ' + tuSekcje.length,
+      sekcja: s.nazwa, gdzie: s.gdzie,
+      pozycje: s.pozycje.map((p) => ({ nazwa: p.nazwa, cena: p.cena + ' zł', styl: 'width: 100%; min-height: 62px; display: flex; align-items: center; gap: 14px; padding: 0 16px; border-radius: 18px; border: 0; background: ' + (o[p.id] ? 'rgba(255,255,255,.55)' : '#ffffff') + '; text-align: left; font-family: inherit; cursor: pointer', znak: znakStyl(!!o[p.id], 30), tekst: tekstStyl(!!o[p.id], 17), przelacz: przelacz(p.id, !!o[p.id]) })),
+      nastepna: nast ? nast.nazwa + ' · ' + nast.gdzie : (zostaly.length > 1 ? 'Kasa, potem wybierzesz kolejny sklep' : 'Kasa'),
+      dzialy, kasaTxt: zostaly.length > 1 ? 'Kasa, potem kolejny sklep' : 'Kasa',
+      wszystkie: wsz.map((p) => ({ nazwa: p.nazwa, cena: p.cena + ' zł', gdzie: kr(p.sklep) + ' · ' + p.dzial, znak: znakStyl(!!o[p.id], 26), ptaszek: ptaszek(!!o[p.id]), tekst: tekstStyl(!!o[p.id], 16), kreska: kreska(!!o[p.id]), przelacz: przelacz(p.id, !!o[p.id]) })),
+      postep: (trwa ? tuZrob + ' z ' + tuPoz.length + ' w ' + (miejsc[kr(ak)] || kr(ak)) : wszZrob + ' z ' + wsz.length),
+      pasekStyl: 'height: 100%; border-radius: 4px; background: var(--akcent); width: ' + Math.round((trwa ? tuZrob / tuPoz.length : wszZrob / wsz.length) * 100) + '%',
+      odNowa: () => this.setState({ o: {}, potw: {}, aktywny: null, zmiana: false, cala: false, podglad: null })
+    };
+  }
+}
+</script>
+</body>
+</html>

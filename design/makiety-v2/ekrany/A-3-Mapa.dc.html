@@ -1,0 +1,125 @@
+<!doctype html>
+<html lang="pl">
+<head>
+<meta charset="utf-8">
+<title>Gdzie jest produkt</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,700&amp;display=swap" rel="stylesheet">
+<style>
+/* Kolory w jednym miejscu: zmiana motywu = zmiana tych wartości */
+:root{--akcent:#1d5f8a;--akcent-ciemny:#164a6b;--akcent-jasny:#e3eff7;--tusz:#121c24;--wyciszony:#5d6b75;--linia:#edf1f4;--chip:#f2f5f7;--ramka:#c8d5de;--odhaczony:#98a4ad}
+body{margin:0}
+a{color:var(--akcent);text-decoration:none}a:hover{color:var(--akcent-ciemny)}
+@keyframes puls{0%{transform:scale(.6);opacity:.5}100%{transform:scale(1.7);opacity:0}}
+.puls{animation:puls 2s ease-out infinite}
+@keyframes skok{0%,100%{transform:translateY(0)}50%{transform:translateY(-4px)}}
+.pin{animation:skok 1.6s ease-in-out infinite}
+@keyframes rysuj{from{stroke-dashoffset:120}to{stroke-dashoffset:0}}
+.trasa{stroke-dasharray:5 6;animation:rysuj 1.4s linear infinite}
+.kropka{transition:left .4s cubic-bezier(.2,.8,.2,1),top .4s cubic-bezier(.2,.8,.2,1)}
+.blok{position:absolute;font-size:10.5px;font-weight:500;color:#33404a;display:flex;align-items:center;justify-content:center;text-align:center;border-radius:8px;box-sizing:border-box;overflow:hidden;background:#eef2f5}
+</style>
+</helmet>
+<div style="width: 390px; height: 844px; box-sizing: border-box; background: #ffffff; color: var(--tusz); font-family: 'DM Sans', sans-serif; display: flex; flex-direction: column; overflow: hidden">
+
+  <div style="padding: 24px 22px 14px; display: flex; gap: 10px; align-items: center">
+    <a href="A-2-Zakupy.dc.html" aria-label="Wróć do zakupów" style="width: 44px; height: 44px; border-radius: 50%; background: var(--chip); display: flex; align-items: center; justify-content: center; flex-shrink: 0">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--tusz)" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><path d="m15 6-6 6 6 6"></path></svg>
+    </a>
+    <div style="flex: 1; height: 44px; border-radius: 999px; background: var(--chip); display: flex; align-items: center; gap: 8px; padding: 0 16px">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--wyciszony)" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="7"></circle><path d="m20 20-3.5-3.5"></path></svg>
+      <span style="font-size: 15px">ser żółty</span>
+    </div>
+  </div>
+
+  <div style="padding: 0 20px">
+    <button onClick="{{kliknijMape}}" aria-label="Plan sklepu" style="{{mapaStyl}}">
+      <div class="blok" style="left: 16px; top: 16px; width: 140px; height: 28px">Warzywa</div>
+      <div class="blok" style="left: 166px; top: 16px; width: 84px; height: 28px">Piekarnia</div>
+      <div class="blok" style="left: 260px; top: 16px; width: 74px; height: 28px">Pieczywo</div>
+      <div class="blok" style="left: 16px; top: 62px; width: 22px; height: 220px; writing-mode: vertical-rl">Napoje</div>
+      <div class="blok" style="left: 62px; top: 70px; width: 22px; height: 220px; writing-mode: vertical-rl">Makarony · Słodycze</div>
+      <div class="blok" style="left: 108px; top: 70px; width: 22px; height: 220px; writing-mode: vertical-rl">Konserwy · Chipsy</div>
+      <div class="blok" style="left: 154px; top: 70px; width: 22px; height: 220px; writing-mode: vertical-rl">Przyprawy · Oleje</div>
+      <div class="blok" style="left: 200px; top: 70px; width: 22px; height: 220px; writing-mode: vertical-rl">Płatki · Kawa</div>
+      <div class="blok" style="left: 246px; top: 70px; width: 22px; height: 220px; writing-mode: vertical-rl">Chemia</div>
+      <div class="blok" style="left: 312px; top: 62px; width: 22px; height: 76px; writing-mode: vertical-rl">Mleko</div>
+      <div class="blok" style="left: 312px; top: 142px; width: 22px; height: 76px; writing-mode: vertical-rl">Jogurty</div>
+      <div class="blok" style="left: 312px; top: 222px; width: 22px; height: 76px; writing-mode: vertical-rl; background: var(--akcent-jasny); color: var(--akcent-ciemny); font-weight: 700; border: 2px solid var(--akcent)">Sery żółte</div>
+      <div class="blok" style="left: 312px; top: 302px; width: 22px; height: 60px; writing-mode: vertical-rl">Mięso</div>
+      <div class="blok" style="left: 62px; top: 318px; width: 206px; height: 22px">Mrożonki</div>
+      <div class="blok" style="left: 214px; top: 380px; width: 96px; height: 40px; background: var(--tusz); color: #ffffff; font-weight: 700">Kasy</div>
+      <div class="blok" style="left: 16px; top: 418px; width: 72px; height: 18px; background: transparent; border: 1.5px dashed var(--wyciszony); color: var(--wyciszony)">Wejście</div>
+
+      <svg width="350" height="450" viewBox="0 0 350 450" style="position: absolute; left: 0; top: 0; pointer-events: none" aria-hidden="true">
+        <path class="trasa" d="{{trasa}}" fill="none" stroke="var(--akcent)" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"></path>
+      </svg>
+
+      <div class="kropka" style="{{kropkaStyl}}">
+        <span class="puls" style="position: absolute; left: -18px; top: -18px; width: 36px; height: 36px; border-radius: 50%; background: var(--akcent); opacity: .35"></span>
+        <span style="position: absolute; left: -16px; top: -16px; width: 32px; height: 32px; border-radius: 50%; background: rgba(29,95,138,.12); border: 1px dashed var(--akcent)"></span>
+        <span style="position: absolute; left: -8px; top: -8px; width: 16px; height: 16px; border-radius: 50%; background: var(--akcent); border: 3px solid #ffffff; box-shadow: 0 1px 4px rgba(0,0,0,.25); box-sizing: border-box"></span>
+      </div>
+
+      <div class="pin" style="position: absolute; left: 286px; top: 236px; width: 28px; height: 36px; margin-left: -14px; margin-top: -34px">
+        <svg width="28" height="36" viewBox="0 0 28 36" aria-hidden="true"><path d="M14 35s12-11.5 12-21A12 12 0 0 0 2 14c0 9.5 12 21 12 21z" fill="var(--tusz)"></path><circle cx="14" cy="14" r="5" fill="#ffffff"></circle></svg>
+      </div>
+
+      <sc-if value="{{tryb}}" hint-placeholder-val="{{false}}">
+        <div style="position: absolute; left: 12px; right: 12px; bottom: 12px; padding: 12px; border-radius: 14px; background: var(--tusz); color: #ffffff; font-size: 14px; text-align: center">Stuknij miejsce, w którym stoisz</div>
+      </sc-if>
+    </button>
+  </div>
+
+  <div style="flex: 1"></div>
+
+  <div style="padding: 0 22px 24px; display: flex; flex-direction: column; gap: 14px">
+    <div style="display: flex; flex-direction: column; gap: 4px">
+      <span style="font-size: 13px; font-weight: 700; color: var(--akcent)">Sery żółte · prawa ściana</span>
+      <span style="font-size: 24px; font-weight: 700; letter-spacing: -0.03em">Ser żółty gouda, 150 g</span>
+      <span style="font-size: 15px; color: var(--wyciszony)">{{opis}}</span>
+    </div>
+    <div style="display: flex; align-items: center; gap: 8px; font-size: 13px; color: var(--wyciszony)">
+      <span style="width: 10px; height: 10px; border-radius: 50%; background: var(--akcent); flex-shrink: 0"></span>{{zrodlo}}
+    </div>
+    <div style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px">
+      <button onClick="{{gdzieIndziej}}" style="height: 54px; border-radius: 999px; border: 1.5px solid var(--ramka); background: #ffffff; font-family: inherit; font-size: 15px; font-weight: 700; color: var(--tusz); cursor: pointer">Jestem gdzie indziej</button>
+      <a href="A-2-Zakupy.dc.html" style="height: 54px; border-radius: 999px; background: var(--akcent); color: #ffffff; display: flex; align-items: center; justify-content: center; font-size: 15px; font-weight: 700">Mam to</a>
+    </div>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":390,"height":844}}'>
+class Component extends DCLogic {
+  constructor(props) {
+    super(props);
+    this.state = { x: 290, y: 100, tryb: false, recznie: false };
+  }
+  renderVals() {
+    const { x, y, tryb, recznie } = this.state;
+    const cx = 286, cy = 236, sy = y + (cy - y) * 0.5;
+    const odl = Math.max(2, Math.round((Math.abs(cx - x) + Math.abs(cy - y)) / 9));
+    return {
+      tryb,
+      trasa: 'M' + x + ' ' + y + ' L' + x + ' ' + sy + ' L' + cx + ' ' + sy + ' L' + cx + ' ' + (cy - 8),
+      opis: 'ok. ' + odl + ' m od Ciebie, niżej na tej samej ścianie',
+      zrodlo: recznie ? 'Twoje miejsce, wskazane ręcznie' : 'Prawdopodobnie tu · ostatnio odhaczone: mleko',
+      mapaStyl: 'position: relative; display: block; width: 350px; height: 450px; padding: 0; border-radius: 24px; border: 0; background: var(--chip); overflow: hidden; cursor: ' + (tryb ? 'crosshair' : 'default') + '; font-family: inherit',
+      kropkaStyl: 'position: absolute; left: ' + x + 'px; top: ' + y + 'px; width: 0; height: 0',
+      gdzieIndziej: () => this.setState({ tryb: true }),
+      kliknijMape: (e) => {
+        if (!this.state.tryb) return;
+        const r = e.currentTarget.getBoundingClientRect();
+        this.setState({ x: Math.round((e.clientX - r.left) * 350 / r.width), y: Math.round((e.clientY - r.top) * 450 / r.height), tryb: false, recznie: true });
+      }
+    };
+  }
+}
+</script>
+</body>
+</html>

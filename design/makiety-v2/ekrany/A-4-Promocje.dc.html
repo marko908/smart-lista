@@ -1,0 +1,170 @@
+<!doctype html>
+<html lang="pl">
+<head>
+<meta charset="utf-8">
+<title>Promocje dla Ciebie</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,700&amp;display=swap" rel="stylesheet">
+<style>
+/* Kolory w jednym miejscu: zmiana motywu = zmiana tych wartości */
+:root{--akcent:#1d5f8a;--akcent-ciemny:#164a6b;--akcent-jasny:#e3eff7;--tusz:#121c24;--wyciszony:#5d6b75;--linia:#edf1f4;--chip:#f2f5f7;--ramka:#c8d5de;--odhaczony:#98a4ad}
+body{margin:0}
+a{color:var(--akcent);text-decoration:none}a:hover{color:var(--akcent-ciemny)}
+.dodaj{transition:background-color .2s ease,color .2s ease,transform .15s ease}.dodaj:active{transform:scale(.94)}
+@keyframes rozwin{from{opacity:0;transform:translateY(-4px)}to{opacity:1;transform:none}}
+.rozwin{animation:rozwin .25s ease}
+</style>
+</helmet>
+<div style="width: 390px; height: 844px; box-sizing: border-box; background: #ffffff; color: var(--tusz); font-family: 'DM Sans', sans-serif; display: flex; flex-direction: column; overflow: hidden">
+
+  <div style="padding: 28px 22px 12px; display: flex; flex-direction: column; gap: 10px">
+    <h1 style="margin: 0; font-size: 40px; font-weight: 700; letter-spacing: -0.035em; line-height: 1">Promocje</h1>
+    <p style="margin: 0; font-size: 15px; color: var(--wyciszony)">Z gazetek na ten tydzień, w sklepach, które wybierasz. Promocja z innego sklepu? Zapytamy, czy dodać ją do listy jako drugi sklep.</p>
+    <div style="display: flex; gap: 8px; align-items: center">
+      <sc-for list="{{sklepy}}" as="sk" hint-placeholder-count="2">
+        <button onClick="{{sk.przelacz}}" aria-pressed="{{sk.wl}}" style="{{sk.styl}}">{{sk.n}}</button>
+      </sc-for>
+      <span style="flex: 1"></span>
+      
+    </div>
+  </div>
+
+  <div style="flex: 1; min-height: 0; overflow-y: auto; padding: 4px 22px 16px; display: flex; flex-direction: column; gap: 12px">
+    <div style="display: flex; flex-direction: column; gap: 2px; padding-top: 6px">
+      <span style="font-size: 20px; font-weight: 700; letter-spacing: -0.02em">Idealne dla Ciebie</span>
+      <span style="font-size: 13px; color: var(--wyciszony)">Z tego, co kupujesz. Najlepiej dopasowane na górze.</span>
+    </div>
+    <sc-for list="{{idealne}}" as="k" hint-placeholder-count="2">
+      <article style="border-radius: 22px; background: var(--chip); padding: 16px 18px; display: flex; flex-direction: column; gap: 12px">
+        <div style="display: flex; align-items: center; justify-content: space-between; gap: 8px">
+          <span style="font-size: 12px; font-weight: 500; color: var(--wyciszony)">{{k.sklep}}</span>
+          <sc-if value="{{k.sponsor}}" hint-placeholder-val="{{false}}"><span style="font-size: 11px; font-weight: 700; color: var(--wyciszony); padding: 3px 8px; border-radius: 999px; background: #ffffff">Sponsorowane</span></sc-if>
+        </div>
+        <div style="display: flex; align-items: flex-start; gap: 12px">
+          <div style="flex: 1; display: flex; flex-direction: column; gap: 4px">
+            <span style="font-size: 18px; font-weight: 700; letter-spacing: -0.02em">{{k.nazwa}}</span>
+            <span style="font-size: 13px; color: var(--wyciszony)">{{k.powod}}</span>
+          </div>
+          <div style="display: flex; flex-direction: column; align-items: flex-end">
+            <span style="font-size: 22px; font-weight: 700; letter-spacing: -0.03em">{{k.cena}}</span>
+            <span style="font-size: 12px; color: var(--wyciszony)">{{k.jedn}}</span>
+          </div>
+        </div>
+        <div style="display: flex; align-items: center; gap: 10px">
+          <span style="font-size: 13px; font-weight: 500; color: var(--wyciszony)">{{k.notka}}</span>
+          <span style="flex: 1"></span>
+          <button class="dodaj" onClick="{{k.dodaj}}" aria-label="{{k.etykieta}}" style="{{k.przyciskStyl}}">{{k.przycisk}}</button>
+        </div>
+        <sc-if value="{{k.pyta}}" hint-placeholder-val="{{false}}">
+          <div class="rozwin" style="padding: 12px 14px; border-radius: 16px; background: #ffffff; display: flex; flex-direction: column; gap: 10px">
+            <span style="font-size: 14px; line-height: 1.4">Lista „Na sobotę” jest na Lidl. Gdzie dodać?</span>
+            <div style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px">
+              <button onClick="{{k.doTejListy}}" style="min-height: 44px; padding: 6px 10px; border-radius: 14px; border: 0; background: var(--akcent); color: #ffffff; font-family: inherit; font-size: 13px; font-weight: 700; cursor: pointer">Do tej listy, jako 2. sklep</button>
+              <button onClick="{{k.nowaLista}}" style="min-height: 44px; padding: 6px 10px; border-radius: 14px; border: 1.5px solid var(--ramka); background: #ffffff; color: var(--tusz); font-family: inherit; font-size: 13px; font-weight: 700; cursor: pointer">Nowa lista na Biedronkę</button>
+            </div>
+          </div>
+        </sc-if>
+      </article>
+    </sc-for>
+    <sc-if value="{{saInne}}" hint-placeholder-val="{{true}}">
+    <div style="display: flex; flex-direction: column; gap: 2px; padding-top: 6px">
+      <span style="font-size: 20px; font-weight: 700; letter-spacing: -0.02em">Inne promocje</span>
+      <span style="font-size: 13px; color: var(--wyciszony)">Popularne w Twoich sklepach.</span>
+    </div>
+    <sc-for list="{{inne}}" as="k" hint-placeholder-count="2">
+      <article style="border-radius: 22px; background: var(--chip); padding: 16px 18px; display: flex; flex-direction: column; gap: 12px">
+        <div style="display: flex; align-items: center; justify-content: space-between; gap: 8px">
+          <span style="font-size: 12px; font-weight: 500; color: var(--wyciszony)">{{k.sklep}}</span>
+          <sc-if value="{{k.sponsor}}" hint-placeholder-val="{{false}}"><span style="font-size: 11px; font-weight: 700; color: var(--wyciszony); padding: 3px 8px; border-radius: 999px; background: #ffffff">Sponsorowane</span></sc-if>
+        </div>
+        <div style="display: flex; align-items: flex-start; gap: 12px">
+          <div style="flex: 1; display: flex; flex-direction: column; gap: 4px">
+            <span style="font-size: 18px; font-weight: 700; letter-spacing: -0.02em">{{k.nazwa}}</span>
+            <span style="font-size: 13px; color: var(--wyciszony)">{{k.powod}}</span>
+          </div>
+          <div style="display: flex; flex-direction: column; align-items: flex-end">
+            <span style="font-size: 22px; font-weight: 700; letter-spacing: -0.03em">{{k.cena}}</span>
+            <span style="font-size: 12px; color: var(--wyciszony)">{{k.jedn}}</span>
+          </div>
+        </div>
+        <div style="display: flex; align-items: center; gap: 10px">
+          <span style="font-size: 13px; font-weight: 500; color: var(--wyciszony)">{{k.notka}}</span>
+          <span style="flex: 1"></span>
+          <button class="dodaj" onClick="{{k.dodaj}}" aria-label="{{k.etykieta}}" style="{{k.przyciskStyl}}">{{k.przycisk}}</button>
+        </div>
+        <sc-if value="{{k.pyta}}" hint-placeholder-val="{{false}}">
+          <div class="rozwin" style="padding: 12px 14px; border-radius: 16px; background: #ffffff; display: flex; flex-direction: column; gap: 10px">
+            <span style="font-size: 14px; line-height: 1.4">Lista „Na sobotę” jest na Lidl. Gdzie dodać?</span>
+            <div style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px">
+              <button onClick="{{k.doTejListy}}" style="min-height: 44px; padding: 6px 10px; border-radius: 14px; border: 0; background: var(--akcent); color: #ffffff; font-family: inherit; font-size: 13px; font-weight: 700; cursor: pointer">Do tej listy, jako 2. sklep</button>
+              <button onClick="{{k.nowaLista}}" style="min-height: 44px; padding: 6px 10px; border-radius: 14px; border: 1.5px solid var(--ramka); background: #ffffff; color: var(--tusz); font-family: inherit; font-size: 13px; font-weight: 700; cursor: pointer">Nowa lista na Biedronkę</button>
+            </div>
+          </div>
+        </sc-if>
+      </article>
+    </sc-for>
+    </sc-if>
+    <sc-if value="{{brak}}" hint-placeholder-val="{{false}}"><span style="padding: 24px 0; text-align: center; font-size: 15px; color: var(--wyciszony)">Wybierz przynajmniej jeden sklep.</span></sc-if>
+  </div>
+
+  <nav aria-label="Główna nawigacja" style="height: 62px; display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); border-top: 1px solid var(--linia)">
+    <a href="E00-a-Start.dc.html" style="display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 3px; font-size: 11px; color: var(--wyciszony)"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M9 6h11M9 12h11M9 18h11M4 6h.01M4 12h.01M4 18h.01"></path></svg>Listy</a>
+    <a href="A-4-Promocje.dc.html" style="display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 3px; font-size: 11px; font-weight: 700; color: var(--akcent)"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20.6 13.4 13.4 20.6a2 2 0 0 1-2.8 0L3 13V3h10l7.6 7.6a2 2 0 0 1 0 2.8z"></path></svg>Promocje</a>
+    <a href="A-8-Paragony.dc.html" style="display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 3px; font-size: 11px; color: var(--wyciszony)"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 3h12v18l-3-2-3 2-3-2-3 2z"></path></svg>Paragony</a>
+    <a href="E00-a-Start.dc.html" style="display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 3px; font-size: 11px; color: var(--wyciszony)"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="8" r="4"></circle><path d="M4 21c1.5-4 4.5-6 8-6s6.5 2 8 6"></path></svg>Konto</a>
+  </nav>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":390,"height":844}}'>
+class Component extends DCLogic {
+  constructor(props) {
+    super(props);
+    this.state = { dodane: {}, sklepy: { lidl: true, biedronka: true }, naLiscie: { lidl: true }, gdzie: {}, pyta: null };
+  }
+  renderVals() {
+    // dopasowanie: im wyżej, tym lepiej pasuje do historii zakupów
+    const dane = [
+      { id: 'ser', s: 'lidl', sklep: 'Lidl · Zorska · do soboty', nazwa: 'Ser żółty gouda, 150 g', powod: 'Masz „ser” na liście na sobotę', cena: '2,99 zł', jedn: '19,93 zł/kg', dop: 0.95 },
+      { id: 'kawa', s: 'lidl', sklep: 'Lidl · Zorska · do niedzieli', nazwa: 'Kawa ziarnista, 1 kg', powod: 'Kupujesz co ok. 3 tygodnie', cena: '39,99 zł', jedn: '39,99 zł/kg', dop: 0.9 },
+      { id: 'kurczak', s: 'biedronka', sklep: 'Biedronka · Wodzisławska · czw–sob', nazwa: 'Filet z kurczaka, 1 kg', powod: 'Kupujesz co ok. 2 tygodnie', cena: '17,99 zł', jedn: '17,99 zł/kg', dop: 0.8 },
+      { id: 'maslo', s: 'lidl', sklep: '[MARKA] · w Twoim Lidlu', nazwa: 'Masło extra, 200 g', powod: 'Kupujesz masło co tydzień', cena: '5,49 zł', jedn: '27,45 zł/kg', sponsor: true, dop: 0.75 },
+      { id: 'pomarancze', s: 'biedronka', sklep: 'Biedronka · Wodzisławska · do soboty', nazwa: 'Pomarańcze, 1 kg', powod: 'Często kupowane w tym tygodniu', cena: '4,99 zł', jedn: '4,99 zł/kg', dop: 0.3 },
+      { id: 'proszek', s: 'lidl', sklep: 'Lidl · Zorska · do soboty', nazwa: 'Proszek do prania, 2,6 kg', powod: 'Popularne w Lidlu', cena: '29,99 zł', jedn: '11,53 zł/kg', dop: 0.2 }
+    ];
+    const st = this.state, d = st.dodane;
+    const karta = (k) => {
+      const jest = !!d[k.id];
+      return Object.assign({}, k, {
+        sponsor: !!k.sponsor,
+        przycisk: jest ? 'Na liście' : 'Dodaj',
+        notka: jest ? (st.gdzie[k.id] || 'Dodane do listy') : (k.s === 'lidl' ? 'Lidl' : 'Biedronka'),
+        pyta: st.pyta === k.id,
+        doTejListy: () => this.setState({ pyta: null, naLiscie: Object.assign({}, st.naLiscie, { [k.s]: true }), dodane: Object.assign({}, d, { [k.id]: true }), gdzie: Object.assign({}, st.gdzie, { [k.id]: 'Na liście, w części Biedronka' }) }),
+        nowaLista: () => this.setState({ pyta: null, dodane: Object.assign({}, d, { [k.id]: true }), gdzie: Object.assign({}, st.gdzie, { [k.id]: 'Na nowej liście: Biedronka' }) }),
+        etykieta: (jest ? 'Usuń z listy: ' : 'Dodaj do listy: ') + k.nazwa,
+        przyciskStyl: 'height: 42px; min-width: 96px; padding: 0 16px; border-radius: 999px; font-family: inherit; font-size: 14px; font-weight: 700; cursor: pointer; border: 0; ' + (jest ? 'background: #ffffff; color: var(--akcent-ciemny)' : 'background: var(--akcent); color: #ffffff'),
+        dodaj: () => {
+          if (!jest && !st.naLiscie[k.s]) { this.setState({ pyta: st.pyta === k.id ? null : k.id }); return; }
+          this.setState({ dodane: Object.assign({}, d, { [k.id]: !jest }), gdzie: Object.assign({}, st.gdzie, { [k.id]: k.s === 'lidl' ? 'Dodane do listy' : 'Na liście, w części Biedronka' }) });
+        }
+      });
+    };
+    const widoczne = dane.filter((k) => st.sklepy[k.s]).sort((a, b) => b.dop - a.dop);
+    const idealne = widoczne.filter((k) => k.dop >= 0.5).map(karta);
+    const inne = widoczne.filter((k) => k.dop < 0.5).map(karta);
+    const sklepy = [['lidl', 'Lidl'], ['biedronka', 'Biedronka']].map(([id, n]) => {
+      const wl = !!st.sklepy[id];
+      return { n: n, wl: wl, przelacz: () => this.setState({ sklepy: Object.assign({}, st.sklepy, { [id]: !wl }) }),
+        styl: 'height: 36px; padding: 0 12px; border-radius: 12px; font-family: inherit; font-size: 14px; font-weight: 500; cursor: pointer; ' + (wl ? 'border: 0; background: var(--akcent); color: #ffffff' : 'border: 1.5px solid var(--ramka); background: #ffffff; color: var(--wyciszony)') };
+    });
+    return { idealne, inne, saInne: inne.length > 0, brak: widoczne.length === 0, sklepy, lista: 'Lidl · Zorska' };
+  }
+}
+</script>
+</body>
+</html>
