@@ -80,14 +80,15 @@ export default function Skan() {
     );
   }
 
-  /** Najszerszy dostępny obiektyw i najmniejsze sensowne zdjęcie (ok. 640 px). */
+  /** Najszerszy dostępny obiektyw i najmniejsze sensowne zdjęcie (ok. 1280 px). */
   async function przygotujKamere() {
     try {
       const lenses = (await kamera.current?.getAvailableLensesAsync()) ?? [];
       const szeroki = lenses.find((l) => /ultra/i.test(`${l.deviceType} ${l.localizedName}`));
       if (szeroki) setObiektyw(szeroki.deviceType);
       const sizes = (await kamera.current?.getAvailablePictureSizesAsync()) ?? [];
-      const maly = ['640x480', 'vga', 'Medium', '1280x720'].find((s) => sizes.includes(s));
+      // 1280×720: na 480 px półki widać, ale napisy na tablicach nad alejkami już ledwo.
+      const maly = ['1280x720', 'High', '640x480', 'Medium'].find((s) => sizes.includes(s));
       if (maly) setRozmiar(maly);
     } catch {
       // Bez wyboru obiektywu też się da — po prostu węższy kadr.
