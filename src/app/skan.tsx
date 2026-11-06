@@ -2,7 +2,7 @@
  * Skan sklepu spacerem — nagrywanie.
  *
  * Telefon na uchwycie na klatce piersiowej, aparat szerokokątny, zwykły spacer
- * po sklepie. Co sekundę jedno małe zdjęcie, a obok licznik kroków i kurs
+ * po sklepie. Co sekundę (albo co pół) jedno małe zdjęcie, a obok licznik kroków i kurs
  * z kompasu. Na koniec wszystko leci jednym plikiem przez arkusz udostępniania;
  * szkic planu robi z niego narzędzie `tools/skan` (patrz src/lib/skan.ts).
  *
@@ -25,7 +25,8 @@ import { useKonto } from '../lib/konto';
 import { detektorKrokow, polaczCzujniki, SKAN_FORMAT, SKAN_VERSION, type SkanKlatka, type SkanSesja } from '../lib/skan';
 import { useTheme } from '../lib/theme';
 
-const CO_ILE_MS = 1000;
+/** Co ile robimy zdjęcie: spokojny krok albo szybki marsz. */
+const TEMPO = { spokojne: { ms: 1000, krok: '0.7' }, szybkie: { ms: 500, krok: '0.85' } } as const;
 const KEEP_AWAKE = 'alejka-skan';
 
 type Stan = 'gotowy' | 'nagrywa' | 'pakuje' | 'koniec';
@@ -40,6 +41,7 @@ export default function Skan() {
   const [obiektyw, setObiektyw] = useState<string | undefined>();
   const [rozmiar, setRozmiar] = useState<string | undefined>();
   const [krok, setKrok] = useState('0.7');
+  const [tempo, setTempo] = useState<keyof typeof TEMPO>('spokojne');
   const [licznik, setLicznik] = useState({ klatki: 0, kroki: 0, kurs: null as number | null, sek: 0 });
   const [info, setInfo] = useState<string | null>(null);
 
@@ -192,7 +194,7 @@ export default function Skan() {
       } finally {
         zajety.current = false;
       }
-    }, CO_ILE_MS);
+    }, TEMPO[tempo].ms);
 
     sprzataj.current = [
       () => ped?.remove(),
@@ -257,9 +259,9 @@ export default function Skan() {
       {!nagrywa && (
         <Card>
           <Body>
-            Załóż telefon na uchwyt na klatce piersiowej, aparatem do przodu. Przejdź każdą alejkę
-            raz, środkiem, spokojnym krokiem. Na początku alejki zatrzymaj się na 2 sekundy przodem
-            do tablicy.
+            Telefon na uchwycie na klatce piersiowej albo na wózku, aparatem do przodu. Przejdź
+            alejki wężykiem, każdą raz, środkiem. Nie minimalizuj aplikacji do końca skanu —
+            w tle iPhone wyłącza aparat i czujniki.
           </Body>
         </Card>
       )}
@@ -292,6 +294,15 @@ export default function Skan() {
         </View>
       ) : (
         <View style={{ gap: 6 }}>
+          <Button
+            title={tempo === 'spokojne' ? 'Tempo: spokojne · 1 zdjęcie/s' : 'Tempo: szybki marsz · 2 zdjęcia/s'}
+            variant="secondary"
+            onPress={() => {
+              const nowe = tempo === 'spokojne' ? 'szybkie' : 'spokojne';
+              if (krok === TEMPO[tempo].krok) setKrok(TEMPO[nowe].krok);
+              setTempo(nowe);
+            }}
+          />
           <Label>Długość kroku (m)</Label>
           <Input value={krok} onChangeText={setKrok} keyboardType="decimal-pad" />
           <Body muted>
