@@ -41,6 +41,19 @@
           "locationWhenInUsePermission": "Intelist pokaże sklepy najbliżej ciebie. Lokalizacja zostaje na telefonie i nigdzie jej nie wysyłamy.",
           "isAndroidBackgroundLocationEnabled": false
         }
+      ],
+      [
+        "expo-camera",
+        {
+          "cameraPermission": "Aparat służy do skanowania alejek sklepu podczas mapowania.",
+          "recordAudioAndroid": false
+        }
+      ],
+      [
+        "expo-sensors",
+        {
+          "motionPermission": "Krokomierz liczy odległość podczas skanowania sklepu."
+        }
       ]
     ],
     "experiments": {

@@ -41,7 +41,7 @@ type Props = {
 export function SectionPicker({ title = 'Wybierz sekcję', selected, onPick, onClose, uzyte, footer }: Props) {
   const t = useTheme();
   const [query, setQuery] = useState('');
-  const pole = useRef<TextInput>(null);
+  const pole = useRef<React.ComponentRef<typeof TextInput>>(null);
 
   /**
    * Ustawienie kursora BEZ przewijania.
