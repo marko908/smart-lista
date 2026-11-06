@@ -77,7 +77,7 @@ export default function ListScreen() {
   }, [navigation, list?.name]);
 
   const suggestions = useMemo(() => (draft.trim().length >= 2 ? suggest(draft, 6) : []), [draft]);
-  const pole = useRef<TextInput>(null);
+  const pole = useRef<React.ComponentRef<typeof TextInput>>(null);
   /** Najświeższa wersja dodawania — nasłuch rejestruje się raz i sięga tutaj. */
   const dodaj = useRef<(text: string) => void>(() => {});
 

@@ -78,8 +78,8 @@ export default function Skan() {
   async function przygotujKamere() {
     try {
       const lenses = (await kamera.current?.getAvailableLensesAsync()) ?? [];
-      const szeroki = lenses.find((l) => /ultra/i.test(l));
-      if (szeroki) setObiektyw(szeroki);
+      const szeroki = lenses.find((l) => /ultra/i.test(`${l.deviceType} ${l.localizedName}`));
+      if (szeroki) setObiektyw(szeroki.deviceType);
       const sizes = (await kamera.current?.getAvailablePictureSizesAsync()) ?? [];
       const maly = ['640x480', 'vga', 'Medium', '1280x720'].find((s) => sizes.includes(s));
       if (maly) setRozmiar(maly);
@@ -235,7 +235,7 @@ export default function Skan() {
           <Label>Długość kroku (m)</Label>
           <Input value={krok} onChangeText={setKrok} keyboardType="decimal-pad" />
           <Body muted>
-            {obiektyw ? `Obiektyw: ${obiektyw}.` : 'Obiektyw szerokokątny niedostępny, używam zwykłego.'}
+            {obiektyw ? 'Obiektyw szerokokątny włączony.' : 'Obiektyw szerokokątny niedostępny, używam zwykłego.'}
           </Body>
         </View>
       )}

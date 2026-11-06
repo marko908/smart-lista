@@ -166,7 +166,7 @@ export function PlanCanvas({
 }: Props) {
   const t = useTheme();
   const [size, setSize] = useState({ w: 0, h: 0 });
-  const hostRef = useRef<View>(null);
+  const hostRef = useRef<React.ComponentRef<typeof View>>(null);
 
   const tx = useSharedValue(0);
   const ty = useSharedValue(PAS_NARZEDZI);
@@ -1053,7 +1053,7 @@ function GripHandle({
    * samego powodu: gest z biblioteki gubił się tu w chwili, gdy rozciąganie
    * zmieniało plan. Na dotyku zostaje gest, bo tam działa bez zarzutu.
    */
-  const wezel = useRef<View>(null);
+  const wezel = useRef<React.ComponentRef<typeof View>>(null);
   const swieze = useRef({ cell, normals });
   swieze.current = { cell, normals };
 

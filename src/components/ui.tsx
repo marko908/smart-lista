@@ -154,7 +154,7 @@ export function Button({ title, onPress, variant = 'primary', disabled, style }:
  * Pole tekstowe przekazuje referencję dalej — bez tego nie da się ustawić
  * na nim kursora z zewnątrz, a wyszukiwarka sekcji właśnie na tym stoi.
  */
-export const Input = forwardRef<TextInput, React.ComponentProps<typeof TextInput>>(function Input(
+export const Input = forwardRef<React.ComponentRef<typeof TextInput>, React.ComponentProps<typeof TextInput>>(function Input(
   props,
   ref
 ) {
