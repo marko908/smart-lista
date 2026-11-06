@@ -3,7 +3,7 @@ import { useEffect, useState } from 'react';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 import { Body, Button, Card, Empty, FONT, H1, Input, Label, Pill, Screen } from '../../components/ui';
 import { CHAINS, chainName, type ChainKey } from '../../data/chains';
-import { czyAdmin } from '../../lib/admin';
+import { mozeMapowac } from '../../lib/admin';
 import { useKonto } from '../../lib/konto';
 import { BLOCK_BY_KEY } from '../../data/blocks';
 import { openTextFile } from '../../lib/fileIO';
@@ -107,7 +107,7 @@ export default function Stores() {
    * aplikację, nie własny rysunek. Użytkownik dostaje gotowy katalog i wybiera
    * z niego w konkretnej liście.
    */
-  if (!czyAdmin(sesja)) {
+  if (!mozeMapowac(sesja)) {
     return (
       <Screen>
         <H1>Sklepy</H1>

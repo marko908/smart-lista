@@ -20,7 +20,7 @@ import * as Sharing from 'expo-sharing';
 import { useEffect, useRef, useState } from 'react';
 import { Platform, StyleSheet, Text, View } from 'react-native';
 import { Body, Button, Card, FONT, H1, Input, Label, Screen } from '../components/ui';
-import { czyAdmin } from '../lib/admin';
+import { mozeMapowac } from '../lib/admin';
 import { useKonto } from '../lib/konto';
 import { polaczCzujniki, SKAN_FORMAT, SKAN_VERSION, type SkanKlatka, type SkanSesja } from '../lib/skan';
 import { useTheme } from '../lib/theme';
@@ -55,7 +55,7 @@ export default function Skan() {
 
   useEffect(() => () => zatrzymajCzujniki(), []);
 
-  if (!czyAdmin(sesja)) {
+  if (!mozeMapowac(sesja)) {
     return (
       <Screen>
         <H1>Skan sklepu</H1>

@@ -14,6 +14,7 @@
  */
 
 import type { Session } from '@supabase/supabase-js';
+import { kontaWlaczone } from './supabase';
 
 const ADRESY = (process.env.EXPO_PUBLIC_ADMIN_EMAILS ?? '')
   .split(',')
@@ -27,3 +28,16 @@ export function czyAdmin(sesja: Session | null | undefined): boolean {
 
 /** Czy w ogóle skonfigurowano administratora — do komunikatu diagnostycznego. */
 export const adminSkonfigurowany = ADRESY.length > 0;
+
+/**
+ * Czy wolno mapować sklepy (Moje sklepy, skan spacerem).
+ *
+ * Normalnie tylko administrator. Wyjątek: wersja deweloperska bez
+ * skonfigurowanej bazy. Wtedy nie ma kont, więc nie da się nikogo uznać za
+ * administratora, a mapowanie i tak zostaje na telefonie — nic nie trafia
+ * do wspólnego katalogu. Bez tego wyjątku nie da się testować skanu,
+ * gdy baza jest wyłączona.
+ */
+export function mozeMapowac(sesja: Session | null | undefined): boolean {
+  return czyAdmin(sesja) || (__DEV__ && !kontaWlaczone);
+}
