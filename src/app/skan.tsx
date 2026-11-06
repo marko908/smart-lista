@@ -154,7 +154,11 @@ export default function Skan() {
 
     // Diagnoza przerw: czy aplikacja schodzi w tło, czy stoi zegar, czy aparat się wiesza.
     const loguj = (co: string) => dziennik.current.push({ t: Math.round(teraz() * 10) / 10, co });
-    const stanApki = AppState.addEventListener('change', (s) => loguj(`app:${s}`));
+    // iOS zatrzymuje aparat i czujniki aplikacji schowanej w tło — nic się wtedy nie nagrywa.
+    const stanApki = AppState.addEventListener('change', (s) => {
+      loguj(`app:${s}`);
+      if (s === 'background') setBladKlatki('Aplikacja była zminimalizowana — w tym czasie nic się nie nagrało. Trzymaj ją na ekranie do końca skanu.');
+    });
     let ostTyk = teraz();
 
     const timer = setInterval(async () => {
