@@ -367,3 +367,32 @@ export function parseSesja(text: string): { ok: true; sesja: SkanSesja } | { ok:
     },
   };
 }
+
+/**
+ * Własny licznik kroków z akcelerometru.
+ *
+ * Krokomierz iPhone'a oddaje kroki z opóźnieniem i paczkami, a przy kilku
+ * krokach potrafi nie oddać nic. Telefon na klatce piersiowej podskakuje
+ * przy każdym kroku, więc kroki widać wprost w przyspieszeniu: odejmujemy
+ * wolno zmieniającą się grawitację i liczymy wyraźne szczyty, nie częściej
+ * niż co `minOdstep` sekund (szybki marsz to ok. 2,5 kroku na sekundę).
+ *
+ * `mag` to długość wektora przyspieszenia w g (spoczynek ≈ 1).
+ */
+export function detektorKrokow(prog = 0.12, minOdstep = 0.3) {
+  let g = 1;
+  let gotowy = true;
+  let ostatni = -Infinity;
+  let kroki = 0;
+  return (t: number, mag: number): number => {
+    g = g * 0.95 + mag * 0.05;
+    const v = mag - g;
+    if (gotowy && v > prog && t - ostatni >= minOdstep) {
+      kroki++;
+      ostatni = t;
+      gotowy = false;
+    }
+    if (v < 0) gotowy = true;
+    return kroki;
+  };
+}

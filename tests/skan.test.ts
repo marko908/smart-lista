@@ -1,6 +1,6 @@
 declare const process: { exit(code: number): never };
 
-import { osSklepu, parseSesja, polaczCzujniki, szkicPlanu, trasa, type Etykieta, type SkanSesja } from '../src/lib/skan';
+import { detektorKrokow, osSklepu, parseSesja, polaczCzujniki, szkicPlanu, trasa, type Etykieta, type SkanSesja } from '../src/lib/skan';
 import { parseStoreFile, serializeStore } from '../src/lib/mapFile';
 import type { SectionKey } from '../src/data/sections';
 
@@ -88,6 +88,19 @@ const pr = polaczCzujniki(kursy, paczki);
 const tr2 = trasa({ ...sesja, probki: pr, dlugoscKroku: 1 });
 const k2 = tr2[tr2.length - 1];
 ok('zakręt między paczkami nie ginie', Math.abs(k2.x - 10) < 1.1 && Math.abs(k2.y + 10) < 1.1, `${k2.x.toFixed(1)},${k2.y.toFixed(1)}`);
+
+console.log('--- detektor kroków ---');
+{
+  // 10 s marszu: 2 kroki/s, podskok 0,25 g, do tego drobny szum; potem 5 s stania.
+  const det = detektorKrokow();
+  let n = 0;
+  for (let i = 0; i < 15 * 50; i++) {
+    const t = i / 50;
+    const ruch = t < 10 ? 0.25 * Math.sin(2 * Math.PI * 2 * t) : 0;
+    n = det(t, 1 + ruch + (los() - 0.5) * 0.04);
+  }
+  ok('detektor liczy ~20 kroków', Math.abs(n - 20) <= 2, String(n));
+}
 
 console.log('--- plik sesji ---');
 ok('zły plik odrzucony', !parseSesja('{"format":"inny"}').ok);

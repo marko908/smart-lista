@@ -15,14 +15,14 @@ import * as FileSystem from 'expo-file-system/legacy';
 import { activateKeepAwakeAsync, deactivateKeepAwake } from 'expo-keep-awake';
 import * as Location from 'expo-location';
 import { router } from 'expo-router';
-import { Pedometer } from 'expo-sensors';
+import { Accelerometer, Pedometer } from 'expo-sensors';
 import * as Sharing from 'expo-sharing';
 import { useEffect, useRef, useState } from 'react';
 import { Platform, StyleSheet, Text, View } from 'react-native';
 import { Body, Button, Card, FONT, H1, Input, Label, Screen } from '../components/ui';
 import { mozeMapowac } from '../lib/admin';
 import { useKonto } from '../lib/konto';
-import { polaczCzujniki, SKAN_FORMAT, SKAN_VERSION, type SkanKlatka, type SkanSesja } from '../lib/skan';
+import { detektorKrokow, polaczCzujniki, SKAN_FORMAT, SKAN_VERSION, type SkanKlatka, type SkanSesja } from '../lib/skan';
 import { useTheme } from '../lib/theme';
 
 const CO_ILE_MS = 1000;
@@ -49,6 +49,12 @@ export default function Skan() {
   const klatki = useRef<SkanKlatka[]>([]);
   const kursy = useRef<{ t: number; kurs: number }[]>([]);
   const kroki = useRef<{ t: number; kroki: number }[]>([]);
+  // Drugi licznik kroków, z akcelerometru — krokomierz iPhone'a bywa milczący.
+  const krokiAkc = useRef<{ t: number; kroki: number }[]>([]);
+  // Gdzie leży zdjęcie każdej klatki (zostaje tam, gdzie zapisał je aparat).
+  const sciezki = useRef<Record<string, string>>({});
+  const bledyZRzedu = useRef(0);
+  const [bladKlatki, setBladKlatki] = useState<string | null>(null);
   const ostatniKurs = useRef<number | null>(null);
   const zajety = useRef(false);
   const sprzataj = useRef<(() => void)[]>([]);
@@ -105,11 +111,8 @@ export default function Skan() {
       setInfo('Kompas w iPhonie wymaga zgody na lokalizację (używamy tylko kierunku, nie pozycji).');
       return;
     }
-    if (!(await Pedometer.isAvailableAsync())) {
-      setInfo('Ten telefon nie ma krokomierza.');
-      return;
-    }
-    await Pedometer.requestPermissionsAsync().catch(() => null);
+    const jestKrokomierz = await Pedometer.isAvailableAsync().catch(() => false);
+    if (jestKrokomierz) await Pedometer.requestPermissionsAsync().catch(() => null);
 
     const dir = `${FileSystem.documentDirectory}skan-${Date.now()}/`;
     await FileSystem.makeDirectoryAsync(dir, { intermediates: true });
@@ -117,14 +120,28 @@ export default function Skan() {
     klatki.current = [];
     kursy.current = [];
     kroki.current = [];
+    krokiAkc.current = [];
+    sciezki.current = {};
+    bledyZRzedu.current = 0;
+    setBladKlatki(null);
     ostatniKurs.current = null;
     start.current = Date.now();
     const teraz = () => (Date.now() - start.current) / 1000;
 
     await activateKeepAwakeAsync(KEEP_AWAKE);
 
-    const ped = Pedometer.watchStepCount((r) => {
-      kroki.current.push({ t: teraz(), kroki: r.steps });
+    const ped = jestKrokomierz
+      ? Pedometer.watchStepCount((r) => {
+          kroki.current.push({ t: teraz(), kroki: r.steps });
+        })
+      : null;
+    const det = detektorKrokow();
+    Accelerometer.setUpdateInterval(20);
+    const akc = Accelerometer.addListener(({ x, y, z }) => {
+      const tt = teraz();
+      const n = det(tt, Math.sqrt(x * x + y * y + z * z));
+      const ost = krokiAkc.current[krokiAkc.current.length - 1];
+      if (!ost || ost.kroki !== n) krokiAkc.current.push({ t: tt, kroki: n });
     });
     const head = await Location.watchHeadingAsync((h) => {
       const kurs = h.trueHeading >= 0 ? h.trueHeading : h.magHeading;
@@ -133,7 +150,10 @@ export default function Skan() {
     });
 
     const timer = setInterval(async () => {
-      const ostKroki = kroki.current[kroki.current.length - 1]?.kroki ?? 0;
+      const ostKroki = Math.max(
+        kroki.current[kroki.current.length - 1]?.kroki ?? 0,
+        krokiAkc.current[krokiAkc.current.length - 1]?.kroki ?? 0
+      );
       setLicznik({ klatki: klatki.current.length, kroki: ostKroki, kurs: ostatniKurs.current, sek: Math.round(teraz()) });
       if (zajety.current || !kamera.current) return;
       zajety.current = true;
@@ -141,16 +161,23 @@ export default function Skan() {
         const tt = teraz();
         const foto = await kamera.current.takePictureAsync({ quality: 0.4, shutterSound: false });
         const plik = `f${String(klatki.current.length + 1).padStart(4, '0')}.jpg`;
-        await FileSystem.moveAsync({ from: foto.uri, to: katalog.current + plik });
+        sciezki.current[plik] = foto.uri;
         klatki.current.push({ t: tt, plik });
-      } catch {
-        // Pojedyncza nieudana klatka nie przerywa skanu.
+        bledyZRzedu.current = 0;
+      } catch (e) {
+        // Pojedyncza nieudana klatka nie przerywa skanu. Seria błędów zwykle
+        // znaczy, że aparat nie lubi wybranego rozmiaru albo obiektywu — wtedy
+        // wracamy do ustawień domyślnych i pokazujemy błąd na ekranie.
+        bledyZRzedu.current += 1;
+        setBladKlatki(String(e));
+        if (bledyZRzedu.current === 3) setRozmiar(undefined);
+        if (bledyZRzedu.current === 6) setObiektyw(undefined);
       } finally {
         zajety.current = false;
       }
     }, CO_ILE_MS);
 
-    sprzataj.current = [() => ped.remove(), () => head.remove(), () => clearInterval(timer)];
+    sprzataj.current = [() => ped?.remove(), () => akc.remove(), () => head.remove(), () => clearInterval(timer)];
     setStan('nagrywa');
   }
 
@@ -164,13 +191,21 @@ export default function Skan() {
         version: SKAN_VERSION,
         start: new Date(start.current).toISOString(),
         dlugoscKroku: Number.isFinite(dl) && dl > 0.3 && dl < 1.5 ? dl : 0.7,
-        probki: polaczCzujniki(kursy.current, kroki.current),
+        // Krokomierz albo akcelerometr — który naliczył więcej. Krokomierz iPhone'a
+        // przy krótkich odcinkach potrafi milczeć, a wtedy zaniża trasę.
+        probki: polaczCzujniki(
+          kursy.current,
+          (kroki.current[kroki.current.length - 1]?.kroki ?? 0) >=
+            0.8 * (krokiAkc.current[krokiAkc.current.length - 1]?.kroki ?? 0)
+            ? kroki.current
+            : krokiAkc.current
+        ),
         klatki: klatki.current,
       };
       // Jeden plik: sesja + zdjęcia w base64. Łatwiej go przesłać niż setki osobnych plików.
       const obrazy: Record<string, string> = {};
       for (const k of klatki.current) {
-        obrazy[k.plik] = await FileSystem.readAsStringAsync(katalog.current + k.plik, {
+        obrazy[k.plik] = await FileSystem.readAsStringAsync(sciezki.current[k.plik], {
           encoding: FileSystem.EncodingType.Base64,
         });
       }
@@ -241,6 +276,7 @@ export default function Skan() {
       )}
 
       {info && <Body muted>{info}</Body>}
+      {nagrywa && bladKlatki && <Body muted>Błąd aparatu: {bladKlatki}</Body>}
 
       {stan === 'gotowy' || stan === 'koniec' ? (
         <Button title={stan === 'koniec' ? 'Nowy skan' : 'Zacznij skan'} onPress={startuj} />
